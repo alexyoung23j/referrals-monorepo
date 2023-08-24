@@ -12,7 +12,7 @@ export default function Home() {
 			</Head>
 			<main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
 				<div>
-					<Button className='bg-white border-x-neutral-50 rounded-md'>Click Me</Button>
+					<Button className='border-x-neutral-50 rounded-md'>Click Me</Button>
 					<Avatar>
 						<AvatarImage src="https://github.com/shadcn.png" />
 						<AvatarFallback>CN</AvatarFallback>
