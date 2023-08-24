@@ -25,6 +25,6 @@
 		"**/*.tsx",
 		"**/*.cjs",
 		"**/*.mjs"
-	],
+, "packages/referrals-app/tailwind.config.js"	],
 	"exclude": ["node_modules"]
 }
