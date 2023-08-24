@@ -1,0 +1,58 @@
+{
+	"name": "referrals-monorepo",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"build": "yarn workspaces run build",
+		"postinstall": "prisma generate",
+		"migrate": "prisma migrate dev --name",
+		"lint": "eslint packages",
+		"lint:fix": "eslint packages --fix",
+		"start:app": "prisma db push && yarn workspace referrals-app start",
+		"start:app:turbo": "prisma db push && yarn workspace referrals-app start:turbo",
+		"start:bot": "prisma db push && yarn workspace referrals-bot start"
+	},
+	"dependencies": {
+		"@prisma/client": "^5.1.1",
+		"@t3-oss/env-nextjs": "^0.3.1",
+		"@tanstack/react-query": "^4.29.25",
+		"@trpc/client": "^10.34.0",
+		"@trpc/next": "^10.34.0",
+		"@trpc/react-query": "^10.34.0",
+		"@trpc/server": "^10.34.0",
+		"next": "^13.4.2",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"superjson": "^1.13.1",
+		"zod": "^3.21.4"
+	},
+	"devDependencies": {
+		"@types/eslint": "^8.37.0",
+		"@types/node": "^18.16.0",
+		"@types/prettier": "^2.7.2",
+		"@types/react": "^18.2.6",
+		"@types/react-dom": "^18.2.4",
+		"@typescript-eslint/eslint-plugin": "6.0.0",
+		"@typescript-eslint/parser": "6.0.0",
+		"autoprefixer": "^10.4.14",
+		"eslint": "^8.40.0",
+		"eslint-config-next": "^13.4.2",
+		"lerna": "^7.1.5",
+		"postcss": "^8.4.27",
+		"prettier": "^2.8.8",
+		"prettier-plugin-tailwindcss": "^0.2.8",
+		"prisma": "^5.1.1",
+		"tailwindcss": "^3.3.3",
+		"typescript": "^5.0.4"
+	},
+	"lint-staged": {
+		"*.{ts,tsx}": "eslint --fix"
+	},
+	"prisma": {
+		"schema": "packages/prisma/schema.prisma"
+	},
+	"workspaces": [
+		"packages/referrals-app",
+		"packages/referrals-bot"
+	]
+}

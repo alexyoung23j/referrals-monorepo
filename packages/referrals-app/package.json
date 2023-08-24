@@ -1,0 +1,15 @@
+{
+	"name": "referrals-app",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "next build",
+		"start": "next dev",
+		"start:turbo": "next dev --turbo",
+		"start:prod": "next start",
+		"migrate": "prisma migrate dev --name",
+		"clean": "rm -rf node_modules .next"
+	},
+	"dependencies": {},
+	"devDependencies": {},
+	"prisma.schema": "../prisma/schema.prisma"
+}
