@@ -7,10 +7,7 @@ const config = {
 		project: true,
 	},
 	plugins: ['@typescript-eslint'],
-	extends: [
-		'next/core-web-vitals',
-		'plugin:@typescript-eslint/recommended',
-	],
+	extends: ['next/core-web-vitals', 'plugin:@typescript-eslint/recommended'],
 	rules: {
 		// These opinionated rules are enabled in stylistic-type-checked above.
 		// Feel free to reconfigure them to your own preference.
@@ -23,13 +20,19 @@ const config = {
 				fixStyle: 'inline-type-imports',
 			},
 		],
-		'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-		'indent': ['error', 'tab', { 'SwitchCase': 1 }],
-		'quotes': ['warn', 'single'],
-		'semi': ['error', 'always'],
-		'prefer-destructuring': ['error', { 'object': true, 'array': false }],
-		'curly': ['error'],
-		'@next/next/no-html-link-for-pages': [2, path.join(__dirname, 'packages/referrals-app/src/pages')]
+		'@typescript-eslint/no-unused-vars': [
+			'warn',
+			{ argsIgnorePattern: '^_' },
+		],
+		indent: ['error', 'tab', { SwitchCase: 1 }],
+		quotes: ['error', 'single'],
+		semi: ['error', 'always'],
+		'prefer-destructuring': ['error', { object: true, array: false }],
+		curly: ['error'],
+		'@next/next/no-html-link-for-pages': [
+			2,
+			path.join(__dirname, 'packages/referrals-app/src/pages'),
+		],
 	},
 };
 
