@@ -3,10 +3,12 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '~/lib/utils';
-import { IconLookup, type IconName } from './icons';
+import dynamicIconImports from 'lucide-react/dynamicIconImports';
+
+import Icon, { IconLookup, IconName } from './icons';
 
 const buttonVariants = cva(
-	'inline-flex items-center text-sm justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+	'inline-flex items-center text-sm font-normal gap-[10px] justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
 	{
 		variants: {
 			variant: {
@@ -57,7 +59,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 interface RButtonProps extends ButtonProps {
-	iconName?: IconName;
+	iconName?: keyof typeof dynamicIconImports;
 }
 
 export const RButton = ({
@@ -66,10 +68,9 @@ export const RButton = ({
 	children,
 	...props
 }: RButtonProps) => {
-	const IconComponent = iconName ? IconLookup[iconName] : null;
 	return (
-		<Button variant={variant} {...props}>
-			{IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+		<Button variant={variant} {...props} className="max-w-fit">
+			{iconName && <Icon name={iconName} size="14px" />}
 			{children}
 		</Button>
 	);
