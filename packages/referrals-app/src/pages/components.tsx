@@ -18,8 +18,12 @@ import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { Switch } from '~/components/ui/switch';
 import { RTextarea } from '~/components/ui/textarea';
+import { Combobox } from '~/components/ui/combobox';
+import { RLabeledSection } from '~/components/ui/labeled_section';
+import { useState } from 'react';
 
 const ComponentsPage: NextPage = () => {
+	const [controlledText, setControlledText] = useState('');
 	return (
 		<div className="flex flex-col gap-3 p-5">
 			<div className="alex">
@@ -36,6 +40,8 @@ const ComponentsPage: NextPage = () => {
 					<RText color="tertiary">Tertiary Text</RText>
 
 					<RText fontWeight="bold">Bold Text</RText>
+					<RText fontWeight="medium">Medium Text</RText>
+
 					<RText fontWeight="normal">Normal Text</RText>
 				</div>
 
@@ -74,15 +80,41 @@ const ComponentsPage: NextPage = () => {
 					</RButton>
 				</div>
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Combobox (idk if we using)</RText>
+					<Combobox />
+				</div>
+
+				<div className="m-top-5 mt-10 flex max-w-[500px] flex-col gap-5">
+					<RText fontSize="h1">Labeled Section</RText>
+					<RLabeledSection
+						label="My Label no subtitle"
+						body={
+							<RInput
+								value="sexylinktocopy.com"
+								readOnly
+								highlighted
+								copyEnabled
+							/>
+						}
+					/>
+					<RLabeledSection
+						label="My Label with toggle"
+						subtitle="This is my subtitle."
+						body={<RTextarea placeholder="Enter your blurb" />}
+						rightContent={<Switch />}
+					/>
+				</div>
+
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Card</RText>
 					<RCard>
 						<div>Content in card, no elevation</div>
 					</RCard>
 					<RCard elevation="md">
-						<div>Content in card, no elevation</div>
+						<div>Content in card, elevation</div>
 					</RCard>
 				</div>
-				<div className="m-top-5 mt-10 flex flex-col gap-3">
+				<div className="m-top-5 mt-10 flex flex-col gap-5">
 					<RText fontSize="h1">Popover</RText>
 					<RPopover
 						trigger={
@@ -153,7 +185,16 @@ const ComponentsPage: NextPage = () => {
 				<Separator className="mb-5 mt-5" />
 				<div className="flex max-w-[500px] flex-col gap-3">
 					<Label className="text-2xl">Inputs</Label>
-					<RInput placeholder="Placeholder" />
+					<RInput
+						placeholder="Controlled text"
+						value={controlledText}
+						onInput={(e) => {
+							setControlledText(
+								(e.target as HTMLInputElement)?.value
+							);
+						}}
+						copyEnabled
+					/>
 					<RInput
 						value="Read Only"
 						readOnly
@@ -175,10 +216,6 @@ const ComponentsPage: NextPage = () => {
 					/>
 					<RTextarea value="Disabled" disabled />
 					<RTextarea copyEnabled placeholder="Enter your blurb" />
-				</div>
-				<Separator className="mb-5 mt-5" />
-				<div className="mb-15">
-					<Label className="text-2xl">Avatar</Label>
 				</div>
 			</div>
 		</div>

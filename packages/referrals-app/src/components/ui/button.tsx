@@ -25,7 +25,7 @@ const buttonVariants = cva(
 			},
 			size: {
 				default: 'h-[34px] max-sm:h-[26px] px-4 py-2',
-				sm: 'h-[26px] rounded-md px-3',
+				sm: 'h-[26px] rounded-md px-3 text-[12px] leading-[12px] font-normal',
 				lg: 'h-11 rounded-md px-8',
 				icon: 'h-10 w-10',
 			},
@@ -70,7 +70,12 @@ export const RButton = ({
 }: RButtonProps) => {
 	return (
 		<Button variant={variant} {...props} className="max-w-fit">
-			{iconName && <Icon name={iconName} size="14px" />}
+			{iconName && (
+				<Icon
+					name={iconName}
+					size={props.size === 'sm' ? '12px' : '14px'}
+				/>
+			)}
 			{children}
 		</Button>
 	);
