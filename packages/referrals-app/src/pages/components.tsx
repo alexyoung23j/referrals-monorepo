@@ -167,13 +167,14 @@ const ComponentsPage: NextPage = () => {
 				<div className="flex max-w-[500px] flex-col gap-3">
 					<Label className="text-2xl">Text Area</Label>
 					<RTextarea placeholder="Placeholder" />
-					<RTextarea value="Read Only" readOnly />
-					<RTextarea value="Disabled" disabled />
 					<RTextarea
+						value="Read Only"
+						readOnly
 						copyEnabled
-						label="Label and Icon"
-						placeholder="Enter your blurb"
+						highlighted
 					/>
+					<RTextarea value="Disabled" disabled />
+					<RTextarea copyEnabled placeholder="Enter your blurb" />
 				</div>
 				<Separator className="mb-5 mt-5" />
 				<div className="mb-15">
