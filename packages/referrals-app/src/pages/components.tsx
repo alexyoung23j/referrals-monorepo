@@ -10,6 +10,9 @@ import {
 	TabsList,
 	TabsTrigger,
 } from '~/components/ui/tabs';
+import { RCalendar } from '~/components/ui/calendar';
+import { RPopover } from '~/components/ui/popover';
+import { RCard } from '~/components/ui/card';
 
 const ComponentsPage: NextPage = () => {
 	return (
@@ -66,6 +69,28 @@ const ComponentsPage: NextPage = () => {
 					</RButton>
 				</div>
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Card</RText>
+					<RCard>
+						<div>Content in card, no elevation</div>
+					</RCard>
+					<RCard elevation="md">
+						<div>Content in card, no elevation</div>
+					</RCard>
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Popover</RText>
+					<RPopover
+						trigger={
+							<div className="flex max-w-fit flex-row items-center gap-1">
+								<RText>Click for Info</RText>
+								<Icon name="info" size="12px" />
+							</div>
+						}
+						content={<div className="p-4">I am in the popover</div>}
+						align="start"
+					/>
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Avatar</RText>
 
 					<Avatar>
@@ -99,6 +124,15 @@ const ComponentsPage: NextPage = () => {
 							<div key="1">Content for Tab 1</div>,
 							<div key="2">Content for Tab 2</div>,
 						]}
+					/>
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Calendar</RText>
+					<RCalendar
+						date={new Date()}
+						onSelect={(date) => {
+							console.log(date);
+						}}
 					/>
 				</div>
 			</div>

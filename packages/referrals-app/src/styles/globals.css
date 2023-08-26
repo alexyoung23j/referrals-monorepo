@@ -24,13 +24,13 @@
 		--profile-background-grey: #f8fafc;
 		--destructive: 0 84.2% 60.2%;
 		--destructive-foreground: 0 0% 98%;
-		--border: 240 5.9% 90%;
 		--input: 240 5.9% 90%;
 		--ring: 240 5.9% 10%;
 		--radius: 6px;
 		--font-colors-primary: #0f172a;
 		--font-colors-secondary: #64748b;
 		--font-colors-tertiary: #94a3b8;
+		--border: #cbd5e1;
 	}
 
 	.dark {
