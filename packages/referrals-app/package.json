@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"build": "next build",
-		"start": "next dev --turbo",
+		"start": "next dev",
 		"start:prod": "next start",
 		"migrate": "prisma migrate dev --name",
 		"clean": "rm -rf node_modules .next"
@@ -32,11 +32,12 @@
 		"cmdk": "^0.2.0",
 		"date-fns": "^2.30.0",
 		"lucide-react": "0.263.1",
-		"next": "^13.4.2",
+		"next": "^13.4.19",
 		"next-auth": "^4.22.4",
 		"react": "18.2.0",
 		"react-day-picker": "^8.8.1",
 		"react-dom": "18.2.0",
+		"react-pdf": "^7.3.3",
 		"superjson": "^1.13.1",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.6"
@@ -46,6 +47,7 @@
 		"postcss": "^8.4.27",
 		"prettier": "^2.8.8",
 		"prettier-plugin-tailwindcss": "^0.2.8",
+		"raw-loader": "^4.0.2",
 		"tailwindcss": "^3.3.3"
 	},
 	"prisma.schema": "../prisma/schema.prisma"

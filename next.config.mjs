@@ -7,6 +7,14 @@ await import('./packages/referrals-app/src/env.mjs');
 /** @type {import("next").NextConfig} */
 const config = {
 	reactStrictMode: true,
+	webpack: (config) => {
+		config.module.rules.push({
+			test: /\.node/,
+			use: 'raw-loader',
+		});
+		
+		return config;
+	},
 
 	/**
    * If you are using `appDir` then you must comment the below `i18n` config out.
