@@ -1,22 +1,29 @@
 import { type NextPage } from 'next';
-import { Button } from '~/components/ui/button';
+import { Button, RButton } from '~/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 
 const ComponentsPage: NextPage = () => {
 	return (
 		<div>
-			<div className='mb-5'>
-				<Button>Click Me</Button>
+			<div className="mb-5">
+				<RButton
+					onClick={() => {
+						console.log('yo');
+					}}
+					variant="secondary"
+				>
+					Click Me
+				</RButton>
 			</div>
-			<div className='mb-15'>
+			<div className="mb-15">
 				<Avatar>
 					<AvatarImage src="https://github.com/shadcn.png" />
 					<AvatarFallback>CN</AvatarFallback>
 				</Avatar>
 			</div>
+			<div>Text what font am i</div>
 		</div>
 	);
 };
-
 
 export default ComponentsPage;
