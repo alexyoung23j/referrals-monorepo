@@ -3,7 +3,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '~/lib/utils';
-import { IconLookup, IconName } from './icons';
+import { IconLookup, type IconName } from './icons';
 
 const buttonVariants = cva(
 	'inline-flex items-center text-sm justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
