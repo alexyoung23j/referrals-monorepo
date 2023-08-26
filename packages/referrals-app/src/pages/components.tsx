@@ -81,7 +81,7 @@ const ComponentsPage: NextPage = () => {
 						Icon
 					</RButton>
 				</div>
-				<div className="m-top-5 mt-10 flex max-w-[600px] flex-col gap-3">
+				<div className="m-top-5 mt-10 flex max-w-[800px] flex-col gap-3">
 					<RText fontSize="h1">RowTable</RText>
 					<RowTable
 						columns={[
@@ -123,6 +123,17 @@ const ComponentsPage: NextPage = () => {
 						rows={[
 							{
 								label: 'row1',
+								cells: [
+									{ content: 'cell12', label: 'label1' },
+									{ content: 'cell22', label: 'label2' },
+									{
+										content: <RTag label="tag" />,
+										label: 'label22',
+									},
+								],
+							},
+							{
+								label: 'row2',
 								cells: [
 									{ content: 'cell1', label: 'label1' },
 									{ content: 'cell2', label: 'label2' },

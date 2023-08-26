@@ -1,5 +1,6 @@
 import Icon, { IconName } from './icons';
 import { RText } from './text';
+import { useMediaQuery } from 'react-responsive';
 
 type RCardProps = {
 	elevation?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
@@ -45,21 +46,26 @@ export const RowTable = ({ columns, rows }: RowTableProps) => {
 	const finalColumn = columns[columns.length - 1];
 	const finalColumnWidth = finalColumn?.minWidth;
 
+	const isMobile = useMediaQuery({
+		query: '(max-width: 640px)',
+	});
+
 	return (
 		<div className="flex w-full flex-col gap-[8px]">
-			<div className="flex justify-between pl-[32px] pr-[32px]">
+			<div className="max-sm: flex justify-between pl-[32px] pr-[32px] max-sm:pl-[16px] max-sm:pr-[16px]">
 				<div className="flex">
 					{columns
 						.slice(0, columns.length - 1)
 						.map((column, index) => {
-							const minWidth = column.minWidth
-								? `min-w-[${column.minWidth}px]`
-								: '';
+							if (isMobile && column.hideOnMobile) {
+								return null;
+							}
 
 							return (
 								<div
+									style={{ minWidth: column.minWidth }}
 									key={column.label?.toString()}
-									className={`flex flex-row items-center gap-[4px] ${minWidth} cursor-pointer`}
+									className={`flex cursor-pointer flex-row items-center gap-[4px]`}
 									onClick={column?.onClick}
 								>
 									{typeof column.label === 'string' ? (
@@ -106,20 +112,26 @@ export const RowTable = ({ columns, rows }: RowTableProps) => {
 					return (
 						<RCard
 							key={row.label}
-							className="border-border flex w-full flex-row justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px]"
+							className="border-border flex w-full flex-row justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]"
 						>
 							<div className="flex">
 								{row.cells
 									.slice(0, row.cells.length - 1)
 									.map((cell, cellIdx) => {
-										const minWidth = columns[cellIdx]
-											?.minWidth
-											? `min-w-[${columns[cellIdx]?.minWidth}px]`
-											: '';
+										if (
+											isMobile &&
+											columns[cellIdx]?.hideOnMobile
+										) {
+											return null;
+										}
 										return (
 											<div
+												style={{
+													minWidth:
+														columns[cellIdx]
+															?.minWidth,
+												}}
 												key={cell.label}
-												className={`${minWidth}`}
 											>
 												{cell.content}
 											</div>
