@@ -21,6 +21,7 @@ import { RTextarea } from '~/components/ui/textarea';
 import { Combobox } from '~/components/ui/combobox';
 import { RLabeledSection } from '~/components/ui/labeled_section';
 import { useState } from 'react';
+import { PDFRenderer } from '~/components/ui/pdf';
 
 const ComponentsPage: NextPage = () => {
 	const [controlledText, setControlledText] = useState('');
@@ -216,6 +217,12 @@ const ComponentsPage: NextPage = () => {
 					/>
 					<RTextarea value="Disabled" disabled />
 					<RTextarea copyEnabled placeholder="Enter your blurb" />
+				</div>
+				<Separator className="mb-5 mt-5" />
+
+				<div className="flex max-w-[500px] flex-col gap-3">
+					<Label className="text-2xl">PDF Dialog</Label>
+					<PDFRenderer />
 				</div>
 			</div>
 		</div>
