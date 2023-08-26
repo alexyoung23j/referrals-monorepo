@@ -19,7 +19,7 @@ module.exports = {
 		},
 		extend: {
 			colors: {
-				border: 'hsl(var(--border))',
+				border: 'var(--border)',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
@@ -54,11 +54,9 @@ module.exports = {
 				},
 				backgroundGrey: 'var(--background-grey)',
 				profileBackgroundGrey: 'var(--profile-background-grey)',
-				fontColors: {
-					primary: 'var(--font-colors-primary)',
-					secondary: 'var(--font-colors-secondary)',
-					tertiary: 'var(--font-colors-tertiary)',
-				},
+				textPrimary: 'var(--font-colors-primary)',
+				textSecondary: 'var(--font-colors-secondary)',
+				textTertiary: 'var(--font-colors-tertiary)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

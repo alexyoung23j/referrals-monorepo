@@ -1,7 +1,21 @@
-import { EnvelopeOpenIcon } from '@radix-ui/react-icons';
+import dynamic from 'next/dynamic';
+import type { LucideProps } from 'lucide-react';
+import dynamicIconImports from 'lucide-react/dynamicIconImports';
+
+interface IconProps extends LucideProps {
+	name: keyof typeof dynamicIconImports;
+}
+
+const Icon = ({ name, ...props }: IconProps) => {
+	const LucideIcon = dynamic(dynamicIconImports[name]);
+
+	return <LucideIcon {...props} />;
+};
+
+export default Icon;
 
 export const IconLookup = {
-	'envelope-open': EnvelopeOpenIcon,
+	pencil: <></>,
 };
 
 export type IconName = keyof typeof IconLookup;
