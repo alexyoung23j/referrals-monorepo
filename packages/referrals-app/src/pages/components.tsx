@@ -12,7 +12,7 @@ import {
 } from '~/components/ui/tabs';
 import { RCalendar } from '~/components/ui/calendar';
 import { RPopover } from '~/components/ui/popover';
-import { RCard } from '~/components/ui/card';
+import { RCard, RowTable } from '~/components/ui/card';
 import { RInput } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
@@ -80,6 +80,60 @@ const ComponentsPage: NextPage = () => {
 					>
 						Icon
 					</RButton>
+				</div>
+				<div className="m-top-5 mt-10 flex max-w-[600px] flex-col gap-3">
+					<RText fontSize="h1">RowTable</RText>
+					<RowTable
+						columns={[
+							{
+								label: (
+									<RPopover
+										trigger={
+											<div className="flex gap-1">
+												<RText
+													fontSize="b2"
+													color="tertiary"
+												>
+													Label
+												</RText>
+												<Icon
+													name="info"
+													size="12px"
+													color="#94a3b8"
+												/>
+											</div>
+										}
+										content={<div>Popover content</div>}
+									/>
+								),
+								minWidth: 200,
+								hideOnMobile: false,
+							},
+							{
+								label: 'label2',
+								iconName: 'chevrons-up-down',
+								hideOnMobile: true,
+							},
+							{
+								label: 'label3',
+								iconName: 'chevrons-up-down',
+								hideOnMobile: false,
+							},
+						]}
+						rows={[
+							{
+								label: 'row1',
+								cells: [
+									{ content: 'cell1', label: 'label1' },
+									{ content: 'cell2', label: 'label2' },
+									{
+										content: <RTag label="tag" />,
+										label: 'label2',
+									},
+								],
+							},
+						]}
+					/>
 				</div>
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Tags</RText>

@@ -3,9 +3,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '~/lib/utils';
-import dynamicIconImports from 'lucide-react/dynamicIconImports';
-
-import Icon, { IconLookup, IconName } from './icons';
+import Icon, { IconName } from './icons';
 
 const buttonVariants = cva(
 	'inline-flex items-center text-sm font-normal gap-[10px] justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -59,7 +57,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 interface RButtonProps extends ButtonProps {
-	iconName?: keyof typeof dynamicIconImports;
+	iconName?: IconName;
 }
 
 export const RButton = ({
