@@ -17,12 +17,6 @@ module.exports = {
 				'2xl': '1400px',
 			},
 		},
-		fontSize: {
-			xs: ['8px', '8px'],
-			sm: ['16px', '16px'], // This is the "base size"
-			lg: ['48px', '48px'],
-			xl: ['100px', '100px'],
-		},
 		extend: {
 			colors: {
 				border: 'hsl(var(--border))',
@@ -60,11 +54,9 @@ module.exports = {
 				},
 				backgroundGrey: 'var(--background-grey)',
 				profileBackgroundGrey: 'var(--profile-background-grey)',
-				fontColors: {
-					primary: 'var(--font-colors-primary)',
-					secondary: 'var(--font-colors-secondary)',
-					tertiary: 'var(--font-colors-tertiary)',
-				},
+				textPrimary: 'var(--font-colors-primary)',
+				textSecondary: 'var(--font-colors-secondary)',
+				textTertiary: 'var(--font-colors-tertiary)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
