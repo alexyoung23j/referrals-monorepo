@@ -75,7 +75,7 @@ export const RTextarea = ({
 				<Icon
 					name={icon as keyof typeof dynamicIconImports}
 					size="14px"
-					className="absolute right-3 top-[0.8rem] cursor-pointer"
+					className="absolute right-3 top-3 cursor-pointer"
 					onClick={handleIconClick}
 					onMouseEnter={handleMouseEnter}
 				/>

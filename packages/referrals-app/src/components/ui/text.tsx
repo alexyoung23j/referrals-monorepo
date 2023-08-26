@@ -1,7 +1,7 @@
 interface TextProps {
 	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2';
 	color?: 'primary' | 'secondary' | 'tertiary';
-	fontWeight?: 'bold' | 'normal';
+	fontWeight?: 'bold' | 'normal' | 'medium';
 	children: React.ReactNode;
 }
 
@@ -9,8 +9,8 @@ const fontSizeMap = {
 	h1: 'text-[24px]',
 	h2: 'text-[18px]',
 	h3: 'text-[16px]',
-	b1: 'text-[14px]',
-	b2: 'text-[12px]',
+	b1: 'text-[14px] leading-[14px]',
+	b2: 'text-[12px] leading-[12px]',
 };
 
 const fontColorMap = {
@@ -22,6 +22,7 @@ const fontColorMap = {
 const fontWeightMap = {
 	bold: 'font-bold',
 	normal: 'font-normal',
+	medium: 'font-medium',
 };
 
 export const RText = ({
