@@ -13,6 +13,11 @@ import {
 import { RCalendar } from '~/components/ui/calendar';
 import { RPopover } from '~/components/ui/popover';
 import { RCard } from '~/components/ui/card';
+import { RInput } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
+import { Separator } from '~/components/ui/separator';
+import { Switch } from '~/components/ui/switch';
+import { RTextarea } from '~/components/ui/textarea';
 
 const ComponentsPage: NextPage = () => {
 	return (
@@ -136,7 +141,46 @@ const ComponentsPage: NextPage = () => {
 					/>
 				</div>
 			</div>
-			<div className="bora"></div>
+			<div className="bora">
+				<div className="flex flex-col gap-3">
+					<Label className="text-2xl">Switch</Label>
+					<Switch
+						onCheckedChange={(value: boolean) =>
+							console.log('Checked: ', value)
+						}
+					/>
+				</div>
+				<Separator className="mb-5 mt-5" />
+				<div className="flex max-w-[500px] flex-col gap-3">
+					<Label className="text-2xl">Inputs</Label>
+					<RInput placeholder="Placeholder" />
+					<RInput
+						value="Read Only"
+						readOnly
+						highlighted
+						copyEnabled
+					/>
+					<RInput value="Disabled" disabled />
+					<RInput copyEnabled placeholder="Enter your blurb" />
+				</div>
+				<Separator className="mb-5 mt-5" />
+				<div className="flex max-w-[500px] flex-col gap-3">
+					<Label className="text-2xl">Text Area</Label>
+					<RTextarea placeholder="Placeholder" />
+					<RTextarea
+						value="Read Only"
+						readOnly
+						copyEnabled
+						highlighted
+					/>
+					<RTextarea value="Disabled" disabled />
+					<RTextarea copyEnabled placeholder="Enter your blurb" />
+				</div>
+				<Separator className="mb-5 mt-5" />
+				<div className="mb-15">
+					<Label className="text-2xl">Avatar</Label>
+				</div>
+			</div>
 		</div>
 	);
 };
