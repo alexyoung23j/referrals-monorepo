@@ -20,12 +20,17 @@
 		--muted-foreground: 240 3.8% 46.1%;
 		--accent: 240 4.8% 95.9%;
 		--accent-foreground: 240 5.9% 10%;
+		--background-grey: #f1f5f9;
+		--profile-background-grey: #f8fafc;
 		--destructive: 0 84.2% 60.2%;
 		--destructive-foreground: 0 0% 98%;
 		--border: 240 5.9% 90%;
 		--input: 240 5.9% 90%;
 		--ring: 240 5.9% 10%;
-		--radius: 0.5rem;
+		--radius: 6px;
+		--font-colors-primary: #0f172a;
+		--font-colors-secondary: #64748b;
+		--font-colors-tertiary: #94a3b8;
 	}
 
 	.dark {

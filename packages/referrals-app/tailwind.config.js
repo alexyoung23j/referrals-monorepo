@@ -52,10 +52,17 @@ module.exports = {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
+				backgroundGrey: 'var(--background-grey)',
+				profileBackgroundGrey: 'var(--profile-background-grey)',
+				fontColors: {
+					primary: 'var(--font-colors-primary)',
+					secondary: 'var(--font-colors-secondary)',
+					tertiary: 'var(--font-colors-tertiary)',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
+				md: 'calc(var(--radius))',
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			keyframes: {

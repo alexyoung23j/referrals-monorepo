@@ -10,7 +10,6 @@ const ComponentsPage: NextPage = () => {
 					onClick={() => {
 						console.log('yo');
 					}}
-					variant="secondary"
 				>
 					Click Me
 				</RButton>
