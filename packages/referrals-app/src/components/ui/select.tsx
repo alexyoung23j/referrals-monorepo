@@ -5,6 +5,7 @@ import * as SelectPrimitive from '@radix-ui/react-select';
 import { Check, ChevronDown } from 'lucide-react';
 
 import { cn } from 'src/lib/utils';
+import Icon from './icons';
 
 const Select = SelectPrimitive.Root;
 
@@ -19,14 +20,14 @@ const SelectTrigger = React.forwardRef<
 	<SelectPrimitive.Trigger
 		ref={ref}
 		className={cn(
-			'border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+			'border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:ring-border flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
 			className
 		)}
 		{...props}
 	>
 		{children}
 		<SelectPrimitive.Icon asChild>
-			<ChevronDown className="h-4 w-4 opacity-50" />
+			<Icon name="chevron-down" className="h-4 w-4 opacity-50" />
 		</SelectPrimitive.Icon>
 	</SelectPrimitive.Trigger>
 ));
@@ -88,7 +89,7 @@ const SelectItem = React.forwardRef<
 	>
 		<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
 			<SelectPrimitive.ItemIndicator>
-				<Check className="h-4 w-4" />
+				<Icon name="check" className="h-4 w-4" />
 			</SelectPrimitive.ItemIndicator>
 		</span>
 
@@ -108,6 +109,44 @@ const SelectSeparator = React.forwardRef<
 	/>
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
+
+type RSelectorProps = {
+	onSelect?: (value: string) => void;
+	items: Array<{ value: string; content: string | React.ReactNode }>;
+	placeholder?: string;
+	defaultValue?: { value: string; content: string | React.ReactNode };
+};
+
+export const RSelector = ({
+	onSelect,
+	items,
+	placeholder = 'placeholder',
+	defaultValue,
+}: RSelectorProps) => {
+	return (
+		<Select
+			onValueChange={(value) => {
+				if (onSelect) {
+					onSelect(value);
+				}
+			}}
+		>
+			<SelectTrigger className="max-w-fit gap-[24px]">
+				<SelectValue
+					placeholder={defaultValue?.content ?? placeholder}
+					defaultValue={defaultValue?.value ?? undefined}
+				></SelectValue>
+			</SelectTrigger>
+			<SelectContent>
+				{items.map((item) => (
+					<SelectItem key={item.value} value={item.value}>
+						{item.content}
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
+	);
+};
 
 export {
 	Select,

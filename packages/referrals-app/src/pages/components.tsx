@@ -12,7 +12,7 @@ import {
 } from '~/components/ui/tabs';
 import { RCalendar } from '~/components/ui/calendar';
 import { RPopover } from '~/components/ui/popover';
-import { RCard } from '~/components/ui/card';
+import { RCard, RowTable } from '~/components/ui/card';
 import { RInput } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
@@ -21,6 +21,8 @@ import { RTextarea } from '~/components/ui/textarea';
 import { Combobox } from '~/components/ui/combobox';
 import { RLabeledSection } from '~/components/ui/labeled_section';
 import { useState } from 'react';
+import { RSelector } from '~/components/ui/select';
+import { RTag } from '~/components/ui/tag';
 
 const ComponentsPage: NextPage = () => {
 	const [controlledText, setControlledText] = useState('');
@@ -79,6 +81,90 @@ const ComponentsPage: NextPage = () => {
 						Icon
 					</RButton>
 				</div>
+				<div className="m-top-5 mt-10 flex max-w-[800px] flex-col gap-3">
+					<RText fontSize="h1">RowTable</RText>
+					<RowTable
+						columns={[
+							{
+								label: (
+									<RPopover
+										trigger={
+											<div className="flex gap-1">
+												<RText
+													fontSize="b2"
+													color="tertiary"
+												>
+													Label
+												</RText>
+												<Icon
+													name="info"
+													size="12px"
+													color="#94a3b8"
+												/>
+											</div>
+										}
+										content={<div>Popover content</div>}
+									/>
+								),
+								minWidth: 200,
+								hideOnMobile: false,
+							},
+							{
+								label: 'label2',
+								iconName: 'chevrons-up-down',
+								hideOnMobile: true,
+							},
+							{
+								label: 'label3',
+								iconName: 'chevrons-up-down',
+								hideOnMobile: false,
+							},
+						]}
+						rows={[
+							{
+								label: 'row1',
+								cells: [
+									{ content: 'cell12', label: 'label1' },
+									{ content: 'cell22', label: 'label2' },
+									{
+										content: <RTag label="tag" />,
+										label: 'label22',
+									},
+								],
+							},
+							{
+								label: 'row2',
+								cells: [
+									{ content: 'cell1', label: 'label1' },
+									{ content: 'cell2', label: 'label2' },
+									{
+										content: <RTag label="tag" />,
+										label: 'label2',
+									},
+								],
+							},
+						]}
+					/>
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Tags</RText>
+					<RTag label="basic tag" />
+					<RTag
+						label="right content"
+						rightContent={<Icon name="link" size="12px" />}
+					/>
+					<RTag
+						label="left content"
+						leftContent={<Icon name="link" size="12px" />}
+					/>
+					<RTag label="Completed" color="green" />
+					<RTag
+						label="In progress"
+						color="blue"
+						onClick={() => console.log('yo')}
+					/>
+				</div>
+
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Combobox (idk if we using)</RText>
 					<Combobox />
@@ -138,6 +224,55 @@ const ComponentsPage: NextPage = () => {
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Icons</RText>
 					<Icon name="pencil" />
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Select</RText>
+					<RSelector
+						onSelect={(value) => {
+							console.log(value);
+						}}
+						defaultValue={{
+							value: '3',
+							content: (
+								<div className="flex flex-row items-center gap-3">
+									<Icon name="pencil" size="14px" />
+									Item 3
+								</div>
+							),
+						}}
+						items={[
+							{ value: '1', content: 'Item 1' },
+							{ value: '2', content: 'Item 2' },
+							{
+								value: '3',
+								content: (
+									<div className="flex flex-row items-center gap-3">
+										<Icon name="pencil" size="14px" />
+										Item 3
+									</div>
+								),
+							},
+						]}
+					/>
+					<RSelector
+						onSelect={(value) => {
+							console.log(value);
+						}}
+						placeholder="Placeholder bitch"
+						items={[
+							{ value: '1', content: 'Item 1' },
+							{ value: '2', content: 'Item 2' },
+							{
+								value: '3',
+								content: (
+									<div className="flex flex-row items-center gap-3">
+										<Icon name="pencil" size="14px" />
+										Item 3
+									</div>
+								),
+							},
+						]}
+					/>
 				</div>
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Tabs</RText>
