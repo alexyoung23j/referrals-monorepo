@@ -33,12 +33,13 @@ export const supabase = createTRPCRouter({
 	getResume: publicProcedure
 		.input(
 			z.object({
-				fileName: z.string(),
-				fileType: z.string(),
-				releaseEntryDataId: z.string(),
+				fileName: z.string()
 			})
 		)
-		.query(({ ctx }) => {
-			return ctx.prisma.example.findMany();
+		.query(async ({ ctx, input }) => {
+			const {fileName} = input;
+			const supabase = createClient(process.env.SUPABASE_URL ?? '', process.env.SUPABASE_API_KEY ?? '');
+			const {data} = await supabase.storage.from('resumes').getPublicUrl(fileName);
+			return data;
 		})
 });

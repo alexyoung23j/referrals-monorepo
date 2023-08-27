@@ -14,13 +14,7 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from './separator';
 import RSpinner from './spinner';
 import { useMediaQuery } from 'react-responsive';
-import { createClient } from '@supabase/supabase-js';
-const supabase = createClient(
-	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-	process.env.NEXT_PUBLIC_SUPABASE_API_KEY ?? ''
-);
-
-type PDFFile = string | File | null;
+import { trpc } from '~/utils/api';
 
 const options = {
 	cMapUrl: '/cmaps/',
@@ -33,22 +27,18 @@ type PDFRendererTypes = {
 
 export const PDFRenderer = ({fileName}: PDFRendererTypes) => {
 	const isBigScreen = useMediaQuery({ query: '(min-width: 800)' });
-	const [file, setFile] = useState<PDFFile>(fileName);
 	const [numPages, setNumPages] = useState<number>(0);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [scale, setScale] = useState<number>(1);
-
-
-	// useEffect(() => {
-	// 	console.log('RESUME DATA', resumeData);
-	// }, [resumeData]);
+	const { data: {publicUrl: resumeUrl} = {} } =
+		trpc.supabase.getResume.useQuery({fileName});
 
 	function onDocumentLoadSuccess({numPages: nextNumPages}: PDFDocumentProxy): void {
 		setNumPages(nextNumPages);
 	}
 
 	const handleDownload = () => {
-		const pdfUrl = file; 
+		const pdfUrl = resumeUrl; 
 	
 		// Use anchor tag to download the file
 		const anchor = document.createElement('a');
@@ -76,15 +66,6 @@ export const PDFRenderer = ({fileName}: PDFRendererTypes) => {
 				  window.removeEventListener('resize', updateScale);
 		};
 	  }, [numPages, isBigScreen]);
-
-	useEffect(() => {
-		const downloadImage = async () => {
-			return supabase.storage.from('resumes').getPublicUrl(fileName);
-		};
-		downloadImage().then(({data}) => {
-			setFile(data.publicUrl);
-		});
-	}, [fileName]);
 	
 	const renderLoader = () => (
 		<div className='flex justify-center mx-auto'><RSpinner size='medium' /></div>);
@@ -92,7 +73,7 @@ export const PDFRenderer = ({fileName}: PDFRendererTypes) => {
 	return (
 		<div className='flex flex-col gap-3 p-5'>
 			<div className='max-w-fit border-textSecondary border-2 rounded border-opacity-100'>
-				<Document file={file} options={options} loading={renderLoader}>
+				<Document file={resumeUrl} options={options} loading={renderLoader}>
 					<Thumbnail width={250} pageNumber={1} pageIndex={1} onClick={() => inputRef.current && inputRef.current.click()} />
 				</Document>
 			</div> 
@@ -104,7 +85,7 @@ export const PDFRenderer = ({fileName}: PDFRendererTypes) => {
 					<DialogHeader />
 					<div id='pdf-container' className='flex flex-col items-center max-w-full h-full overflow-hidden'>
 						<ScrollArea className='flex flex-col w-full overflow-hidden'>
-							<Document file={file} options={options} className='w-full gap-3 justify-center items-center overflow-hidden max-h-full max-w-full' onLoadSuccess={onDocumentLoadSuccess} loading={renderLoader}>
+							<Document file={resumeUrl} options={options} className='w-full gap-3 justify-center items-center overflow-hidden max-h-full max-w-full' onLoadSuccess={onDocumentLoadSuccess} loading={renderLoader}>
 								{Array.from(new Array(numPages), (el, index) => (
 									<div key={`page_container_${index}`}>
 										<Page scale={isBigScreen ? 1.25 : scale} className='flex justify-center w-full' key={`page_${index + 1}`} pageNumber={index + 1} renderTextLayer={false} renderAnnotationLayer={false} />
