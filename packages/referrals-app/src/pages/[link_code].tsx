@@ -13,6 +13,7 @@ export default function LinkPage() {
 			avatarUrl="https://github.com/shadcn.png"
 			currentRoleTitle="Software Engineer"
 			location="New York City"
+			profileName="Alex Young"
 			education="University of California, San Diego"
 			linkedInUrl="https://www.linkedin.com/in/alexyoung23j/"
 			twitterUrl="https://twitter.com/alex_j_young"

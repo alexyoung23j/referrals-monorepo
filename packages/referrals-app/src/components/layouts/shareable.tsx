@@ -40,7 +40,18 @@ const LinkPageMobile = ({
 	jobExperience,
 	children,
 }: LinkPageLayoutProps) => {
-	return <div></div>;
+	const [showRequests, setShowRequests] = useState(false);
+
+	return (
+		<div className="bg-background flex h-screen flex-col">
+			<div className="bg-profileBackgroundGrey flex justify-center gap-[8px] p-[24px]">
+				<Avatar className="h-[40px] w-[40px]">
+					<AvatarImage src={avatarUrl} />
+					<AvatarFallback>CN</AvatarFallback>
+				</Avatar>
+			</div>
+		</div>
+	);
 };
 const LinkPageDesktop = ({
 	avatarUrl,
@@ -55,16 +66,19 @@ const LinkPageDesktop = ({
 	jobExperience,
 	children,
 }: LinkPageLayoutProps) => {
-	const [maxExperiences, setMaxExperiences] = useState(4);
+	const [maxExperiences, setMaxExperiences] = useState(3);
 
 	return (
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
-				<div className="flex flex-col gap-[24px] pt-[10vh]">
+				<div className="flex flex-col gap-[20px] pt-[10vh]">
 					<Avatar className="h-[112px] w-[112px]">
 						<AvatarImage src={avatarUrl} />
 						<AvatarFallback>CN</AvatarFallback>
 					</Avatar>
+					<RText fontSize="h1" fontWeight="medium">
+						{profileName}
+					</RText>
 					<div className="flex flex-col gap-3">
 						{currentRoleTitle && (
 							<div className="flex items-center gap-1">
@@ -234,7 +248,7 @@ const LinkPageDesktop = ({
 
 export const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 	const isMobile = useMediaQuery({
-		query: '(max-width: 640px)',
+		query: '(max-width: 840px)',
 	});
 
 	return isMobile ? (
