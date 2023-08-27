@@ -5,10 +5,6 @@ import { RText } from '../ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Separator } from '../ui/separator';
 
-const SidebarMap = {
-	selected: 'bg-backgroundGrey',
-};
-
 const Sidebar = () => {
 	const router = useRouter();
 

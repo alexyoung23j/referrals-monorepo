@@ -1,8 +1,9 @@
 interface TextProps {
 	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2';
 	color?: 'primary' | 'secondary' | 'tertiary';
-	fontWeight?: 'bold' | 'normal' | 'medium';
+	fontWeight?: 'bold' | 'normal' | 'medium' | 'light';
 	children: React.ReactNode;
+	className?: string;
 }
 
 const fontSizeMap = {
@@ -23,6 +24,7 @@ const fontWeightMap = {
 	bold: 'font-bold',
 	normal: 'font-normal',
 	medium: 'font-medium',
+	light: 'font-light',
 };
 
 export const RText = ({
@@ -30,10 +32,11 @@ export const RText = ({
 	color = 'primary',
 	children,
 	fontWeight = 'normal',
+	className,
 }: TextProps) => {
 	return (
 		<span
-			className={`${fontSizeMap[fontSize]} ${fontColorMap[color]} ${fontWeightMap[fontWeight]}`}
+			className={`${fontSizeMap[fontSize]} ${fontColorMap[color]} ${fontWeightMap[fontWeight]} ${className}`}
 		>
 			{children}
 		</span>
