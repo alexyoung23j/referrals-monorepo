@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { RTooltip } from '../ui/tooltip';
 import { RText } from '../ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { Separator } from '../ui/separator';
 
 const SidebarMap = {
 	selected: 'bg-backgroundGrey',
@@ -83,6 +84,7 @@ type PageLayoutProps = {
 	children: React.ReactNode | undefined;
 	showSidebar?: boolean;
 	pageTitle: string;
+	pageSubtitle?: string;
 	topRightContent?: React.ReactNode;
 };
 
@@ -90,12 +92,31 @@ export const PageLayout = ({
 	children,
 	showSidebar = true,
 	pageTitle,
+	pageSubtitle,
 	topRightContent,
 }: PageLayoutProps) => {
 	return (
 		<div className="bg-background flex h-screen">
 			{showSidebar && <Sidebar />}
-			<div className="h-screen w-full overflow-y-auto"> {children}</div>
+			<div className="flex h-screen w-full flex-col items-center overflow-y-auto">
+				<div className="mt-[48px] flex max-h-fit max-w-fit justify-center">
+					<div className="flex flex-col gap-[16px]">
+						<div className="flex w-[75vw] max-w-[1092px] items-center justify-between">
+							<RText fontSize="h1" fontWeight="medium">
+								{pageTitle}
+							</RText>
+							{topRightContent && topRightContent}
+						</div>
+						{pageSubtitle && (
+							<RText fontWeight="medium" color="secondary">
+								{pageSubtitle}
+							</RText>
+						)}
+						<Separator className="mb-5 mt-5" />
+					</div>
+					{children}
+				</div>
+			</div>
 		</div>
 	);
 };
