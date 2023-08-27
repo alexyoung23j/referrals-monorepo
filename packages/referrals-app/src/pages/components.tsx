@@ -21,16 +21,79 @@ import { Switch } from '~/components/ui/switch';
 import { RTextarea } from '~/components/ui/textarea';
 import { Combobox } from '~/components/ui/combobox';
 import { RLabeledSection } from '~/components/ui/labeled_section';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PDFRenderer } from '~/components/ui/pdf';
-import dynamic from 'next/dynamic';
+import { createClient } from '@supabase/supabase-js';
+import { trpc } from '~/utils/api';
+import axios from 'axios';
 
-// const DynamicPDF = dynamic(() => import('~/components/ui/pdf'), {
-// 	ssr: false,
-// });
+const supabase = createClient(
+	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+	process.env.NEXT_PUBLIC_SUPABASE_API_KEY ?? ''
+);
 
 const ComponentsPage: NextPage = () => {
 	const [controlledText, setControlledText] = useState('');
+	const [fileToUpload, setFileToUpload] = useState<File>();
+
+	const { data: resumeUploadData, mutate: resumeUploadMutate } =
+		trpc.supabase.uploadResume.useMutation();
+	
+	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = event.target;
+
+		let file;
+		if (files && files[0]) {
+			file = files[0] || null;
+		}
+		if(!file) {return;}
+
+		const { data, error } = await supabase.storage.from('resumes').upload(file.name, file);
+
+		setFileToUpload(file);
+		// try {
+		// 	await resumeUploadMutate({
+		// 		fileName: file.name
+		// 	});
+		// } catch (e) {
+		// 	console.error('Error while generating presigned URL: ', e);
+		// }
+	};
+
+	// useEffect(() => {
+	// 	if (!resumeUploadData || !fileToUpload) {
+	// 		return;
+	// 	}
+	// 	const { signedUrl } = resumeUploadData;
+	// 	console.log('T', fileToUpload.type);
+	// 	const fileData = {
+	// 		'Content-Type': fileToUpload.type,
+	// 		file: fileToUpload,
+	// 	};
+	// 	const formData = new FormData();
+	// 	for (const name in fileData) {
+	// 		// @ts-ignore
+	// 		formData.append(name, fileData[name]);
+	// 	}
+	// 	const postImage = async () => {
+	// 		await axios
+	// 			.post(
+	// 				signedUrl,
+	// 				formData,
+	// 				{
+	// 					headers: {
+	// 						authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_API_KEY}`,
+	// 						apikey: process.env.NEXT_PUBLIC_SUPABASE_API_KEY,
+	// 					},
+	// 				})
+	// 			.then(async () => {
+	// 				console.log('SUCCESSFUL POST');
+	// 			})
+	// 			.catch((e: any) => console.error('ERROR', e));
+	// 	};
+
+	// 	postImage().then(() => setFileToUpload(null));
+	// }, [resumeUploadData, fileToUpload]);	
 	return (
 		<div className="flex flex-col gap-3 p-5">
 			<div className="alex">
@@ -228,7 +291,8 @@ const ComponentsPage: NextPage = () => {
 
 				<div className="flex max-w-[500px] flex-col gap-3">
 					<Label className="text-2xl">PDF Dialog</Label>
-					<PDFRenderer />
+					<input type='file' onChange={onFileSubmit} />
+					<PDFRenderer fileName={fileToUpload?.name ?? ''} />
 				</div>
 			</div>
 		</div>

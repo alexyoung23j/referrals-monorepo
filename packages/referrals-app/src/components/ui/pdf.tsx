@@ -14,6 +14,11 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from './separator';
 import RSpinner from './spinner';
 import { useMediaQuery } from 'react-responsive';
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(
+	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+	process.env.NEXT_PUBLIC_SUPABASE_API_KEY ?? ''
+);
 
 type PDFFile = string | File | null;
 
@@ -22,12 +27,21 @@ const options = {
 	standardFontDataUrl: '/standard_fonts/',
 };
 
-export const PDFRenderer = () => {
+type PDFRendererTypes = {
+	fileName: string;
+}
+
+export const PDFRenderer = ({fileName}: PDFRendererTypes) => {
 	const isBigScreen = useMediaQuery({ query: '(min-width: 800)' });
-	const [file] = useState<PDFFile>('/combinepdf.pdf');
+	const [file, setFile] = useState<PDFFile>(fileName);
 	const [numPages, setNumPages] = useState<number>(0);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [scale, setScale] = useState<number>(1);
+
+
+	// useEffect(() => {
+	// 	console.log('RESUME DATA', resumeData);
+	// }, [resumeData]);
 
 	function onDocumentLoadSuccess({numPages: nextNumPages}: PDFDocumentProxy): void {
 		setNumPages(nextNumPages);
@@ -63,9 +77,14 @@ export const PDFRenderer = () => {
 		};
 	  }, [numPages, isBigScreen]);
 
-	useEffect(() => {	
-
-	  }, []);
+	useEffect(() => {
+		const downloadImage = async () => {
+			return supabase.storage.from('resumes').getPublicUrl(fileName);
+		};
+		downloadImage().then(({data}) => {
+			setFile(data.publicUrl);
+		});
+	}, [fileName]);
 	
 	const renderLoader = () => (
 		<div className='flex justify-center mx-auto'><RSpinner size='medium' /></div>);
