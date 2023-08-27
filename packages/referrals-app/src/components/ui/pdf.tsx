@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { pdfjs, Document, Page, Thumbnail } from 'react-pdf';
+import { Document, Page, Thumbnail } from 'react-pdf';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { RButton } from '~/components/ui/button';
 import {
@@ -8,7 +8,6 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
-	DialogTitle,
 	DialogTrigger,
 } from '~/components/ui/dialog';
 import { ScrollArea } from '~/components/ui/scroll-area';
@@ -52,7 +51,6 @@ export const PDFRenderer = () => {
 			if (!containerWidth) {return;}
 			const pdfWidth = !isBigScreen ? 595 : 300; // Default PDF width in points (8.27 inches)
 			const calculatedScale = containerWidth / pdfWidth;
-			console.log('IS BIG SCREEN', scale);
 			setScale(calculatedScale);
 		};
 
@@ -71,8 +69,6 @@ export const PDFRenderer = () => {
 	
 	const renderLoader = () => (
 		<div className='flex justify-center mx-auto'><RSpinner size='medium' /></div>);
-
-	const widthForDialog = isBigScreen ? 'min-w-[3000px] ' : 'w-screen h-screen';
 
 	return (
 		<div className='flex flex-col gap-3 p-5'>
@@ -96,7 +92,6 @@ export const PDFRenderer = () => {
 										{index < numPages - 1 && <Separator />}
 									</div>
 								))}
-								{/* {renderLoader()} */}
 							</Document>
 						</ScrollArea>
 					</div>
