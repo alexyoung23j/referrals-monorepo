@@ -14,6 +14,7 @@ import {
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from './separator';
 import RSpinner from './spinner';
+import { useMediaQuery } from 'react-responsive';
 
 type PDFFile = string | File | null;
 
@@ -23,10 +24,11 @@ const options = {
 };
 
 export const PDFRenderer = () => {
-	const [file] = useState<PDFFile>('/sample.pdf');
+	const isBigScreen = useMediaQuery({ query: '(min-width: 800)' });
+	const [file] = useState<PDFFile>('/combinepdf.pdf');
 	const [numPages, setNumPages] = useState<number>(0);
-	const [scale, setScale] = useState<number>(1);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [scale, setScale] = useState<number>(1);
 
 	function onDocumentLoadSuccess({numPages: nextNumPages}: PDFDocumentProxy): void {
 		setNumPages(nextNumPages);
@@ -43,21 +45,34 @@ export const PDFRenderer = () => {
 		anchor.click();
 	};
 
-	// TODO: use this to scale the PDF with the react-responsive
-	// useEffect(() => {
-	// 	const container = document.getElementById('pdf-container');
-	// 	const containerWidth = container && container.clientWidth;
-	// 	console.log('BRO', container, containerWidth);
-	// 	if (!containerWidth) {return;}
-	// 	const DEFAULT_PDF_WIDTH = 595;
-	// 	const pdfWidth = 300; // Default PDF width in points (8.27 inches)
-	// 	const calculatedScale = containerWidth / pdfWidth;
-	// 	console.log('CALCULATED SCALE', calculatedScale, containerWidth);
-	// 	setScale(calculatedScale);
-	//   }, [numPages]);
+	useEffect(() => {
+		const updateScale = () => {
+			const container = document.getElementById('pdf-container');
+			const containerWidth = container && container.clientWidth;
+			if (!containerWidth) {return;}
+			const pdfWidth = !isBigScreen ? 595 : 300; // Default PDF width in points (8.27 inches)
+			const calculatedScale = containerWidth / pdfWidth;
+			console.log('IS BIG SCREEN', scale);
+			setScale(calculatedScale);
+		};
+
+		updateScale();
+		// Update scale on window resize
+		window.addEventListener('resize', updateScale);
+	
+		return () => {
+				  window.removeEventListener('resize', updateScale);
+		};
+	  }, [numPages, isBigScreen]);
+
+	useEffect(() => {	
+
+	  }, []);
 	
 	const renderLoader = () => (
 		<div className='flex justify-center mx-auto'><RSpinner size='medium' /></div>);
+
+	const widthForDialog = isBigScreen ? 'min-w-[3000px] ' : 'w-screen h-screen';
 
 	return (
 		<div className='flex flex-col gap-3 p-5'>
@@ -70,14 +85,14 @@ export const PDFRenderer = () => {
 				<DialogTrigger asChild>
 					<input ref={inputRef} hidden />
 				</DialogTrigger>
-				<DialogContent className="min-w-[40%] w-fit max-w-fit h-[95%] border-textSecondary border-4 rounded border-opacity-100">
+				<DialogContent className={'min-w-[40%] max-sm:w-screen max-sm:h-screen h-[95%] border-textSecondary border-4 rounded border-opacity-100 p-0 pb-5'}>
 					<DialogHeader />
 					<div id='pdf-container' className='flex flex-col items-center max-w-full h-full overflow-hidden'>
 						<ScrollArea className='flex flex-col w-full overflow-hidden'>
-							<Document file={file} options={options} className='flex flex-col gap-3 justify-center items-center overflow-hidden max-h-full' onLoadSuccess={onDocumentLoadSuccess} loading={renderLoader}>
+							<Document file={file} options={options} className='w-full gap-3 justify-center items-center overflow-hidden max-h-full max-w-full' onLoadSuccess={onDocumentLoadSuccess} loading={renderLoader}>
 								{Array.from(new Array(numPages), (el, index) => (
 									<div key={`page_container_${index}`}>
-										<Page className='flex justify-center' key={`page_${index + 1}`} pageNumber={index + 1} renderTextLayer={false} renderAnnotationLayer={false} />
+										<Page scale={isBigScreen ? 1.25 : scale} className='flex justify-center w-full' key={`page_${index + 1}`} pageNumber={index + 1} renderTextLayer={false} renderAnnotationLayer={false} />
 										{index < numPages - 1 && <Separator />}
 									</div>
 								))}
