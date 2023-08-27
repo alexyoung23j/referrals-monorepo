@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { api } from '~/utils/api';
@@ -59,7 +60,13 @@ function AuthShowcase() {
 			<button
 				className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
 				onClick={
-					sessionData ? () => void signOut() : () => void signIn()
+					sessionData
+						? () => void signOut()
+						: () => {
+								void signIn('google', {
+									callbackUrl: '/dashboard',
+								});
+						  }
 				}
 			>
 				{sessionData ? 'Sign out' : 'Sign in'}

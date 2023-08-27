@@ -61,6 +61,7 @@ module.exports = {
 					border: 'var(--blue-border)',
 				},
 				backgroundGrey: 'var(--background-grey)',
+				grey: 'var(--grey)',
 				profileBackgroundGrey: 'var(--profile-background-grey)',
 				lightGrey: 'var(--light-grey)',
 				textPrimary: 'var(--font-colors-primary)',
