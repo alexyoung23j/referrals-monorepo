@@ -1,3 +1,4 @@
+'use client';
 import { type NextPage } from 'next';
 import { Button, RButton } from '~/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
@@ -22,6 +23,11 @@ import { Combobox } from '~/components/ui/combobox';
 import { RLabeledSection } from '~/components/ui/labeled_section';
 import { useState } from 'react';
 import { PDFRenderer } from '~/components/ui/pdf';
+import dynamic from 'next/dynamic';
+
+// const DynamicPDF = dynamic(() => import('~/components/ui/pdf'), {
+// 	ssr: false,
+// });
 
 const ComponentsPage: NextPage = () => {
 	const [controlledText, setControlledText] = useState('');
