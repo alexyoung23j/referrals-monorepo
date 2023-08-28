@@ -44,20 +44,33 @@ const LinkPageMobile = ({
 
 	return (
 		<div className="bg-background flex h-screen flex-col">
-			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[8px] p-[24px]">
-				<Avatar className="h-[40px] w-[40px]">
-					<AvatarImage src={avatarUrl} />
-					<AvatarFallback>CN</AvatarFallback>
-				</Avatar>
-				<RText fontSize="h1" fontWeight="medium">
-					{profileName}
-				</RText>
+			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[12px] p-[24px]">
+				<div className="flex flex-col items-center gap-[8px]">
+					<Avatar className="h-[56px] w-[56px]">
+						<AvatarImage src={avatarUrl} />
+						<AvatarFallback>CN</AvatarFallback>
+					</Avatar>
+					<RText fontSize="h1" fontWeight="medium">
+						{profileName}
+					</RText>
+				</div>
+
 				<RTabsSection
 					tabs={[
 						{ label: 'Referral requests' },
 						{ label: 'Profile' },
 					]}
+					onTabsChange={(tab) => {
+						if (tab === 'Referral requests') {
+							setShowRequests(true);
+						} else {
+							setShowRequests(false);
+						}
+					}}
 				/>
+			</div>
+			<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
+				{showRequests ? children : <div>Profile</div>}
 			</div>
 		</div>
 	);
@@ -259,8 +272,6 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
-
-	console.log({ isMobile });
 
 	return isMobile ? (
 		<LinkPageMobile {...props} />
