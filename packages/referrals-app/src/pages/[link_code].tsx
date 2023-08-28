@@ -27,7 +27,7 @@ export default function LinkPage() {
 			jobExperience={[
 				{
 					jobTitle: 'Founder',
-					company: 'Giterate',
+					company: 'Giterate long name company',
 					companyLogoUrl:
 						'https://assets.commonwealth.im/c36edf04-1463-4cb2-b106-f70e6dee9ffb.png',
 					startDate: '2021',
