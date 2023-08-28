@@ -101,7 +101,7 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 				</DialogTrigger>
 				<DialogContent
 					className={
-						'h-[80vh] min-w-[50%] rounded border-4 border-opacity-100 p-0 pb-5 max-sm:h-screen max-sm:w-screen'
+						'h-[90vh] min-w-[50%] rounded border-4 border-opacity-100 p-0 pb-5 max-sm:h-screen max-sm:w-screen'
 					}
 				>
 					<DialogHeader />
