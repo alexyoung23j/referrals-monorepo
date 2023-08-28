@@ -10,7 +10,7 @@
 		"lint:fix": "eslint packages --fix",
 		"start:app": "prisma db push && yarn workspace referrals-app start",
 		"start:app:turbo": "prisma db push && yarn workspace referrals-app start:turbo",
-		"start:bot": "prisma db push && yarn workspace referrals-bot start"
+		"start:email": "prisma db push && yarn workspace email-service start"
 	},
 	"dependencies": {
 		"@prisma/client": "^5.1.1",
@@ -42,6 +42,6 @@
 	},
 	"workspaces": [
 		"packages/referrals-app",
-		"packages/referrals-bot"
+		"packages/email-service"
 	]
 }
