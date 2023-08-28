@@ -44,11 +44,20 @@ const LinkPageMobile = ({
 
 	return (
 		<div className="bg-background flex h-screen flex-col">
-			<div className="bg-profileBackgroundGrey flex justify-center gap-[8px] p-[24px]">
+			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[8px] p-[24px]">
 				<Avatar className="h-[40px] w-[40px]">
 					<AvatarImage src={avatarUrl} />
 					<AvatarFallback>CN</AvatarFallback>
 				</Avatar>
+				<RText fontSize="h1" fontWeight="medium">
+					{profileName}
+				</RText>
+				<RTabsSection
+					tabs={[
+						{ label: 'Referral requests' },
+						{ label: 'Profile' },
+					]}
+				/>
 			</div>
 		</div>
 	);
@@ -246,10 +255,12 @@ const LinkPageDesktop = ({
 	);
 };
 
-export const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
+const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
+
+	console.log({ isMobile });
 
 	return isMobile ? (
 		<LinkPageMobile {...props} />
@@ -257,3 +268,5 @@ export const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 		<LinkPageDesktop {...props} />
 	);
 };
+
+export default LinkPageLayout;

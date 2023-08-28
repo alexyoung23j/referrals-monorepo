@@ -1,11 +1,16 @@
 import { PageLayout } from '~/components/layouts';
-import { LinkPageLayout } from '~/components/layouts/shareable';
+import dynamic from 'next/dynamic';
+
 import { RButton } from '~/components/ui/button';
 import { RowTable } from '~/components/ui/card';
 import Icon from '~/components/ui/icons';
 import { RPopover } from '~/components/ui/popover';
 import { RTag } from '~/components/ui/tag';
 import { RText } from '~/components/ui/text';
+
+const LinkPageLayout = dynamic(() => import('~/components/layouts/shareable'), {
+	ssr: false,
+});
 
 export default function LinkPage() {
 	return (
