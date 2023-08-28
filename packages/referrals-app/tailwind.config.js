@@ -52,8 +52,17 @@ module.exports = {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
+				green: {
+					DEFAULT: 'var(--green)',
+					border: 'var(--green-border)',
+				},
+				blue: {
+					DEFAULT: 'var(--blue)',
+					border: 'var(--blue-border)',
+				},
 				backgroundGrey: 'var(--background-grey)',
 				profileBackgroundGrey: 'var(--profile-background-grey)',
+				lightGrey: 'var(--light-grey)',
 				textPrimary: 'var(--font-colors-primary)',
 				textSecondary: 'var(--font-colors-secondary)',
 				textTertiary: 'var(--font-colors-tertiary)',

@@ -2,6 +2,8 @@ import dynamic from 'next/dynamic';
 import type { LucideProps } from 'lucide-react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
 
+export type IconName = keyof typeof dynamicIconImports;
+
 interface IconProps extends LucideProps {
 	name: keyof typeof dynamicIconImports;
 }
@@ -13,9 +15,3 @@ const Icon = ({ name, ...props }: IconProps) => {
 };
 
 export default Icon;
-
-export const IconLookup = {
-	pencil: <></>,
-};
-
-export type IconName = keyof typeof IconLookup;

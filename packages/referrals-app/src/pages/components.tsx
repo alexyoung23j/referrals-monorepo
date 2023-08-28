@@ -13,7 +13,7 @@ import {
 } from '~/components/ui/tabs';
 import { RCalendar } from '~/components/ui/calendar';
 import { RPopover } from '~/components/ui/popover';
-import { RCard } from '~/components/ui/card';
+import { RCard, RowTable } from '~/components/ui/card';
 import { RInput } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
@@ -25,7 +25,8 @@ import { useEffect, useState } from 'react';
 import { PDFRenderer } from '~/components/ui/pdf';
 import { createClient } from '@supabase/supabase-js';
 import { trpc } from '~/utils/api';
-import axios from 'axios';
+import { RSelector } from '~/components/ui/select';
+import { RTag } from '~/components/ui/tag';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -38,7 +39,7 @@ const ComponentsPage: NextPage = () => {
 
 	const { data: resumeUploadData, mutate: resumeUploadMutate } =
 		trpc.supabase.uploadResume.useMutation();
-	
+
 	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { files } = event.target;
 
@@ -46,18 +47,22 @@ const ComponentsPage: NextPage = () => {
 		if (files && files[0]) {
 			file = files[0] || null;
 		}
-		if(!file) {return;}
+		if (!file) {
+			return;
+		}
 
-		const { data, error } = await supabase.storage.from('resumes').upload(file.name, file);
+		const { data, error } = await supabase.storage
+			.from('resumes')
+			.upload(file.name, file);
 
 		setFileToUpload(file);
-		// try {
-		// 	await resumeUploadMutate({
-		// 		fileName: file.name
-		// 	});
-		// } catch (e) {
-		// 	console.error('Error while generating presigned URL: ', e);
-		// }
+		try {
+			await resumeUploadMutate({
+				fileName: file.name,
+			});
+		} catch (e) {
+			console.error('Error while generating presigned URL: ', e);
+		}
 	};
 
 	// useEffect(() => {
@@ -93,7 +98,7 @@ const ComponentsPage: NextPage = () => {
 	// 	};
 
 	// 	postImage().then(() => setFileToUpload(null));
-	// }, [resumeUploadData, fileToUpload]);	
+	// }, [resumeUploadData, fileToUpload]);
 	return (
 		<div className="flex flex-col gap-3 p-5">
 			<div className="alex">
@@ -149,6 +154,90 @@ const ComponentsPage: NextPage = () => {
 						Icon
 					</RButton>
 				</div>
+				<div className="m-top-5 mt-10 flex max-w-[800px] flex-col gap-3">
+					<RText fontSize="h1">RowTable</RText>
+					<RowTable
+						columns={[
+							{
+								label: (
+									<RPopover
+										trigger={
+											<div className="flex gap-1">
+												<RText
+													fontSize="b2"
+													color="tertiary"
+												>
+													Label
+												</RText>
+												<Icon
+													name="info"
+													size="12px"
+													color="#94a3b8"
+												/>
+											</div>
+										}
+										content={<div>Popover content</div>}
+									/>
+								),
+								minWidth: 200,
+								hideOnMobile: false,
+							},
+							{
+								label: 'label2',
+								iconName: 'chevrons-up-down',
+								hideOnMobile: true,
+							},
+							{
+								label: 'label3',
+								iconName: 'chevrons-up-down',
+								hideOnMobile: false,
+							},
+						]}
+						rows={[
+							{
+								label: 'row1',
+								cells: [
+									{ content: 'cell12', label: 'label1' },
+									{ content: 'cell22', label: 'label2' },
+									{
+										content: <RTag label="tag" />,
+										label: 'label22',
+									},
+								],
+							},
+							{
+								label: 'row2',
+								cells: [
+									{ content: 'cell1', label: 'label1' },
+									{ content: 'cell2', label: 'label2' },
+									{
+										content: <RTag label="tag" />,
+										label: 'label2',
+									},
+								],
+							},
+						]}
+					/>
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Tags</RText>
+					<RTag label="basic tag" />
+					<RTag
+						label="right content"
+						rightContent={<Icon name="link" size="12px" />}
+					/>
+					<RTag
+						label="left content"
+						leftContent={<Icon name="link" size="12px" />}
+					/>
+					<RTag label="Completed" color="green" />
+					<RTag
+						label="In progress"
+						color="blue"
+						onClick={() => console.log('yo')}
+					/>
+				</div>
+
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Combobox (idk if we using)</RText>
 					<Combobox />
@@ -208,6 +297,55 @@ const ComponentsPage: NextPage = () => {
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Icons</RText>
 					<Icon name="pencil" />
+				</div>
+				<div className="m-top-5 mt-10 flex flex-col gap-3">
+					<RText fontSize="h1">Select</RText>
+					<RSelector
+						onSelect={(value) => {
+							console.log(value);
+						}}
+						defaultValue={{
+							value: '3',
+							content: (
+								<div className="flex flex-row items-center gap-3">
+									<Icon name="pencil" size="14px" />
+									Item 3
+								</div>
+							),
+						}}
+						items={[
+							{ value: '1', content: 'Item 1' },
+							{ value: '2', content: 'Item 2' },
+							{
+								value: '3',
+								content: (
+									<div className="flex flex-row items-center gap-3">
+										<Icon name="pencil" size="14px" />
+										Item 3
+									</div>
+								),
+							},
+						]}
+					/>
+					<RSelector
+						onSelect={(value) => {
+							console.log(value);
+						}}
+						placeholder="Placeholder bitch"
+						items={[
+							{ value: '1', content: 'Item 1' },
+							{ value: '2', content: 'Item 2' },
+							{
+								value: '3',
+								content: (
+									<div className="flex flex-row items-center gap-3">
+										<Icon name="pencil" size="14px" />
+										Item 3
+									</div>
+								),
+							},
+						]}
+					/>
 				</div>
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Tabs</RText>
@@ -291,7 +429,7 @@ const ComponentsPage: NextPage = () => {
 
 				<div className="flex max-w-[500px] flex-col gap-3">
 					<Label className="text-2xl">PDF Dialog</Label>
-					<input type='file' onChange={onFileSubmit} />
+					<input type="file" onChange={onFileSubmit} />
 					<PDFRenderer fileName={fileToUpload?.name ?? ''} />
 				</div>
 			</div>

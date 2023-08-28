@@ -1,12 +1,9 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Head from 'next/head';
-import { api } from '~/utils/api';
 import { Button } from '~/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 
 export default function Home() {
-	const hello = api.example.hello.useQuery({ text: 'from tRPC' });
-
 	return (
 		<>
 			<Head>
@@ -27,9 +24,7 @@ export default function Home() {
 						</Avatar>
 					</div>
 					<div className="flex flex-col items-center gap-2">
-						<p className="text-2xl text-white">
-							{hello.data	? hello.data.greeting :	'Loading tRPC query...'}
-						</p>
+						<p className="text-2xl text-white"></p>
 						{/* <AuthShowcase /> */}
 					</div>
 				</div>
@@ -39,7 +34,7 @@ export default function Home() {
 }
 
 // function AuthShowcase() {
-// 	const { data: ses		onData } = useSession()		
+// 	const { data: ses		onData } = useSession()
 // 	const { data: secretMessage } = api.example	getSecretMessa.useQuery(
 // 		undefined, // no input
 // 		{ enabled: sessionData?.user !== undefined }
