@@ -120,6 +120,12 @@ const ComponentsPage: NextPage = () => {
 					<RText fontWeight="normal">Normal Text</RText>
 				</div>
 
+				<div className="flex max-w-[500px] flex-col gap-3">
+					<Label className="text-2xl">PDF Dialog</Label>
+					<input type="file" onChange={onFileSubmit} />
+					<PDFRenderer fileName={fileToUpload?.name ?? ''} />
+				</div>
+
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
 					<RText fontSize="h1">Buttons</RText>
 					<RButton
@@ -426,12 +432,6 @@ const ComponentsPage: NextPage = () => {
 					<RTextarea copyEnabled placeholder="Enter your blurb" />
 				</div>
 				<Separator className="mb-5 mt-5" />
-
-				<div className="flex max-w-[500px] flex-col gap-3">
-					<Label className="text-2xl">PDF Dialog</Label>
-					<input type="file" onChange={onFileSubmit} />
-					<PDFRenderer fileName={fileToUpload?.name ?? ''} />
-				</div>
 			</div>
 		</div>
 	);
