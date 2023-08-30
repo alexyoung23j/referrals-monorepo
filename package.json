@@ -5,12 +5,13 @@
 	"scripts": {
 		"build": "yarn workspaces run build",
 		"postinstall": "prisma generate",
-		"migrate": "prisma migrate dev --name",
 		"lint": "eslint packages",
 		"lint:fix": "eslint packages --fix",
 		"start:app": "prisma db push && yarn workspace referrals-app start",
 		"start:app:turbo": "prisma db push && yarn workspace referrals-app start:turbo",
-		"start:email": "prisma db push && yarn workspace email-service start"
+		"start:email": "prisma db push && yarn workspace email-service start",
+		"reset-db": "yarn --cwd packages/prisma prisma migrate reset --force && prisma migrate deploy",
+		"migrate-db": "prisma migrate dev --schema=packages/prisma/schema.prisma --name"
 	},
 	"dependencies": {
 		"@prisma/client": "^5.1.1",
