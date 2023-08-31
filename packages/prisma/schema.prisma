@@ -14,6 +14,38 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// The email service will handle each of these cases differently
+enum EmailJobType {
+    REFERRAL_REMINDER // Email sent to the referrer to remind them to make the referral
+    REFERRAL_REMINDER_NOTIFICATION // Email sent to the job seeker to notify them the referrer has set a reminder
+    REFERRAL_CONFIRMATION // Email sent to referrer after they succesfully refer
+    REFERRAL_CONFIRMATION_NOTIFICATION // Email sent to job seeker after they have been referred
+    MESSAGE_FROM_REFERRER // Email sent to job seeker with a message from the referrer
+}
+
+enum EmailJobStatus {
+    QUEUED
+    CANCELLED
+    SENT
+    FAILED
+}
+
+model EmailJob {
+    id                        String           @id @default(cuid())
+    toAddress                 String
+    body                      String
+    attachmentUrls            String[]
+    toCC                      String[]
+    associatedReferralRequest ReferralRequest? @relation(fields: [referralRequestId], references: [id])
+    referralRequestId         String?
+    emailType                 EmailJobType
+    status                    EmailJobStatus
+    scheduledAt               DateTime?
+    sentAt                    DateTime?
+    createdAt                 DateTime         @default(now())
+    updatedAt                 DateTime         @updatedAt
+}
+
 model Company {
     id              String            @id @default(cuid())
     name            String
@@ -46,6 +78,7 @@ model ReferralRequest {
     createdAt             DateTime               @default(now())
     updatedAt             DateTime               @updatedAt
     Link                  Link[]
+    EmailJob              EmailJob[]
 }
 
 model NonLoggedInUser {
