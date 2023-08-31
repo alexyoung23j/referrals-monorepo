@@ -82,7 +82,7 @@ export const RInput = ({
 	const [error, setError] = useState<string | null>(null);
 
 	const validateInput = useDebouncedCallback((value: string) => {
-		if (validationSchema) {
+		if (validationSchema && value.length > 0) {
 			try {
 				validationSchema.parse(value);
 				setError(null);
@@ -91,6 +91,8 @@ export const RInput = ({
 					setError(e.errors[0]?.message as string);
 				}
 			}
+		} else {
+			setError(null);
 		}
 	}, 500); // 500ms debounce
 

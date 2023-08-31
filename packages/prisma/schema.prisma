@@ -108,6 +108,7 @@ model UserProfile {
     id               String          @id @default(cuid())
     user             User            @relation(fields: [userId], references: [id])
     userId           String
+    avatarUrl        String?
     firstName        String?
     lastName         String?
     publicEmail      String?
