@@ -67,6 +67,7 @@ module.exports = {
 				textPrimary: 'var(--font-colors-primary)',
 				textSecondary: 'var(--font-colors-secondary)',
 				textTertiary: 'var(--font-colors-tertiary)',
+				textRed: 'var(--font-colors-red)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

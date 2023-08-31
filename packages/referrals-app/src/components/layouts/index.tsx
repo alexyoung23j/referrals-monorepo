@@ -95,7 +95,7 @@ export const PageLayout = ({
 		<div className="bg-background flex h-screen">
 			{showSidebar && <Sidebar />}
 			<div className="flex h-screen w-full flex-col items-center overflow-y-auto">
-				<div className="mt-[48px] flex max-h-fit max-w-fit justify-center">
+				<div className="mt-[48px] flex max-h-fit max-w-fit flex-col justify-center">
 					<div className="flex flex-col gap-[16px]">
 						<div className="flex w-[75vw] max-w-[1092px] items-center justify-between">
 							<RText fontSize="h1" fontWeight="medium">

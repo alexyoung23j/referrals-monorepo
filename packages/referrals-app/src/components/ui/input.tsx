@@ -1,11 +1,16 @@
+/* eslint-disable indent */
 import * as React from 'react';
 
 import { cn } from 'src/lib/utils';
 import { Label } from './label';
 import Icon from './icons';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import * as z from 'zod';
 
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import { RText } from './text';
+import { useDebouncedCallback } from 'use-debounce';
+import { ZodSchema } from 'zod';
 
 export interface InputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -30,14 +35,26 @@ Input.displayName = 'Input';
 interface RInputProps extends InputProps {
 	copyEnabled?: boolean;
 	highlighted?: boolean;
+	validationSchema?: ZodSchema;
+	isRequired?: boolean;
+	onErrorFound?: () => void;
 }
 
-export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
+export const RInput = ({
+	copyEnabled,
+	highlighted,
+	isRequired,
+	validationSchema,
+	...props
+}: RInputProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [icon, setIcon] = useState('copy');
 	const [debounceIcon, setDebounceIcon] = useState<
 		NodeJS.Timeout | undefined
 	>(undefined);
+	const [currentValueLocal, setCurrentValueLocal] = useState(
+		props.value ?? ''
+	);
 
 	const handleIconClick = () => {
 		if (inputRef.current) {
@@ -56,8 +73,33 @@ export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
 		}
 	};
 
+	useEffect(() => {
+		if (props.value !== currentValueLocal) {
+			setCurrentValueLocal(props.value ?? '');
+		}
+	}, [props.value, currentValueLocal]);
+
+	const [error, setError] = useState<string | null>(null);
+
+	const validateInput = useDebouncedCallback((value: string) => {
+		if (validationSchema) {
+			try {
+				validationSchema.parse(value);
+				setError(null);
+			} catch (e) {
+				if (e instanceof z.ZodError) {
+					setError(e.errors[0]?.message as string);
+				}
+			}
+		}
+	}, 500); // 500ms debounce
+
+	useEffect(() => {
+		validateInput(String(props.value ?? ''));
+	}, [props.value, validateInput]);
+
 	return (
-		<div className="relative">
+		<div className="relative flex flex-col">
 			<Input
 				ref={inputRef}
 				{...props}
@@ -79,6 +121,22 @@ export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
 					onMouseEnter={handleMouseEnter}
 				/>
 			)}
+			{isRequired && (currentValueLocal as string).length < 1 && (
+				<RText fontSize="b2" className="ml-[6px] mt-[12px]" color="red">
+					This field is required*
+				</RText>
+			)}
+			{error &&
+				error.length > 0 &&
+				!(isRequired && (currentValueLocal as string).length < 1) && (
+					<RText
+						fontSize="b2"
+						className="ml-[6px] mt-[12px]"
+						color="red"
+					>
+						{error}
+					</RText>
+				)}
 		</div>
 	);
 };
