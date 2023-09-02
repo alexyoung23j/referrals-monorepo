@@ -26,7 +26,8 @@ type PDFRendererTypes = {
 };
 
 export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
-	const isBigScreen = useMediaQuery({ query: '(min-width: 800)' });
+	const isBigScreen = useMediaQuery({ query: '(min-width: 800px)' });
+	console.log('IS BIG ', isBigScreen);
 	const [numPages, setNumPages] = useState<number>(0);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pdfContainerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +38,7 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 	const updateScale = () => {
 		const containerWidth = pdfContainerRef?.current?.clientWidth;
 		if (!containerWidth) {return;}
-		const pdfWidth = !isBigScreen ? 595 : 300; // Default PDF width in points (8.27 inches)
+		const pdfWidth = isBigScreen ? 800 : 595; // Default PDF width in points (8.27 inches)
 		const calculatedScale = containerWidth / pdfWidth;
 		setScale(calculatedScale);
 	};
