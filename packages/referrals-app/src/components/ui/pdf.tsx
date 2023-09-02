@@ -27,7 +27,6 @@ type PDFRendererTypes = {
 
 export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 	const isBigScreen = useMediaQuery({ query: '(min-width: 800px)' });
-	console.log('IS BIG ', isBigScreen);
 	const [numPages, setNumPages] = useState<number>(0);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pdfContainerRef = useRef<HTMLDivElement>(null);
