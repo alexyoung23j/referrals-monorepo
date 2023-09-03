@@ -25,6 +25,7 @@ enum EmailJobType {
 
 enum EmailJobStatus {
     QUEUED
+    PROCESSING
     CANCELLED
     SENT
     FAILED
@@ -44,6 +45,7 @@ model EmailJob {
     sentAt                    DateTime?
     createdAt                 DateTime         @default(now())
     updatedAt                 DateTime         @updatedAt
+    resendEmailId             String?
 }
 
 model Company {
