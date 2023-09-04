@@ -1,8 +1,14 @@
 import { EmailJobStatus, type EmailJob } from '@prisma/client';
 import {prisma} from '..';
+import getEmail from './getEmail';
 import sendEmail from './sendEmail';
-import retrieveEmailStatus from './retrieveEmailStatus';
 import { EMAIL } from '../constants';
+import { type CreateEmailResponse, type GetEmailResponse } from 'resend/build/src/emails/interfaces';
+import { type EmailError } from '.';
+
+type ResendResponse = CreateEmailResponse | GetEmailResponse | EmailError
+const responseIsEmailError = (response: ResendResponse): response is EmailError => !('id' in response);
+
 
 // TODO: should implement something where in case the email-service goes down completely,
 // TODO: we can query all the last PROCESSING emails, and re-process if needed.
@@ -25,21 +31,47 @@ export default async function processEmailQueue(emailQueue: Array<EmailJob>) {
 	});
 
 	emailQueue.forEach(async email => {
-		console.log('Sending email with id: ', email.id);
-		console.log('Sending email with body: ', email.body);
-		const {id: emailId} = await sendEmail(email);
+		try {
+			console.log('Sending email with id: ', email.id);
+			console.log('Sending email with body: ', email.body);
 
-		const emailStatus = await retrieveEmailStatus(emailId);
-		console.log('EMAIL STATUS', emailStatus);
-		await prisma.emailJob.update({
-			where: {
-				id: email.id
-			},
-			data: {
-				status: emailStatus === EMAIL.SENT ? EmailJobStatus.SENT : EmailJobStatus.FAILED,
-				resendEmailId: emailId,
-				sentAt: new Date()
+			const sendEmailResponse = await sendEmail(email);
+
+			if(responseIsEmailError(sendEmailResponse)) {
+				const {statusCode, message} = sendEmailResponse;
+				throw new Error(`Sending email failed with status code ${statusCode}: ${message}`);
 			}
-		});
+		
+			const {id: emailId} = sendEmailResponse;
+			const getEmailResponse = await getEmail(emailId);
+			if(responseIsEmailError(getEmailResponse)) {
+				const {statusCode, message} = getEmailResponse;
+				throw new Error(`Sending email failed with status code ${statusCode}: ${message}`);
+			}
+		
+			// const {id: emailId} = sendEmailResponse;
+			 const {last_event: emailStatus, created_at: sentAt} = getEmailResponse;
+			 console.log(`Status for email with id ${email.id}: `, emailStatus);
+			await prisma.emailJob.update({
+				where: {
+					id: email.id
+				},
+				data: {
+					status: emailStatus === EMAIL.SENT ? EmailJobStatus.SENT : EmailJobStatus.FAILED,
+					resendEmailId: emailId,
+					sentAt
+				}
+			});
+		} catch(e) {
+			console.error(`Error while processing email with id ${email.id}: ${e}`);
+			await prisma.emailJob.update({
+				where: {
+					id: email.id
+				},
+				data: {
+					status: EmailJobStatus.FAILED
+				}
+			});
+		}
 	});
 }

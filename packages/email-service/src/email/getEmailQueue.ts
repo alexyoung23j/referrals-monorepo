@@ -1,11 +1,11 @@
-import { type EmailJob } from '@prisma/client';
+import { type EmailJob, type EmailJobStatus } from '@prisma/client';
 import {prisma} from '..';
 
-export default async function getEmailQueue(): Promise<EmailJob[]> {
-	console.log('Getting email queue...');
+export default async function getEmailQueue(status: EmailJobStatus): Promise<EmailJob[]> {
+	console.log('Getting email queue with status: ', status);
 	const emailQueue = await prisma.emailJob.findMany({
 		where: {
-			status: 'QUEUED',
+			status,
 			OR: [
 				{
 					scheduledAt: {
