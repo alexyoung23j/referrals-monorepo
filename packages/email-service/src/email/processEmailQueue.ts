@@ -57,7 +57,7 @@ export default async function processEmailQueue(emailQueue: Array<EmailJob>) {
 					id: email.id
 				},
 				data: {
-					status: emailStatus === EMAIL.SENT ? EmailJobStatus.SENT : EmailJobStatus.FAILED,
+					status: (emailStatus === EMAIL.SENT || emailStatus === EMAIL.DELIVERED) ? EmailJobStatus.SENT : EmailJobStatus.FAILED,
 					resendEmailId: emailId,
 					sentAt
 				}
