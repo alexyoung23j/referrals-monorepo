@@ -8,6 +8,7 @@ import { RLogo } from '../ui/logo';
 import { ScrollArea } from '../ui/scroll-area';
 import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
+import { Toaster } from '../ui/toaster';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
@@ -73,6 +74,7 @@ const LinkPageMobile = ({
 				/>
 			</div>
 			<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
+				<Toaster />
 				{showRequests ? (
 					children
 				) : (
@@ -438,6 +440,7 @@ const LinkPageDesktop = ({
 			</div>
 			<div className="flex h-screen w-full flex-col items-center overflow-y-auto p-[104px]">
 				{children}
+				<Toaster />
 			</div>
 		</div>
 	);

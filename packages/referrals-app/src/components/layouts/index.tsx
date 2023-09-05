@@ -4,6 +4,7 @@ import { RTooltip } from '../ui/tooltip';
 import { RText } from '../ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Separator } from '../ui/separator';
+import { Toaster } from '../ui/toaster';
 
 const Sidebar = () => {
 	const router = useRouter();
@@ -111,6 +112,7 @@ export const PageLayout = ({
 						<Separator className="mb-5 mt-5" />
 					</div>
 					{children}
+					<Toaster />
 				</div>
 			</div>
 		</div>

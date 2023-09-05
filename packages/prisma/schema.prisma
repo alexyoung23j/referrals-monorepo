@@ -115,8 +115,9 @@ model UserProfile {
     currentRoleTitle String?
     twitterUrl       String?
     personalSiteUrl  String?
-    location         String?
+    currentLocation  String?
     education        String?
+    defaultBlurb     String?
     resumeUrl        String?
     linkedInUrl      String?
     createdAt        DateTime        @default(now())

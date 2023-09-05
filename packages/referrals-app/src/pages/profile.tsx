@@ -12,11 +12,15 @@ import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { RTextarea } from '~/components/ui/textarea';
+import { useToast } from '~/components/ui/use-toast';
 
 export default function ProfilePage() {
+	const { toast } = useToast();
+
 	const { data: profileData } = api.profiles.getProfile.useQuery(undefined, {
 		refetchOnWindowFocus: false,
 	});
+	const updateProfile = api.profiles.updateProfile.useMutation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [publicEmail, setPublicEmail] = useState('');
@@ -26,6 +30,7 @@ export default function ProfilePage() {
 	const [personalSiteUrl, setPersonalSiteUrl] = useState('');
 	const [currentLocation, setCurrentLocation] = useState('');
 	const [education, setEducation] = useState('');
+	const [defaultBlurb, setDefaultBlurb] = useState('');
 
 	const [savedStatus, setSavedStatus] = useState('Unsaved');
 
@@ -51,17 +56,46 @@ export default function ProfilePage() {
 		if (profileData?.personalSiteUrl) {
 			setPersonalSiteUrl(profileData.personalSiteUrl as string);
 		}
-		if (profileData?.location) {
-			setCurrentLocation(profileData.location as string);
+		if (profileData?.currentLocation) {
+			setCurrentLocation(profileData.currentLocation as string);
 		}
 		if (profileData?.education) {
 			setEducation(profileData.education as string);
+		}
+		if (profileData?.defaultBlurb) {
+			setDefaultBlurb(profileData.defaultBlurb as string);
 		}
 	}, [profileData]);
 
 	if (!profileData) {
 		return null; // TODO: Loading state here
 	}
+
+	const onSaveProfile = async () => {
+		try {
+			await updateProfile.mutateAsync({
+				firstName,
+				lastName,
+				publicEmail,
+				currentRoleTitle,
+				linkedInUrl,
+				twitterUrl,
+				personalSiteUrl,
+				currentLocation,
+				education,
+				defaultBlurb,
+				avatarUrl: '',
+			});
+
+			setSavedStatus('Saved');
+			toast({
+				title: 'Profile Saved',
+				duration: 500,
+			});
+		} catch (e) {
+			console.log(e);
+		}
+	};
 
 	return (
 		<PageLayout
@@ -87,7 +121,7 @@ export default function ProfilePage() {
 						</div>
 
 						<div className="flex w-full flex-col lg:flex-row">
-							<div className="flex w-full flex-col gap-[24px] pr-[5%] lg:w-[55%]">
+							<div className="flex w-full flex-col gap-[24px] lg:w-[55%] lg:pr-[10%]">
 								<RLabeledSection
 									label="Public Email*"
 									subtitle="The email address that all your referrals will use and will be shared on your referral links. "
@@ -263,7 +297,7 @@ export default function ProfilePage() {
 							</div>
 							<div className="mt-[24px] flex h-full w-full flex-col gap-[24px] pr-[5%] lg:mt-[0px] lg:w-[45%]">
 								<div className="flex items-center gap-6">
-									<Avatar className="h-[15vw] w-[15vw]">
+									<Avatar className="h-[15vw] max-h-[220px] w-[15vw] max-w-[220px]">
 										<AvatarImage
 											src={
 												profileData.avatarUrl as string
@@ -288,6 +322,14 @@ export default function ProfilePage() {
 										<RTextarea
 											placeholder="enter blurb"
 											className="min-h-[120px]"
+											value={defaultBlurb as string}
+											onInput={(e) => {
+												setDefaultBlurb(
+													(
+														e.target as HTMLInputElement
+													).value
+												);
+											}}
 										/>
 									}
 								/>
@@ -323,7 +365,11 @@ export default function ProfilePage() {
 								/>
 							</div>
 						</div>
-						<RButton iconName="check" className="mt-10">
+						<RButton
+							onClick={onSaveProfile}
+							iconName="check"
+							className="mt-10"
+						>
 							Save
 						</RButton>
 					</div>
