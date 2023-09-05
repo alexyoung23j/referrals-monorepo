@@ -34,16 +34,22 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 	const { data: { publicUrl: resumeUrl } = {} } =
 		trpc.supabase.getResume.useQuery({ fileName });
 
+	const isMobile = useMediaQuery({
+		query: '(max-width: 640px)',
+	});
+
 	const updateScale = () => {
 		const containerWidth = pdfContainerRef?.current?.clientWidth;
-		if (!containerWidth) {return;}
+		if (!containerWidth) {
+			return;
+		}
 		const pdfWidth = isBigScreen ? 800 : 595; // Default PDF width in points (8.27 inches)
 		const calculatedScale = containerWidth / pdfWidth;
 		setScale(calculatedScale);
 	};
 
 	function onDocumentLoadSuccess(pdf: PDFDocumentProxy): void {
-		const {numPages: nextNumPages} = pdf;
+		const { numPages: nextNumPages } = pdf;
 		setNumPages(nextNumPages);
 		updateScale();
 	}
@@ -64,23 +70,39 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 		window.addEventListener('resize', rescalePdf);
 
 		return () => {
-				  window.removeEventListener('resize', rescalePdf);
+			window.removeEventListener('resize', rescalePdf);
 		};
-	  });
-	
+	});
+
 	const renderLoader = () => (
-		<div className='flex justify-center mx-auto'><RSpinner size='medium' /></div>
+		<div className="mx-auto flex justify-center">
+			<RSpinner size="medium" />
+		</div>
 	);
 
 	const renderError = () => (
-		<div className='flex justify-center mx-auto'><span>Failed to load PDF.</span></div>
+		<div className="mx-auto flex w-[250px] justify-center">
+			<span>Failed to load PDF.</span>
+		</div>
 	);
 
 	return (
-		<div className='flex flex-col gap-3 p-5'>
-			<div className='max-w-fit border-textSecondary border-2 rounded border-opacity-100'>
-				<Document file={resumeUrl} options={options} loading={renderLoader} error={renderError}>
-					<Thumbnail width={250} pageNumber={1} pageIndex={1} onClick={() => inputRef.current && inputRef.current.click()} />
+		<div className="flex flex-col gap-3 p-5">
+			<div className="border-textSecondary max-w-fit rounded border-2 border-opacity-100">
+				<Document
+					file={resumeUrl}
+					options={options}
+					loading={renderLoader}
+					error={renderError}
+				>
+					<Thumbnail
+						width={250}
+						pageNumber={1}
+						pageIndex={1}
+						onClick={() =>
+							inputRef.current && inputRef.current.click()
+						}
+					/>
 				</Document>
 			</div>
 			<Dialog>
@@ -93,29 +115,38 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 					}
 				>
 					<DialogHeader />
-					<div ref={pdfContainerRef} id='pdf-container' className='flex flex-col items-center max-w-full h-full overflow-hidden'>
-						<ScrollArea className='flex flex-col w-full overflow-hidden'>
-							<Document 
+					<div
+						ref={pdfContainerRef}
+						id="pdf-container"
+						className="flex h-full max-w-full flex-col items-center overflow-hidden"
+					>
+						<ScrollArea className="flex w-full flex-col overflow-hidden">
+							<Document
 								file={resumeUrl}
 								options={options}
-								className='w-full gap-3 justify-center items-center overflow-hidden max-h-full max-w-full'
+								className="max-h-full w-full max-w-full items-center justify-center gap-3 overflow-hidden"
 								onLoadSuccess={onDocumentLoadSuccess}
 								loading={renderLoader}
 								error={renderError}
 							>
-								{Array.from(new Array(numPages), (el, index) => (
-									<div key={`page_container_${index}`}>
-										<Page
-											scale={scale}
-											className='flex justify-center w-full'
-											key={`page_${index + 1}`}
-											pageNumber={index + 1}
-											renderTextLayer={false}
-											renderAnnotationLayer={false}
-										/>
-										{index < numPages - 1 && <Separator />}
-									</div>
-								))}
+								{Array.from(
+									new Array(numPages),
+									(el, index) => (
+										<div key={`page_container_${index}`}>
+											<Page
+												scale={scale}
+												className="flex w-full justify-center"
+												key={`page_${index + 1}`}
+												pageNumber={index + 1}
+												renderTextLayer={false}
+												renderAnnotationLayer={false}
+											/>
+											{index < numPages - 1 && (
+												<Separator />
+											)}
+										</div>
+									)
+								)}
 							</Document>
 						</ScrollArea>
 					</div>
