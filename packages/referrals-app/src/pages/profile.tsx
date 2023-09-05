@@ -13,6 +13,12 @@ import { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+	process.env.NEXT_PUBLIC_SUPABASE_API_KEY ?? ''
+);
 
 export default function ProfilePage() {
 	const { toast } = useToast();
@@ -20,6 +26,7 @@ export default function ProfilePage() {
 	const { data: profileData } = api.profiles.getProfile.useQuery(undefined, {
 		refetchOnWindowFocus: false,
 	});
+	const uploadAvatarImage = api.supabase.uploadImage.useMutation();
 	const updateProfile = api.profiles.updateProfile.useMutation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
@@ -32,7 +39,38 @@ export default function ProfilePage() {
 	const [education, setEducation] = useState('');
 	const [defaultBlurb, setDefaultBlurb] = useState('');
 
-	const [savedStatus, setSavedStatus] = useState('Unsaved');
+	const [hasFormErrors, setHasFormErrors] = useState(false);
+	const [savedStatus, setSavedStatus] = useState('Saved');
+
+	const [localAvatarUrl, setLocalAvatarUrl] = useState('');
+
+	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = event.target;
+
+		let file;
+		if (files && files[0]) {
+			file = files[0] || null;
+		}
+		if (!file) {
+			return;
+		}
+
+		try {
+			const { data, error } = await supabase.storage
+				.from('avatar_images')
+				.upload(file.name, file);
+
+			const path = data?.path;
+			const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatar_images/${path}`;
+
+			setLocalAvatarUrl(url);
+			await updateProfile.mutateAsync({
+				avatarUrl: url,
+			});
+		} catch (e) {
+			console.error('Error while generating presigned URL: ', e);
+		}
+	};
 
 	useEffect(() => {
 		if (profileData?.firstName) {
@@ -65,6 +103,10 @@ export default function ProfilePage() {
 		if (profileData?.defaultBlurb) {
 			setDefaultBlurb(profileData.defaultBlurb as string);
 		}
+		if (profileData?.avatarUrl) {
+			console.log(profileData.avatarUrl);
+			setLocalAvatarUrl(profileData.avatarUrl as string);
+		}
 	}, [profileData]);
 
 	if (!profileData) {
@@ -72,6 +114,13 @@ export default function ProfilePage() {
 	}
 
 	const onSaveProfile = async () => {
+		if (hasFormErrors) {
+			toast({
+				title: 'Please fix form errors.',
+				duration: 1500,
+			});
+			return;
+		}
 		try {
 			await updateProfile.mutateAsync({
 				firstName,
@@ -90,7 +139,7 @@ export default function ProfilePage() {
 			setSavedStatus('Saved');
 			toast({
 				title: 'Profile Saved',
-				duration: 500,
+				duration: 1500,
 			});
 		} catch (e) {
 			console.log(e);
@@ -141,6 +190,13 @@ export default function ProfilePage() {
 												message:
 													'Must be valid email address.',
 											})}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -158,6 +214,13 @@ export default function ProfilePage() {
 											}}
 											isRequired
 											validationSchema={z.string()}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -175,6 +238,13 @@ export default function ProfilePage() {
 											}}
 											isRequired
 											validationSchema={z.string()}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -230,6 +300,13 @@ export default function ProfilePage() {
 															'Must be a valid LinkedIn URL.',
 													}
 												)}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -274,6 +351,13 @@ export default function ProfilePage() {
 															'Must be a valid Twitter URL.',
 													}
 												)}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -291,6 +375,13 @@ export default function ProfilePage() {
 											}}
 											placeholder="enter personal site url"
 											validationSchema={z.string().url()}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -299,9 +390,11 @@ export default function ProfilePage() {
 								<div className="flex items-center gap-6">
 									<Avatar className="h-[15vw] max-h-[220px] w-[15vw] max-w-[220px]">
 										<AvatarImage
-											src={
-												profileData.avatarUrl as string
-											}
+											src={localAvatarUrl}
+											style={{
+												objectFit: 'cover',
+												objectPosition: 'top',
+											}}
 										/>
 										<AvatarFallback>
 											{firstName[0]}
@@ -311,16 +404,17 @@ export default function ProfilePage() {
 									<RButton
 										variant="secondary"
 										iconName="image-plus"
+										onFileChange={onFileSubmit}
 									>
 										Upload new
 									</RButton>
 								</div>
 								<RLabeledSection
 									label="Experience Blurb"
-									subtitle="This blurb will be available to referrers to help them understand your background and experience."
+									subtitle="Available to referrers to help communicate your background and experience."
 									body={
 										<RTextarea
-											placeholder="enter blurb"
+											placeholder="enter short blurb describing yourself"
 											className="min-h-[120px]"
 											value={defaultBlurb as string}
 											onInput={(e) => {
@@ -395,7 +489,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 				});
 
 				if (existingProfile) {
-					console.log('exists');
 					return {
 						props: { session },
 					};

@@ -38,6 +38,7 @@ interface RInputProps extends InputProps {
 	validationSchema?: ZodSchema;
 	isRequired?: boolean;
 	onErrorFound?: () => void;
+	onErrorFixed?: () => void;
 }
 
 export const RInput = ({
@@ -86,9 +87,15 @@ export const RInput = ({
 			try {
 				validationSchema.parse(value);
 				setError(null);
+				if (props.onErrorFixed) {
+					props.onErrorFixed();
+				}
 			} catch (e) {
 				if (e instanceof z.ZodError) {
 					setError(e.errors[0]?.message as string);
+				}
+				if (props.onErrorFound) {
+					props.onErrorFound();
 				}
 			}
 		} else {

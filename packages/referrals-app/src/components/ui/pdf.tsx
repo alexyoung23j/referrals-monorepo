@@ -61,10 +61,6 @@ export const PDFRenderer = ({
 	const { data: { publicUrl: resumeUrl } = {} } =
 		api.supabase.getResume.useQuery({ fileName });
 
-	const isMobile = useMediaQuery({
-		query: '(max-width: 640px)',
-	});
-
 	const updateScale = () => {
 		const containerWidth = pdfContainerRef?.current?.clientWidth;
 		if (!containerWidth) {

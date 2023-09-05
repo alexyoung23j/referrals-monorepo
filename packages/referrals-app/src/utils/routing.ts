@@ -72,10 +72,10 @@ export async function redirectIfNotAuthed({
 	});
 
 	if (!session) {
-		if (callback) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return callback();
-		}
+		// if (callback) {
+		// 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		// 	return callback();
+		// }
 
 		return {
 			redirect: {

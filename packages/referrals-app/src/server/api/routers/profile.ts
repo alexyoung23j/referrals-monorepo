@@ -26,17 +26,17 @@ export const profileRouter = createTRPCRouter({
 	updateProfile: protectedProcedure
 		.input(
 			z.object({
-				firstName: z.string(),
-				lastName: z.string(),
-				publicEmail: z.string(),
-				currentRoleTitle: z.string(),
-				linkedInUrl: z.string(),
-				twitterUrl: z.string(),
-				personalSiteUrl: z.string(),
-				currentLocation: z.string(),
-				education: z.string(),
-				defaultBlurb: z.string(),
-				avatarUrl: z.string(),
+				firstName: z.string().optional(),
+				lastName: z.string().optional(),
+				publicEmail: z.string().optional(),
+				currentRoleTitle: z.string().optional(),
+				linkedInUrl: z.string().optional(),
+				twitterUrl: z.string().optional(),
+				personalSiteUrl: z.string().optional(),
+				currentLocation: z.string().optional(),
+				education: z.string().optional(),
+				defaultBlurb: z.string().optional(),
+				avatarUrl: z.string().optional(),
 			})
 		)
 		.mutation(({ ctx, input }) => {
