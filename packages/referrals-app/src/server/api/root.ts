@@ -1,5 +1,6 @@
 import { createTRPCRouter } from '~/server/api/trpc';
 import { profileRouter } from './routers/profile';
+import { supabase } from './routers/supabase_bucket';
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { profileRouter } from './routers/profile';
  */
 export const appRouter = createTRPCRouter({
 	profiles: profileRouter,
+	supabase,
 });
 
 // export type definition of API

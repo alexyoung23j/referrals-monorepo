@@ -9,6 +9,8 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
+import { PDFRenderer, handleDownload } from '../ui/pdf';
+import { supabase } from '~/server/api/routers/supabase_bucket';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
@@ -202,6 +204,15 @@ const LinkPageMobile = ({
 								)}
 						</div>
 						<Separator />
+						{resumeUrl && (
+							<div className="mb-[200px] flex flex-col items-center gap-3">
+								<PDFRenderer
+									fileName={resumeUrl}
+									preUploadedResumeUrl={resumeUrl}
+									size="md"
+								/>
+							</div>
+						)}
 						<div className="bg-background fixed bottom-[0px] left-[0px] flex w-full justify-center gap-4 pb-[16px] pt-[4px]">
 							{twitterUrl && (
 								<Icon
@@ -345,20 +356,20 @@ const LinkPageDesktop = ({
 						)}
 					</div>
 					<div className="mt-[36px] flex flex-col gap-[24px]">
-						{resumeUrl &&
-							jobExperience &&
-							jobExperience.length > 0 && (
-								<RTabsSection
-									tabs={[
-										{ label: 'Experience' },
-										{ label: 'Resume' },
-									]}
-									tabContents={[
-										<div
-											key="Experience"
-											className="mb-10 mt-5 flex flex-col justify-between gap-6 pl-1"
-										>
-											{jobExperience
+						{(resumeUrl ||
+							(jobExperience && jobExperience.length > 0)) && (
+							<RTabsSection
+								tabs={[
+									{ label: 'Experience' },
+									{ label: 'Resume' },
+								]}
+								tabContents={[
+									<div
+										key="Experience"
+										className="mb-10 mt-5 flex min-w-[23vw] max-w-[23vw] flex-col justify-between gap-6 pl-1"
+									>
+										{jobExperience &&
+											jobExperience
 												.slice(0, maxExperiences)
 												.map((experience, idx) => {
 													return (
@@ -412,7 +423,8 @@ const LinkPageDesktop = ({
 														</div>
 													);
 												})}
-											{jobExperience.length >
+										{jobExperience &&
+											jobExperience.length >
 												maxExperiences && (
 												<div
 													className="cursor-pointer"
@@ -430,11 +442,36 @@ const LinkPageDesktop = ({
 													</RText>
 												</div>
 											)}
-										</div>,
-										<div key="resume"></div>,
-									]}
-								/>
-							)}
+									</div>,
+									<div
+										key="resume"
+										className="mb-10 mt-5 flex min-w-[23vw] max-w-[23vw] flex-col justify-between gap-6 pl-1"
+									>
+										{resumeUrl && (
+											<div className="flex items-center gap-3">
+												<PDFRenderer
+													fileName={resumeUrl}
+													preUploadedResumeUrl={
+														resumeUrl
+													}
+													size="md"
+												/>
+												<Icon
+													name="download"
+													color="#64748b"
+													className="cursor-pointer"
+													onClick={() => {
+														handleDownload(
+															resumeUrl
+														);
+													}}
+												/>
+											</div>
+										)}
+									</div>,
+								]}
+							/>
+						)}
 					</div>
 				</div>
 			</div>

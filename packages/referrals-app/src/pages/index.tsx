@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Head from 'next/head';
-import { api } from '~/utils/api';
 import { Button } from '~/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 
