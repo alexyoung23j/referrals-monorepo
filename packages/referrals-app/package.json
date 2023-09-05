@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "next build",
 		"start": "next dev",
+		"start:turbo": "next dev --turbo",
 		"start:prod": "next start",
 		"migrate": "prisma migrate dev --name",
 		"clean": "rm -rf node_modules .next"
@@ -23,6 +24,7 @@
 		"@radix-ui/react-switch": "^1.0.3",
 		"@radix-ui/react-tabs": "^1.0.4",
 		"@supabase/supabase-js": "^2.33.1",
+		"@radix-ui/react-tooltip": "^1.0.6",
 		"@t3-oss/env-nextjs": "^0.3.1",
 		"@tanstack/react-query": "^4.29.25",
 		"@trpc/client": "^10.34.0",
@@ -45,6 +47,7 @@
 		"react-responsive": "^9.0.2",
 		"superjson": "^1.13.1",
 		"tailwind-merge": "^1.14.0",
+		"tailwind-scrollbar": "^3.0.5",
 		"tailwindcss-animate": "^1.0.6"
 	},
 	"devDependencies": {

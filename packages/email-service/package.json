@@ -1,5 +1,5 @@
 {
-	"name": "referrals-bot",
+	"name": "email-service",
 	"version": "0.1.0",
 	"module": "src/index.js",
 	"license": "MIT",
