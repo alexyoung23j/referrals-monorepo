@@ -123,7 +123,10 @@ const ComponentsPage: NextPage = () => {
 				<div className="flex max-w-[500px] flex-col gap-3">
 					<Label className="text-2xl">PDF Dialog</Label>
 					<input type="file" onChange={onFileSubmit} />
-					<PDFRenderer fileName={fileToUpload?.name ?? ''} />
+					<PDFRenderer
+						fileName={fileToUpload?.name ?? ''}
+						size="sm"
+					/>
 				</div>
 
 				<div className="m-top-5 mt-10 flex flex-col gap-3">

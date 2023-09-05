@@ -23,7 +23,7 @@ export default function LinkPage() {
 			linkedInUrl="https://www.linkedin.com/in/alexyoung23j/"
 			twitterUrl="https://twitter.com/alex_j_young"
 			personalSiteUrl="https://alexjyoung.me"
-			resumeUrl="https://drive.google.com/file/u/4/d/19yzdrnjfqD2tc8vO4GabsJuhcEmqZCV0/view?usp=sharing"
+			resumeUrl="https://wtshcihzoimxpnrbnnau.supabase.co/storage/v1/object/public/resumes/Alexander%20Young%20Resume%20June%202023.pdf"
 			jobExperience={[
 				{
 					jobTitle: 'Founder',

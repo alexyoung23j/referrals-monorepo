@@ -21,11 +21,38 @@ const options = {
 	standardFontDataUrl: '/standard_fonts/',
 };
 
-type PDFRendererTypes = {
-	fileName: string;
+const sizeMapNumerical = {
+	sm: 100,
+	md: 200,
+	lg: 300,
 };
 
-export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
+const sizeMapTailwind = {
+	sm: 'min-w-[100px] max-w-[100px] max-h-[129px] min-h-[129px]',
+	md: 'min-w-[200px] max-w-[200px] max-h-[258px] min-h-[258px]',
+	lg: 'min-w-[300px] max-w-[300px] max-h-[388px] min-h-[388px]',
+};
+
+type PDFRendererTypes = {
+	fileName: string;
+	preUploadedResumeUrl?: string;
+	size: 'sm' | 'md' | 'lg';
+};
+
+export const handleDownload = (pdfUrl: string) => {
+	// Use anchor tag to download the file
+	const anchor = document.createElement('a');
+	anchor.href = pdfUrl as string;
+	anchor.target = '_blank';
+	anchor.download = `${pdfUrl}.pdf`;
+	anchor.click();
+};
+
+export const PDFRenderer = ({
+	fileName,
+	preUploadedResumeUrl,
+	size,
+}: PDFRendererTypes) => {
 	const isBigScreen = useMediaQuery({ query: '(min-width: 800px)' });
 	const [numPages, setNumPages] = useState<number>(0);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -54,17 +81,6 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 		updateScale();
 	}
 
-	const handleDownload = () => {
-		const pdfUrl = resumeUrl;
-
-		// Use anchor tag to download the file
-		const anchor = document.createElement('a');
-		anchor.href = pdfUrl as string;
-		anchor.target = '_blank';
-		anchor.download = `${pdfUrl}.pdf`;
-		anchor.click();
-	};
-
 	useEffect(() => {
 		const rescalePdf = updateScale;
 		window.addEventListener('resize', rescalePdf);
@@ -75,33 +91,38 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 	});
 
 	const renderLoader = () => (
-		<div className="mx-auto flex justify-center">
+		<div
+			className={`mx-auto flex ${sizeMapTailwind[size]} items-center justify-center`}
+		>
 			<RSpinner size="medium" />
 		</div>
 	);
 
 	const renderError = () => (
-		<div className="mx-auto flex w-[250px] justify-center">
+		<div
+			className={`mx-auto flex ${sizeMapTailwind[size]} items-center justify-center`}
+		>
 			<span>Failed to load PDF.</span>
 		</div>
 	);
 
 	return (
-		<div className="flex flex-col gap-3 p-5">
-			<div className="border-textSecondary max-w-fit rounded border-2 border-opacity-100">
+		<div className="flex flex-col">
+			<div className="border-border max-w-fit cursor-zoom-in rounded border-2 border-opacity-100">
 				<Document
-					file={resumeUrl}
+					file={preUploadedResumeUrl ?? resumeUrl}
 					options={options}
 					loading={renderLoader}
 					error={renderError}
 				>
 					<Thumbnail
-						width={250}
+						width={sizeMapNumerical[size]}
 						pageNumber={1}
 						pageIndex={1}
 						onClick={() =>
 							inputRef.current && inputRef.current.click()
 						}
+						className="cursor-zoom-in"
 					/>
 				</Document>
 			</div>
@@ -122,7 +143,7 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 					>
 						<ScrollArea className="flex w-full flex-col overflow-hidden">
 							<Document
-								file={resumeUrl}
+								file={preUploadedResumeUrl ?? resumeUrl}
 								options={options}
 								className="max-h-full w-full max-w-full items-center justify-center gap-3 overflow-hidden"
 								onLoadSuccess={onDocumentLoadSuccess}
@@ -155,7 +176,12 @@ export const PDFRenderer = ({ fileName }: PDFRendererTypes) => {
 							<RButton
 								iconName="download"
 								variant="secondary"
-								onClick={() => handleDownload()}
+								onClick={() =>
+									handleDownload(
+										(preUploadedResumeUrl ??
+											resumeUrl) as string
+									)
+								}
 							>
 								Download
 							</RButton>
