@@ -58,24 +58,60 @@ Button.displayName = 'Button';
 
 interface RButtonProps extends ButtonProps {
 	iconName?: IconName;
+	onFileChange?: React.ChangeEventHandler<HTMLInputElement>; // renamed to onFileChange
+	onClick?: React.MouseEventHandler<HTMLButtonElement>; // added
 }
 
 export const RButton = ({
 	iconName,
 	variant = 'default',
 	children,
+	onFileChange,
+	onClick,
 	...props
 }: RButtonProps) => {
+	const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (onFileChange) {
+			onFileChange(e);
+		}
+	};
+
+	const handleClick = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
+		if (onClick) {
+			onClick(e);
+		}
+		if (onFileChange) {
+			fileInputRef.current?.click();
+		}
+	};
+
 	return (
-		<Button variant={variant} {...props} className="max-w-fit">
-			{iconName && (
-				<Icon
-					name={iconName}
-					size={props.size === 'sm' ? '12px' : '14px'}
-				/>
-			)}
-			{children}
-		</Button>
+		<>
+			<Button
+				variant={variant}
+				{...props}
+				className="max-w-fit"
+				onClick={handleClick}
+			>
+				{iconName && (
+					<Icon
+						name={iconName}
+						size={props.size === 'sm' ? '12px' : '14px'}
+					/>
+				)}
+				{children}
+			</Button>
+			<input
+				type="file"
+				ref={fileInputRef}
+				style={{ display: 'none' }}
+				onChange={handleFileChange}
+			/>
+		</>
 	);
 };
 

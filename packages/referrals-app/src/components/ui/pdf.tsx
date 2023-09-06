@@ -14,7 +14,8 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from './separator';
 import RSpinner from './spinner';
 import { useMediaQuery } from 'react-responsive';
-import { trpc } from '~/utils/api';
+import { api } from '~/utils/api';
+import { RText } from './text';
 
 const options = {
 	cMapUrl: '/cmaps/',
@@ -59,11 +60,7 @@ export const PDFRenderer = ({
 	const pdfContainerRef = useRef<HTMLDivElement>(null);
 	const [scale, setScale] = useState<number>(1);
 	const { data: { publicUrl: resumeUrl } = {} } =
-		trpc.supabase.getResume.useQuery({ fileName });
-
-	const isMobile = useMediaQuery({
-		query: '(max-width: 640px)',
-	});
+		api.supabase.getResume.useQuery({ fileName });
 
 	const updateScale = () => {
 		const containerWidth = pdfContainerRef?.current?.clientWidth;
@@ -102,7 +99,15 @@ export const PDFRenderer = ({
 		<div
 			className={`mx-auto flex ${sizeMapTailwind[size]} items-center justify-center`}
 		>
-			<span>Failed to load PDF.</span>
+			<RText color="secondary">Failed to load PDF</RText>
+		</div>
+	);
+
+	const renderEmpty = () => (
+		<div
+			className={`mx-auto flex ${sizeMapTailwind[size]} items-center justify-center`}
+		>
+			<RText color="secondary">No file uploaded.</RText>
 		</div>
 	);
 
@@ -114,6 +119,7 @@ export const PDFRenderer = ({
 					options={options}
 					loading={renderLoader}
 					error={renderError}
+					noData={renderEmpty}
 				>
 					<Thumbnail
 						width={sizeMapNumerical[size]}

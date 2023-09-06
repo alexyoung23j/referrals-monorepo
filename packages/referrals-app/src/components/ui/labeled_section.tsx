@@ -14,7 +14,7 @@ export const RLabeledSection = ({
 	body,
 }: LabeledSectionProps) => {
 	return (
-		<div className="labeled-section">
+		<div className="labeled-section w-full">
 			<div className="flex flex-col gap-[8px] text-lg font-bold">
 				<div className="flex max-w-fit flex-row items-center gap-2">
 					<RText fontSize="b1" fontWeight="medium">

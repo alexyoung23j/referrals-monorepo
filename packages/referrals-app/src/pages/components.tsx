@@ -24,7 +24,7 @@ import { RLabeledSection } from '~/components/ui/labeled_section';
 import { useEffect, useState } from 'react';
 import { PDFRenderer } from '~/components/ui/pdf';
 import { createClient } from '@supabase/supabase-js';
-import { trpc } from '~/utils/api';
+import { api } from '~/utils/api';
 import { RSelector } from '~/components/ui/select';
 import { RTag } from '~/components/ui/tag';
 
@@ -37,8 +37,8 @@ const ComponentsPage: NextPage = () => {
 	const [controlledText, setControlledText] = useState('');
 	const [fileToUpload, setFileToUpload] = useState<File>();
 
-	const { data: resumeUploadData, mutate: resumeUploadMutate } =
-		trpc.supabase.uploadResume.useMutation();
+	// const { data: resumeUploadData, mutate: resumeUploadMutate } =
+	// 	api.supabase.uploadResume.useMutation();
 
 	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { files } = event.target;
@@ -57,9 +57,9 @@ const ComponentsPage: NextPage = () => {
 
 		setFileToUpload(file);
 		try {
-			await resumeUploadMutate({
-				fileName: file.name,
-			});
+			// await resumeUploadMutate({
+			// 	fileName: file.name,
+			// });
 		} catch (e) {
 			console.error('Error while generating presigned URL: ', e);
 		}

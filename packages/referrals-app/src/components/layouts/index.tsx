@@ -4,6 +4,7 @@ import { RTooltip } from '../ui/tooltip';
 import { RText } from '../ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Separator } from '../ui/separator';
+import { Toaster } from '../ui/toaster';
 
 const Sidebar = () => {
 	const router = useRouter();
@@ -94,8 +95,8 @@ export const PageLayout = ({
 	return (
 		<div className="bg-background flex h-screen">
 			{showSidebar && <Sidebar />}
-			<div className="flex h-screen w-full flex-col items-center overflow-y-auto">
-				<div className="mt-[48px] flex max-h-fit max-w-fit justify-center">
+			<div className="flex h-screen w-full flex-col items-center overflow-y-auto px-[20px] lg:px-[0px]">
+				<div className="mt-[48px] flex max-h-fit max-w-fit flex-col justify-center">
 					<div className="flex flex-col gap-[16px]">
 						<div className="flex w-[75vw] max-w-[1092px] items-center justify-between">
 							<RText fontSize="h1" fontWeight="medium">
@@ -111,6 +112,7 @@ export const PageLayout = ({
 						<Separator className="mb-5 mt-5" />
 					</div>
 					{children}
+					<Toaster />
 				</div>
 			</div>
 		</div>

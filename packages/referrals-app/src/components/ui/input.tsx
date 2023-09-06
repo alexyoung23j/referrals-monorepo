@@ -1,11 +1,16 @@
+/* eslint-disable indent */
 import * as React from 'react';
 
 import { cn } from 'src/lib/utils';
 import { Label } from './label';
 import Icon from './icons';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import * as z from 'zod';
 
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import { RText } from './text';
+import { useDebouncedCallback } from 'use-debounce';
+import { ZodSchema } from 'zod';
 
 export interface InputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -30,14 +35,29 @@ Input.displayName = 'Input';
 interface RInputProps extends InputProps {
 	copyEnabled?: boolean;
 	highlighted?: boolean;
+	validationSchema?: ZodSchema;
+	isRequired?: boolean;
+	onErrorFound?: () => void;
+	onErrorFixed?: () => void;
+	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
+export const RInput = ({
+	copyEnabled,
+	highlighted,
+	isRequired,
+	validationSchema,
+	onChange,
+	...props
+}: RInputProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [icon, setIcon] = useState('copy');
 	const [debounceIcon, setDebounceIcon] = useState<
 		NodeJS.Timeout | undefined
 	>(undefined);
+	const [currentValueLocal, setCurrentValueLocal] = useState(
+		props.value ?? ''
+	);
 
 	const handleIconClick = () => {
 		if (inputRef.current) {
@@ -56,8 +76,54 @@ export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
 		}
 	};
 
+	useEffect(() => {
+		if (props.value !== currentValueLocal) {
+			setCurrentValueLocal(props.value ?? '');
+		}
+	}, [props.value, currentValueLocal]);
+
+	const [error, setError] = useState<string | null>(null);
+
+	const validateInput = useDebouncedCallback((value: string) => {
+		if (validationSchema && value.length > 0) {
+			try {
+				validationSchema.parse(value);
+				setError(null);
+				if (props.onErrorFixed) {
+					props.onErrorFixed();
+				}
+			} catch (e) {
+				if (e instanceof z.ZodError) {
+					setError(e.errors[0]?.message as string);
+				}
+				if (props.onErrorFound) {
+					props.onErrorFound();
+				}
+			}
+		} else {
+			setError(null);
+		}
+	}, 500); // 500ms debounce
+
+	const firstUpdate = useRef(true);
+
+	useEffect(() => {
+		if (firstUpdate.current) {
+			firstUpdate.current = false;
+			return;
+		}
+
+		validateInput(String(props.value ?? ''));
+	}, [props.value, validateInput]);
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (onChange) {
+			onChange(event);
+		}
+	};
+
 	return (
-		<div className="relative">
+		<div className="relative flex flex-col">
 			<Input
 				ref={inputRef}
 				{...props}
@@ -69,6 +135,7 @@ export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
 					},
 					props.className
 				)}
+				onChange={handleChange}
 			/>
 			{copyEnabled && (
 				<Icon
@@ -79,6 +146,22 @@ export const RInput = ({ copyEnabled, highlighted, ...props }: RInputProps) => {
 					onMouseEnter={handleMouseEnter}
 				/>
 			)}
+			{isRequired && (currentValueLocal as string).length < 1 && (
+				<RText fontSize="b2" className="ml-[6px] mt-[12px]" color="red">
+					This field is required*
+				</RText>
+			)}
+			{error &&
+				error.length > 0 &&
+				!(isRequired && (currentValueLocal as string).length < 1) && (
+					<RText
+						fontSize="b2"
+						className="ml-[6px] mt-[12px]"
+						color="red"
+					>
+						{error}
+					</RText>
+				)}
 		</div>
 	);
 };

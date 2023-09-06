@@ -1,6 +1,6 @@
 interface TextProps {
 	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2';
-	color?: 'primary' | 'secondary' | 'tertiary';
+	color?: 'primary' | 'secondary' | 'tertiary' | 'red';
 	fontWeight?: 'bold' | 'normal' | 'medium' | 'light';
 	children: React.ReactNode;
 	className?: string;
@@ -18,6 +18,7 @@ const fontColorMap = {
 	primary: 'text-textPrimary',
 	secondary: 'text-textSecondary',
 	tertiary: 'text-textTertiary',
+	red: 'text-textRed',
 };
 
 const fontWeightMap = {

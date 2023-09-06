@@ -26,7 +26,7 @@ export default function Home() {
 					</div>
 					<div className="flex flex-col items-center gap-2">
 						<p className="text-2xl text-white"></p>
-						{/* <AuthShowcase /> */}
+						<AuthShowcase />
 					</div>
 				</div>
 			</main>

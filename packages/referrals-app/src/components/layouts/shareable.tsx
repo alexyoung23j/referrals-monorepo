@@ -8,12 +8,13 @@ import { RLogo } from '../ui/logo';
 import { ScrollArea } from '../ui/scroll-area';
 import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
+import { Toaster } from '../ui/toaster';
 import { PDFRenderer, handleDownload } from '../ui/pdf';
 import { supabase } from '~/server/api/routers/supabase_bucket';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
-	profileName?: string;
+	profileName: string;
 	currentRoleTitle?: string;
 	location?: string;
 	education?: string;
@@ -53,7 +54,9 @@ const LinkPageMobile = ({
 				<div className="flex flex-col items-center gap-[8px]">
 					<Avatar className="h-[56px] w-[56px]">
 						<AvatarImage src={avatarUrl} />
-						<AvatarFallback>CN</AvatarFallback>
+						<AvatarFallback>
+							{profileName[0] as string}
+						</AvatarFallback>
 					</Avatar>
 					<RText fontSize="h1" fontWeight="medium">
 						{profileName}
@@ -75,6 +78,7 @@ const LinkPageMobile = ({
 				/>
 			</div>
 			<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
+				<Toaster />
 				{showRequests ? (
 					children
 				) : (
@@ -275,8 +279,14 @@ const LinkPageDesktop = ({
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
 				<div className="flex flex-col gap-[20px] pt-[10vh]">
 					<Avatar className="h-[112px] w-[112px]">
-						<AvatarImage src={avatarUrl} />
-						<AvatarFallback>CN</AvatarFallback>
+						<AvatarImage
+							src={avatarUrl}
+							style={{
+								objectFit: 'cover',
+								objectPosition: 'top',
+							}}
+						/>
+						<AvatarFallback>{profileName[0]}</AvatarFallback>
 					</Avatar>
 					<RText fontSize="h1" fontWeight="medium">
 						{profileName}
@@ -475,6 +485,7 @@ const LinkPageDesktop = ({
 			</div>
 			<div className="flex h-screen w-full flex-col items-center overflow-y-auto p-[104px]">
 				{children}
+				<Toaster />
 			</div>
 		</div>
 	);
