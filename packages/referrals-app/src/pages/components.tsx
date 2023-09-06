@@ -99,6 +99,75 @@ const ComponentsPage: NextPage = () => {
 						onOpenChange={(open) => {
 							setModalOpen(open);
 						}}
+						headerText="Activity Modal"
+						headerRightContent={<RTag label="test" />}
+						subtitleText="This is a subtitle."
+						sections={[
+							{
+								type: 'single-column',
+								content: [
+									<RLabeledSection
+										label="My Label with toggle"
+										subtitle="This is my subtitle."
+										body={
+											<RTextarea placeholder="Enter your blurb" />
+										}
+										key="1"
+									/>,
+								],
+							},
+							{
+								type: 'two-column',
+								content: [
+									<RLabeledSection
+										label="My Label with toggle"
+										subtitle="This is my subtitle."
+										body={
+											<RTextarea placeholder="Enter your blurb" />
+										}
+										key="1"
+									/>,
+									<RLabeledSection
+										label="My Label with toggle"
+										subtitle="This is my subtitle."
+										body={
+											<RTextarea placeholder="Enter your blurb" />
+										}
+										key="2"
+									/>,
+								],
+							},
+							{
+								type: 'two-column',
+								content: [
+									<RLabeledSection
+										label="My Label with toggle"
+										subtitle="This is my subtitle."
+										body={
+											<RTextarea placeholder="Enter your blurb" />
+										}
+										key="1"
+									/>,
+									<RLabeledSection
+										label="My Label with toggle"
+										subtitle="This is my subtitle."
+										body={
+											<RTextarea placeholder="Enter your blurb" />
+										}
+										key="2"
+									/>,
+								],
+							},
+							{
+								type: 'single-column',
+								content: [<Separator key="3" />],
+							},
+						]}
+						bottomRowContent={
+							<div>
+								<RButton iconName="check">Save</RButton>
+							</div>
+						}
 					/>
 				</div>
 
