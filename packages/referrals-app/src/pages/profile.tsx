@@ -63,6 +63,10 @@ export default function ProfilePage() {
 			const path = data?.path;
 			const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatar_images/${path}`;
 
+			if (error) {
+				return;
+			}
+
 			setLocalAvatarUrl(url);
 			await updateProfile.mutateAsync({
 				avatarUrl: url,
@@ -104,7 +108,6 @@ export default function ProfilePage() {
 			setDefaultBlurb(profileData.defaultBlurb as string);
 		}
 		if (profileData?.avatarUrl) {
-			console.log(profileData.avatarUrl);
 			setLocalAvatarUrl(profileData.avatarUrl as string);
 		}
 	}, [profileData]);
@@ -195,6 +198,8 @@ export default function ProfilePage() {
 											}}
 											onErrorFixed={() => {
 												setHasFormErrors(false);
+											}}
+											onChange={() => {
 												setSavedStatus('Unsaved');
 											}}
 										/>
@@ -219,6 +224,8 @@ export default function ProfilePage() {
 											}}
 											onErrorFixed={() => {
 												setHasFormErrors(false);
+											}}
+											onChange={() => {
 												setSavedStatus('Unsaved');
 											}}
 										/>
@@ -243,6 +250,8 @@ export default function ProfilePage() {
 											}}
 											onErrorFixed={() => {
 												setHasFormErrors(false);
+											}}
+											onChange={() => {
 												setSavedStatus('Unsaved');
 											}}
 										/>
@@ -305,6 +314,8 @@ export default function ProfilePage() {
 											}}
 											onErrorFixed={() => {
 												setHasFormErrors(false);
+											}}
+											onChange={() => {
 												setSavedStatus('Unsaved');
 											}}
 										/>
@@ -356,6 +367,8 @@ export default function ProfilePage() {
 											}}
 											onErrorFixed={() => {
 												setHasFormErrors(false);
+											}}
+											onChange={() => {
 												setSavedStatus('Unsaved');
 											}}
 										/>
@@ -380,6 +393,8 @@ export default function ProfilePage() {
 											}}
 											onErrorFixed={() => {
 												setHasFormErrors(false);
+											}}
+											onChange={() => {
 												setSavedStatus('Unsaved');
 											}}
 										/>
@@ -423,6 +438,7 @@ export default function ProfilePage() {
 														e.target as HTMLInputElement
 													).value
 												);
+												setSavedStatus('Unsaved');
 											}}
 										/>
 									}
@@ -439,6 +455,10 @@ export default function ProfilePage() {
 													).value
 												);
 											}}
+											placeholder="enter a city"
+											onChange={() => {
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -454,6 +474,10 @@ export default function ProfilePage() {
 													).value
 												);
 											}}
+											placeholder="enter a school name"
+											onChange={() => {
+												setSavedStatus('Unsaved');
+											}}
 										/>
 									}
 								/>
@@ -463,6 +487,12 @@ export default function ProfilePage() {
 							onClick={onSaveProfile}
 							iconName="check"
 							className="mt-10"
+							variant={
+								savedStatus === 'Saved'
+									? 'secondary'
+									: 'default'
+							}
+							disabled={savedStatus === 'Saved'}
 						>
 							Save
 						</RButton>

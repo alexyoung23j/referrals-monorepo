@@ -39,6 +39,7 @@ interface RInputProps extends InputProps {
 	isRequired?: boolean;
 	onErrorFound?: () => void;
 	onErrorFixed?: () => void;
+	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const RInput = ({
@@ -46,6 +47,7 @@ export const RInput = ({
 	highlighted,
 	isRequired,
 	validationSchema,
+	onChange,
 	...props
 }: RInputProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -103,9 +105,22 @@ export const RInput = ({
 		}
 	}, 500); // 500ms debounce
 
+	const firstUpdate = useRef(true);
+
 	useEffect(() => {
+		if (firstUpdate.current) {
+			firstUpdate.current = false;
+			return;
+		}
+
 		validateInput(String(props.value ?? ''));
 	}, [props.value, validateInput]);
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (onChange) {
+			onChange(event);
+		}
+	};
 
 	return (
 		<div className="relative flex flex-col">
@@ -120,6 +135,7 @@ export const RInput = ({
 					},
 					props.className
 				)}
+				onChange={handleChange}
 			/>
 			{copyEnabled && (
 				<Icon
