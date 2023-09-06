@@ -37,6 +37,7 @@ export const profileRouter = createTRPCRouter({
 				education: z.string().optional(),
 				defaultBlurb: z.string().optional(),
 				avatarUrl: z.string().optional(),
+				resumeUrl: z.string().optional(),
 			})
 		)
 		.mutation(({ ctx, input }) => {
