@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
+import { v4 as uuidv4 } from 'uuid';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -50,24 +51,21 @@ export default function PersonalInfoSection() {
 		}
 
 		try {
+			const id = uuidv4();
+
 			const { data, error } = await supabase.storage
 				.from('avatar_images')
-				.upload(file.name, file);
+				.upload(`${id}/${file.name}`, file);
 
 			const path = data?.path;
 			const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatar_images/${path}`;
 
-			console.log({ data, error });
-
 			if (error) {
-				if (error.message === 'The resource already exists') {
-					console.log('hi');
-					const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatar_images/${file.name}`;
-					await updateProfile.mutateAsync({
-						avatarUrl: url,
-					});
-					setLocalAvatarUrl(url);
-				}
+				console.error(error);
+				toast({
+					title: 'Error uploading image.',
+					duration: 1500,
+				});
 				return;
 			}
 
