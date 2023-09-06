@@ -9,6 +9,7 @@ import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
 import { PDFRenderer } from '../ui/pdf';
+import { v4 as uuidv4 } from 'uuid';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -35,23 +36,23 @@ export default function ResumeSection() {
 		}
 
 		try {
+			const id = uuidv4();
+
 			const { data, error } = await supabase.storage
 				.from('resumes')
-				.upload(file.name, file);
+				.upload(`${id}/${file.name}`, file);
+
+			if (error) {
+				console.error(error);
+				toast({
+					title: 'Error uploading image.',
+					duration: 1500,
+				});
+				return;
+			}
 
 			const path = data?.path;
 			const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/resumes/${path}`;
-
-			if (error) {
-				if (error.message === 'The resource already exists') {
-					const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/resumes/${file.name}`;
-					await updateProfile.mutateAsync({
-						resumeUrl: url,
-					});
-					setLocalResumeUrl(url);
-				}
-				return;
-			}
 
 			setLocalResumeUrl(url);
 			await updateProfile.mutateAsync({
