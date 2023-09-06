@@ -133,7 +133,7 @@ model Link {
     referralRequestId     String?
     blurb                 String?
     blurbAuthorName       String?
-    createdById           String // If the link was created by a user on the platform
+    createdById           String? // Added only if the link was created by a user on the platform
     createdByLoggedInUser Boolean
     createdAt             DateTime         @default(now())
     updatedAt             DateTime         @updatedAt
