@@ -95,7 +95,7 @@ export const PageLayout = ({
 	return (
 		<div className="bg-background flex h-screen">
 			{showSidebar && <Sidebar />}
-			<div className="flex h-screen w-full flex-col items-center overflow-y-auto">
+			<div className="flex h-screen w-full flex-col items-center overflow-y-auto px-[20px] lg:px-[0px]">
 				<div className="mt-[48px] flex max-h-fit max-w-fit flex-col justify-center">
 					<div className="flex flex-col gap-[16px]">
 						<div className="flex w-[75vw] max-w-[1092px] items-center justify-between">
