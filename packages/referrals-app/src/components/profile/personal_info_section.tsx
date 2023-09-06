@@ -57,7 +57,17 @@ export default function PersonalInfoSection() {
 			const path = data?.path;
 			const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatar_images/${path}`;
 
+			console.log({ data, error });
+
 			if (error) {
+				if (error.message === 'The resource already exists') {
+					console.log('hi');
+					const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatar_images/${file.name}`;
+					await updateProfile.mutateAsync({
+						avatarUrl: url,
+					});
+					setLocalAvatarUrl(url);
+				}
 				return;
 			}
 

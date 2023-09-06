@@ -44,7 +44,6 @@ export default function ResumeSection() {
 
 			if (error) {
 				if (error.message === 'The resource already exists') {
-					console.log('ero');
 					const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/resumes/${file.name}`;
 					await updateProfile.mutateAsync({
 						resumeUrl: url,
