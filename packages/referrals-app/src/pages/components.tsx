@@ -27,6 +27,7 @@ import { createClient } from '@supabase/supabase-js';
 import { api } from '~/utils/api';
 import { RSelector } from '~/components/ui/select';
 import { RTag } from '~/components/ui/tag';
+import ActivityModal from '~/components/modals/activity_modal';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -36,9 +37,7 @@ const supabase = createClient(
 const ComponentsPage: NextPage = () => {
 	const [controlledText, setControlledText] = useState('');
 	const [fileToUpload, setFileToUpload] = useState<File>();
-
-	// const { data: resumeUploadData, mutate: resumeUploadMutate } =
-	// 	api.supabase.uploadResume.useMutation();
+	const [modalOpen, setModalOpen] = useState(false);
 
 	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { files } = event.target;
@@ -65,40 +64,6 @@ const ComponentsPage: NextPage = () => {
 		}
 	};
 
-	// useEffect(() => {
-	// 	if (!resumeUploadData || !fileToUpload) {
-	// 		return;
-	// 	}
-	// 	const { signedUrl } = resumeUploadData;
-	// 	console.log('T', fileToUpload.type);
-	// 	const fileData = {
-	// 		'Content-Type': fileToUpload.type,
-	// 		file: fileToUpload,
-	// 	};
-	// 	const formData = new FormData();
-	// 	for (const name in fileData) {
-	// 		// @ts-ignore
-	// 		formData.append(name, fileData[name]);
-	// 	}
-	// 	const postImage = async () => {
-	// 		await axios
-	// 			.post(
-	// 				signedUrl,
-	// 				formData,
-	// 				{
-	// 					headers: {
-	// 						authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_API_KEY}`,
-	// 						apikey: process.env.NEXT_PUBLIC_SUPABASE_API_KEY,
-	// 					},
-	// 				})
-	// 			.then(async () => {
-	// 				console.log('SUCCESSFUL POST');
-	// 			})
-	// 			.catch((e: any) => console.error('ERROR', e));
-	// 	};
-
-	// 	postImage().then(() => setFileToUpload(null));
-	// }, [resumeUploadData, fileToUpload]);
 	return (
 		<div className="flex flex-col gap-3 p-5">
 			<div className="alex">
@@ -118,6 +83,23 @@ const ComponentsPage: NextPage = () => {
 					<RText fontWeight="medium">Medium Text</RText>
 
 					<RText fontWeight="normal">Normal Text</RText>
+				</div>
+
+				<div className="flex max-w-[500px] flex-col gap-3">
+					<Label className="text-2xl">Activity Modal</Label>
+					<RButton
+						onClick={() => {
+							setModalOpen(true);
+						}}
+					>
+						Open
+					</RButton>
+					<ActivityModal
+						open={modalOpen}
+						onOpenChange={(open) => {
+							setModalOpen(open);
+						}}
+					/>
 				</div>
 
 				<div className="flex max-w-[500px] flex-col gap-3">
