@@ -64,6 +64,7 @@ export default async function processEmailQueue(emailQueue: Array<EmailJob>) {
 			});
 		} catch(e) {
 			console.error(`Error while processing email with id ${email.id}: ${e}`);
+			// TODO: try 3 times total, save the failedTotal in DB. after 3 fail completely, until 3, continue queueing
 			await prisma.emailJob.update({
 				where: {
 					id: email.id
