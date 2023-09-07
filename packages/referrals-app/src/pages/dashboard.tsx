@@ -5,13 +5,17 @@ import { redirectIfNotAuthed } from '~/utils/routing';
 import { prisma } from '~/server/db';
 import { generateValidLink } from '~/utils/links';
 import type { Link } from '@prisma/client';
+import ShareSection from '~/components/dashboard/share_section';
+import { Separator } from '~/components/ui/separator';
+import { useSession } from 'next-auth/react';
 
 interface DashboardPageProps {
-	userMainLink: Link; // Replace 'any' with the actual type of 'link'
+	userMainLink: string; // Replace 'any' with the actual type of 'link'
 }
 
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
-	console.log({ userMainLink });
+	const { data: sessionData } = useSession();
+
 	return (
 		<PageLayout
 			showSidebar
@@ -22,7 +26,13 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				</RButton>
 			}
 		>
-			<div className="h-[200vh] w-full"></div>
+			<div className="my-[16px] h-[200vh] w-full">
+				<ShareSection
+					linkCode={userMainLink}
+					userName={sessionData?.user.name as string}
+				/>
+				<Separator />
+			</div>
 		</PageLayout>
 	);
 }
