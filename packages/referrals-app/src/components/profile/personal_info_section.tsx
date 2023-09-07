@@ -10,6 +10,7 @@ import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import Spinner from '../ui/spinner';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -18,9 +19,12 @@ const supabase = createClient(
 
 export default function PersonalInfoSection() {
 	const { toast } = useToast();
-	const { data: profileData } = api.profiles.getProfile.useQuery(undefined, {
-		refetchOnWindowFocus: false,
-	});
+	const { data: profileData, status } = api.profiles.getProfile.useQuery(
+		undefined,
+		{
+			refetchOnWindowFocus: false,
+		}
+	);
 
 	const updateProfile = api.profiles.updateProfile.useMutation();
 	const [firstName, setFirstName] = useState('');
@@ -162,290 +166,296 @@ export default function PersonalInfoSection() {
 				</RText>
 			</div>
 
-			<div className="flex w-full flex-col lg:flex-row">
-				<div className="flex w-full flex-col gap-[24px] lg:w-[55%] lg:pr-[10%]">
-					<RLabeledSection
-						label="Public Email*"
-						subtitle="The email address that all your referrals will use and will be shared on your referral links. "
-						body={
-							<RInput
-								value={publicEmail as string}
-								onInput={(e) => {
-									setPublicEmail(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter email address"
-								isRequired
-								validationSchema={z.string().email({
-									message: 'Must be valid email address.',
-								})}
-								onErrorFound={() => {
-									setHasFormErrors(true);
-								}}
-								onErrorFixed={() => {
-									setHasFormErrors(false);
-								}}
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="First Name*"
-						body={
-							<RInput
-								value={firstName as string}
-								onInput={(e) => {
-									setFirstName(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								isRequired
-								validationSchema={z.string()}
-								onErrorFound={() => {
-									setHasFormErrors(true);
-								}}
-								onErrorFixed={() => {
-									setHasFormErrors(false);
-								}}
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="Last Name*"
-						body={
-							<RInput
-								value={lastName as string}
-								onInput={(e) => {
-									setLastName(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								isRequired
-								validationSchema={z.string()}
-								onErrorFound={() => {
-									setHasFormErrors(true);
-								}}
-								onErrorFixed={() => {
-									setHasFormErrors(false);
-								}}
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
+			{status === 'success' ? (
+				<div className="flex w-full flex-col lg:flex-row">
+					<div className="flex w-full flex-col gap-[24px] lg:w-[55%] lg:pr-[10%]">
+						<RLabeledSection
+							label="Public Email*"
+							subtitle="The email address that all your referrals will use and will be shared on your referral links. "
+							body={
+								<RInput
+									value={publicEmail as string}
+									onInput={(e) => {
+										setPublicEmail(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter email address"
+									isRequired
+									validationSchema={z.string().email({
+										message: 'Must be valid email address.',
+									})}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="First Name*"
+							body={
+								<RInput
+									value={firstName as string}
+									onInput={(e) => {
+										setFirstName(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									isRequired
+									validationSchema={z.string()}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Last Name*"
+							body={
+								<RInput
+									value={lastName as string}
+									onInput={(e) => {
+										setLastName(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									isRequired
+									validationSchema={z.string()}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
 
-					<RLabeledSection
-						label="Current Role Title"
-						body={
-							<RInput
-								value={currentRoleTitle as string}
-								onInput={(e) => {
-									setCurrentRoleTitle(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter current role"
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="LinkedIn URL"
-						body={
-							<RInput
-								value={linkedInUrl as string}
-								onInput={(e) => {
-									setLinkedInUrl(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter Linkedin url"
-								validationSchema={z
-									.string()
-									.url()
-									.refine(
-										(value) => {
-											try {
-												const url = new URL(value);
-												return (
-													url.hostname ===
-													'www.linkedin.com'
-												);
-											} catch {
-												return false;
+						<RLabeledSection
+							label="Current Role Title"
+							body={
+								<RInput
+									value={currentRoleTitle as string}
+									onInput={(e) => {
+										setCurrentRoleTitle(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter current role"
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="LinkedIn URL"
+							body={
+								<RInput
+									value={linkedInUrl as string}
+									onInput={(e) => {
+										setLinkedInUrl(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter Linkedin url"
+									validationSchema={z
+										.string()
+										.url()
+										.refine(
+											(value) => {
+												try {
+													const url = new URL(value);
+													return (
+														url.hostname ===
+														'www.linkedin.com'
+													);
+												} catch {
+													return false;
+												}
+											},
+											{
+												message:
+													'Must be a valid LinkedIn URL.',
 											}
-										},
-										{
-											message:
-												'Must be a valid LinkedIn URL.',
-										}
-									)}
-								onErrorFound={() => {
-									setHasFormErrors(true);
-								}}
-								onErrorFixed={() => {
-									setHasFormErrors(false);
-								}}
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="Twitter URL"
-						body={
-							<RInput
-								value={twitterUrl as string}
-								onInput={(e) => {
-									setTwitterUrl(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter Twitter profile url"
-								validationSchema={z
-									.string()
-									.url()
-									.refine(
-										(value) => {
-											try {
-												const url = new URL(value);
-												return (
-													url.hostname ===
-														'twitter.com' ||
-													url.hostname ===
-														'www.twitter.com' ||
-													url.hostname === 'x.com' ||
-													url.hostname === 'www.x.com'
-												);
-											} catch {
-												return false;
+										)}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Twitter URL"
+							body={
+								<RInput
+									value={twitterUrl as string}
+									onInput={(e) => {
+										setTwitterUrl(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter Twitter profile url"
+									validationSchema={z
+										.string()
+										.url()
+										.refine(
+											(value) => {
+												try {
+													const url = new URL(value);
+													return (
+														url.hostname ===
+															'twitter.com' ||
+														url.hostname ===
+															'www.twitter.com' ||
+														url.hostname ===
+															'x.com' ||
+														url.hostname ===
+															'www.x.com'
+													);
+												} catch {
+													return false;
+												}
+											},
+											{
+												message:
+													'Must be a valid Twitter URL.',
 											}
-										},
-										{
-											message:
-												'Must be a valid Twitter URL.',
-										}
-									)}
-								onErrorFound={() => {
-									setHasFormErrors(true);
-								}}
-								onErrorFixed={() => {
-									setHasFormErrors(false);
-								}}
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="Personal Site URL"
-						body={
-							<RInput
-								value={personalSiteUrl as string}
-								onInput={(e) => {
-									setPersonalSiteUrl(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter personal site url"
-								validationSchema={z.string().url()}
-								onErrorFound={() => {
-									setHasFormErrors(true);
-								}}
-								onErrorFixed={() => {
-									setHasFormErrors(false);
-								}}
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-				</div>
-				<div className="mt-[24px] flex h-full w-full flex-col gap-[24px] pr-[5%] lg:mt-[0px] lg:w-[45%]">
-					<div className="flex items-center gap-6">
-						<Avatar className="h-[15vw] max-h-[220px] w-[15vw] max-w-[220px]">
-							<AvatarImage
-								src={localAvatarUrl}
-								style={{
-									objectFit: 'cover',
-									objectPosition: 'top',
-								}}
-							/>
-							<AvatarFallback>
-								{firstName[0]}
-								{lastName[0]}
-							</AvatarFallback>
-						</Avatar>
-						<RButton
-							variant="secondary"
-							iconName="image-plus"
-							onFileChange={onFileSubmit}
-						>
-							Upload new
-						</RButton>
+										)}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Personal Site URL"
+							body={
+								<RInput
+									value={personalSiteUrl as string}
+									onInput={(e) => {
+										setPersonalSiteUrl(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter personal site url"
+									validationSchema={z.string().url()}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
 					</div>
-					<RLabeledSection
-						label="Experience Blurb"
-						subtitle="Available to referrers to help communicate your background and experience."
-						body={
-							<RTextarea
-								placeholder="enter short blurb describing yourself"
-								className="min-h-[120px]"
-								value={defaultBlurb as string}
-								onInput={(e) => {
-									setDefaultBlurb(
-										(e.target as HTMLInputElement).value
-									);
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="Current Location"
-						body={
-							<RInput
-								value={currentLocation as string}
-								onInput={(e) => {
-									setCurrentLocation(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter a city"
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
-					<RLabeledSection
-						label="Education"
-						body={
-							<RInput
-								value={education as string}
-								onInput={(e) => {
-									setEducation(
-										(e.target as HTMLInputElement).value
-									);
-								}}
-								placeholder="enter a school name"
-								onChange={() => {
-									setSavedStatus('Unsaved');
-								}}
-							/>
-						}
-					/>
+					<div className="mt-[24px] flex h-full w-full flex-col gap-[24px] pr-[5%] lg:mt-[0px] lg:w-[45%]">
+						<div className="flex items-center gap-6">
+							<Avatar className="h-[15vw] max-h-[220px] w-[15vw] max-w-[220px]">
+								<AvatarImage
+									src={localAvatarUrl}
+									style={{
+										objectFit: 'cover',
+										objectPosition: 'top',
+									}}
+								/>
+								<AvatarFallback>
+									{firstName[0]}
+									{lastName[0]}
+								</AvatarFallback>
+							</Avatar>
+							<RButton
+								variant="secondary"
+								iconName="image-plus"
+								onFileChange={onFileSubmit}
+							>
+								Upload new
+							</RButton>
+						</div>
+						<RLabeledSection
+							label="Experience Blurb"
+							subtitle="Available to referrers to help communicate your background and experience."
+							body={
+								<RTextarea
+									placeholder="enter short blurb describing yourself"
+									className="min-h-[120px]"
+									value={defaultBlurb as string}
+									onInput={(e) => {
+										setDefaultBlurb(
+											(e.target as HTMLInputElement).value
+										);
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Current Location"
+							body={
+								<RInput
+									value={currentLocation as string}
+									onInput={(e) => {
+										setCurrentLocation(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter a city"
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Education"
+							body={
+								<RInput
+									value={education as string}
+									onInput={(e) => {
+										setEducation(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter a school name"
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+					</div>
 				</div>
-			</div>
+			) : (
+				<Spinner size="large" />
+			)}
 			<RButton
 				onClick={onSaveProfile}
 				iconName="check"
