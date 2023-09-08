@@ -299,7 +299,7 @@ const ComponentsPage: NextPage = () => {
 					/>
 				</div>
 
-				<div className="m-top-5 mt-10 flex flex-col gap-3">
+				<div className="m-top-5 mt-10 flex max-w-[400px] flex-col gap-3">
 					<RText fontSize="h1">Combobox (idk if we using)</RText>
 					<Combobox />
 					<CompanyCombobox />

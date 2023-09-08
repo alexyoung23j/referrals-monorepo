@@ -24,7 +24,11 @@ const config = {
 	// 	defaultLocale: 'en',
 	// },
 	images: {
-		domains: ['assets.commonwealth.im', 'logo.clearbit.com'],
+		domains: [
+			'assets.commonwealth.im',
+			'logo.clearbit.com',
+			'wtshcihzoimxpnrbnnau.supabase.co',
+		],
 	},
 };
 
