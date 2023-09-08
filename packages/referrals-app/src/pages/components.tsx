@@ -28,6 +28,7 @@ import { api } from '~/utils/api';
 import { RSelector } from '~/components/ui/select';
 import { RTag } from '~/components/ui/tag';
 import ActivityModal from '~/components/modals/activity_modal';
+import { CompanyCombobox } from '~/components/company/company_combobox';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -298,9 +299,10 @@ const ComponentsPage: NextPage = () => {
 					/>
 				</div>
 
-				<div className="m-top-5 mt-10 flex flex-col gap-3">
+				<div className="m-top-5 mt-10 flex max-w-[400px] flex-col gap-3">
 					<RText fontSize="h1">Combobox (idk if we using)</RText>
 					<Combobox />
+					<CompanyCombobox />
 				</div>
 
 				<div className="m-top-5 mt-10 flex max-w-[500px] flex-col gap-5">
