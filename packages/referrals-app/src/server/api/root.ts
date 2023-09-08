@@ -1,7 +1,8 @@
 import { createTRPCRouter } from '~/server/api/trpc';
 import { profileRouter } from './routers/profile';
 import { supabase } from './routers/supabase_bucket';
-import {company} from './routers/company';
+import { company } from './routers/company';
+import { referralRequestRouter } from './routers/referral_requests';
 
 /**
  * This is the primary router for your server.
@@ -11,7 +12,8 @@ import {company} from './routers/company';
 export const appRouter = createTRPCRouter({
 	profiles: profileRouter,
 	supabase,
-	company
+	company,
+	referralRequest: referralRequestRouter,
 });
 
 // export type definition of API

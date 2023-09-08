@@ -50,6 +50,7 @@ model Company {
     id              String            @id @default(cuid())
     name            String
     logoUrl         String?
+    isCreatedByUser Boolean
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
     ReferralRequest ReferralRequest[]
@@ -57,9 +58,10 @@ model Company {
 }
 
 enum ReferralRequestStatus {
-    PENDING
+    COMMITTED
     ACCEPTED
     REJECTED
+    OPEN
 }
 
 model ReferralRequest {
@@ -72,8 +74,8 @@ model ReferralRequest {
     status                ReferralRequestStatus?
     isAnyOpenRole         Boolean
     jobPostingLink        String?
-    referrer              NonLoggedInUser        @relation(fields: [notLoggedInReferrerId], references: [id])
-    notLoggedInReferrerId String
+    referrer              NonLoggedInUser?       @relation(fields: [notLoggedInReferrerId], references: [id])
+    notLoggedInReferrerId String?
     referrerUserId        String? // only if the referrer happens to be a user on the platform
     createdAt             DateTime               @default(now())
     updatedAt             DateTime               @updatedAt

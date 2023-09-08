@@ -15,14 +15,59 @@ import { RText } from '~/components/ui/text';
 import { RLabeledSection } from '~/components/ui/labeled_section';
 import { RInput } from '~/components/ui/input';
 import { z } from 'zod';
+import {
+	Company,
+	CompanyCombobox,
+} from '~/components/company/company_combobox';
+import { api } from '~/utils/api';
+import { useToast } from '~/components/ui/use-toast';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
 }
 
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
+	const { toast } = useToast();
+
 	const { data: sessionData } = useSession();
 	const [newRequestModalOpen, setNewRequestModalOpen] = useState(false);
+	const [isAnyOpenRole, setAnyOpenRole] = useState(false);
+	const [company, setCompany] = useState<Company | null>(null);
+	const [jobTitle, setJobTitle] = useState('');
+	const [jobPostingLink, setJobPostingLink] = useState('');
+	const [hasFormErrors, setHasFormErrors] = useState(false);
+	const [companyIsCreatedByUser, setCompanyIsCreatedByUser] = useState(false);
+
+	const createReferralRequest =
+		api.referralRequest.createRequest.useMutation();
+
+	const createRequest = async () => {
+		if (hasFormErrors || !company) {
+			return;
+		}
+		try {
+			setNewRequestModalOpen(false);
+
+			await createReferralRequest.mutateAsync({
+				companyName: company.name,
+				companyLogo: company.logo,
+				jobTitle,
+				jobPostingLink,
+				isAnyOpenRole,
+				isCreatedByUser: companyIsCreatedByUser,
+			});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (e: any) {
+			toast({
+				title: e.message,
+				duration: 2000,
+			});
+		}
+		setCompany(null);
+		setJobTitle('');
+		setJobPostingLink('');
+		setAnyOpenRole(false);
+	};
 
 	return (
 		<PageLayout
@@ -44,6 +89,12 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				open={newRequestModalOpen}
 				onOpenChange={(open) => {
 					setNewRequestModalOpen(open);
+					if (!open) {
+						setCompany(null);
+						setJobTitle('');
+						setJobPostingLink('');
+						setAnyOpenRole(false);
+					}
 				}}
 				headerText="Create referral request"
 				subtitleText="Link to a job listing or choose “Any open role” for a general referral."
@@ -52,38 +103,43 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 						type: 'single-column',
 						content: [
 							<div key="1" className="flex items-center gap-3 ">
-								<Switch />
+								<Switch
+									checked={isAnyOpenRole}
+									onCheckedChange={(checked) => {
+										setAnyOpenRole(checked);
+									}}
+								/>
 								<RText fontWeight="medium">Any open role</RText>
 							</div>,
 						],
 					},
 					{
-						type: 'single-column',
+						type: 'two-column',
 						content: [
 							<RLabeledSection
-								label="Job posting link*"
-								subtitle="Feel free to link to your top choice job at this company."
+								label="Company*"
 								body={
-									<RInput
-										placeholder="enter link"
-										validationSchema={z.string().url()}
-										// isRequired
+									<CompanyCombobox
+										onCreateCompany={(company) => {
+											setCompany(company);
+											setCompanyIsCreatedByUser(true);
+										}}
+										onSelectCompany={(company) => {
+											setCompany(company);
+										}}
 									/>
 								}
 								key="2"
 							/>,
-						],
-					},
-					{
-						type: 'single-column',
-						content: [
 							<RLabeledSection
 								label="Job title"
 								body={
 									<RInput
 										placeholder="enter title"
-										// isRequired
-										className="max-w-[50%]"
+										value={jobTitle}
+										onChange={(e) => {
+											setJobTitle(e.target.value);
+										}}
 									/>
 								}
 								key="3"
@@ -94,20 +150,42 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 						type: 'single-column',
 						content: [
 							<RLabeledSection
-								label="Company*"
+								label={
+									isAnyOpenRole
+										? 'Job posting link'
+										: 'Job posting link*'
+								}
+								subtitle={
+									isAnyOpenRole
+										? 'Feel free to link to your top choice job at this company.'
+										: undefined
+								}
 								body={
 									<RInput
-										placeholder="enter title"
-										// isRequired
+										placeholder="enter link"
+										validationSchema={z.string().url()}
+										isRequired={!isAnyOpenRole}
+										value={jobPostingLink}
+										onChange={(e) => {
+											setJobPostingLink(e.target.value);
+										}}
+										onErrorFound={() => {
+											setHasFormErrors(true);
+										}}
+										onErrorFixed={() => {
+											setHasFormErrors(false);
+										}}
 									/>
 								}
-								key="3"
+								key="4"
 							/>,
 						],
 					},
 				]}
 				bottomRowContent={
-					<RButton iconName="check">Create request</RButton>
+					<RButton iconName="check" onClick={createRequest}>
+						Create request
+					</RButton>
 				}
 			/>
 			<div className="my-[16px] h-[200vh] w-full">

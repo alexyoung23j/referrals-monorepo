@@ -37,6 +37,7 @@ interface RInputProps extends InputProps {
 	highlighted?: boolean;
 	validationSchema?: ZodSchema;
 	isRequired?: boolean;
+	checkRequired?: boolean;
 	onErrorFound?: () => void;
 	onErrorFixed?: () => void;
 	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -85,6 +86,13 @@ export const RInput = ({
 	const [error, setError] = useState<string | null>(null);
 
 	const validateInput = useDebouncedCallback((value: string) => {
+		if (isRequired && value.length < 1) {
+			setError('This field is required');
+			if (props.onErrorFound) {
+				props.onErrorFound();
+			}
+			return;
+		}
 		if (validationSchema && value.length > 0) {
 			try {
 				validationSchema.parse(value);
