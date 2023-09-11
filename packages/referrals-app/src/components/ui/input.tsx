@@ -87,7 +87,7 @@ export const RInput = ({
 
 	const validateInput = useDebouncedCallback((value: string) => {
 		if (isRequired && value.length < 1) {
-			setError('This field is required');
+			// setError('This field is required');
 			if (props.onErrorFound) {
 				props.onErrorFound();
 			}

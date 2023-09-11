@@ -43,6 +43,10 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 
 	const createRequest = async () => {
 		if (hasFormErrors || !company) {
+			toast({
+				title: 'Please fill out the required fields.',
+				duration: 2000,
+			});
 			return;
 		}
 		try {
@@ -56,6 +60,12 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				isAnyOpenRole,
 				isCreatedByUser: companyIsCreatedByUser,
 			});
+
+			toast({
+				title: 'Created request.',
+				duration: 2000,
+			});
+
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
 			toast({
@@ -107,6 +117,9 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 									checked={isAnyOpenRole}
 									onCheckedChange={(checked) => {
 										setAnyOpenRole(checked);
+										if (checked) {
+											setHasFormErrors(false);
+										}
 									}}
 								/>
 								<RText fontWeight="medium">Any open role</RText>
