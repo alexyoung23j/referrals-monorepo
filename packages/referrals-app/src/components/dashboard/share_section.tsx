@@ -6,11 +6,11 @@ import { RTextarea } from '../ui/textarea';
 import { RTabsSection } from '../ui/tabs';
 
 const defaultEmailText = (link: string, name: string) => {
-	return `Hey [[Contact name]],\n\nI'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: ${link}. I would really appreciate it! \n\nThanks,\n${name}`;
+	return `Hey [[Contact name]],\n\nI'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: https://${link}. I would really appreciate it! \n\nThanks,\n${name}`;
 };
 
 const defaultDMText = (link: string, name: string) => {
-	return `Hey [[Contact name]], I'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: ${link}. I would really appreciate it, thanks!`;
+	return `Hey [[Contact name]], I'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: https://${link}. I would really appreciate it, thanks!`;
 };
 
 export default function ShareSection({
@@ -23,7 +23,7 @@ export default function ShareSection({
 	const router = useRouter();
 
 	return (
-		<div className="mb-[36px] flex w-full justify-between">
+		<div className="flex w-full flex-col justify-between gap-6 lg:flex-row">
 			<div className="flex flex-col gap-[24px]">
 				<RLabeledSection
 					label="Share"
@@ -94,7 +94,7 @@ export default function ShareSection({
 									`${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${linkCode}`,
 									userName
 								)}
-								className="h-[80px] text-[#334155]"
+								className="h-[100px] text-[#334155]"
 							/>
 						</div>,
 					]}

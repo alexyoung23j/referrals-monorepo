@@ -171,7 +171,7 @@ export default function PersonalInfoSection() {
 					<div className="flex w-full flex-col gap-[24px] lg:w-[55%] lg:pr-[10%]">
 						<RLabeledSection
 							label="Public Email*"
-							subtitle="The email address that all your referrals will use and will be shared on your referral links. "
+							subtitle="This address will be used for all your referrals and will be shared via your referral links."
 							body={
 								<RInput
 									value={publicEmail as string}

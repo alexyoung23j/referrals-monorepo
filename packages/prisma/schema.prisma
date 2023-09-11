@@ -59,7 +59,7 @@ model Company {
 
 enum ReferralRequestStatus {
     COMMITTED
-    ACCEPTED
+    COMPLETED
     REJECTED
     OPEN
 }
@@ -86,6 +86,7 @@ model ReferralRequest {
 model NonLoggedInUser {
     id              String            @id @default(cuid())
     email           String            @unique
+    name            String?
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
     ReferralRequest ReferralRequest[]

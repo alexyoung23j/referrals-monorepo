@@ -4,7 +4,6 @@ import { RButton } from '~/components/ui/button';
 import { redirectIfNotAuthed } from '~/utils/routing';
 import { prisma } from '~/server/db';
 import { generateValidLink } from '~/utils/links';
-import type { Link } from '@prisma/client';
 import ShareSection from '~/components/dashboard/share_section';
 import { Separator } from '~/components/ui/separator';
 import { useSession } from 'next-auth/react';
@@ -21,6 +20,7 @@ import {
 } from '~/components/company/company_combobox';
 import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/use-toast';
+import RequestsSection from '~/components/dashboard/requests_section';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
@@ -28,7 +28,6 @@ interface DashboardPageProps {
 
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const { toast } = useToast();
-
 	const { data: sessionData } = useSession();
 	const [newRequestModalOpen, setNewRequestModalOpen] = useState(false);
 	const [isAnyOpenRole, setAnyOpenRole] = useState(false);
@@ -37,6 +36,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const [jobPostingLink, setJobPostingLink] = useState('');
 	const [hasFormErrors, setHasFormErrors] = useState(false);
 	const [companyIsCreatedByUser, setCompanyIsCreatedByUser] = useState(false);
+	const [shouldRefetch, setShouldRefetch] = useState(false);
 
 	const createReferralRequest =
 		api.referralRequest.createRequest.useMutation();
@@ -60,6 +60,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				isAnyOpenRole,
 				isCreatedByUser: companyIsCreatedByUser,
 			});
+			setShouldRefetch((prev) => !prev);
 
 			toast({
 				title: 'Created request.',
@@ -201,12 +202,16 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 					</RButton>
 				}
 			/>
-			<div className="my-[16px] h-[200vh] w-full">
+			<div className="my-[16px] flex h-[200vh] w-full flex-col gap-[36px]">
 				<ShareSection
 					linkCode={userMainLink}
 					userName={sessionData?.user.name as string}
 				/>
 				<Separator />
+				<RequestsSection
+					shouldUpdate={shouldRefetch}
+					setNewRequestModalOpen={setNewRequestModalOpen}
+				/>
 			</div>
 		</PageLayout>
 	);

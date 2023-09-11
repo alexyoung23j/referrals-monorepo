@@ -18,7 +18,7 @@ export const RLabeledSection = ({
 	return (
 		<div className="labeled-section w-full">
 			<div className="flex flex-col gap-[8px] text-lg font-bold">
-				<div className="flex max-w-fit flex-row items-center gap-2">
+				<div className="flex w-full flex-row items-center justify-between gap-2">
 					<RText fontSize={labelSize} fontWeight="medium">
 						{label}
 					</RText>

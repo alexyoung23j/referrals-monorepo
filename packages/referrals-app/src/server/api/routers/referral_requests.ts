@@ -1,3 +1,4 @@
+import { ReferralRequestStatus } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import {
@@ -8,6 +9,60 @@ import {
 import { generateValidLink } from '~/utils/links';
 
 export const referralRequestRouter = createTRPCRouter({
+	getRequests: protectedProcedure
+		.input(
+			z.object({
+				userId: z.string().optional(),
+				statuses: z.string().array().optional(),
+			})
+		)
+		.query(async ({ ctx, input }) => {
+			const requests = await ctx.prisma.referralRequest.findMany({
+				where: {
+					requester: {
+						id: input.userId ?? ctx.session.user.id,
+					},
+					status: {
+						in: (input.statuses as ReferralRequestStatus[]) ?? [
+							'COMMITTED',
+							'COMPLETED',
+							'REJECTED',
+							'OPEN',
+						],
+					},
+				},
+				include: {
+					company: true,
+					referrer: true,
+				},
+			});
+
+			return requests;
+		}),
+	updateRequest: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				jobTitle: z.string().optional(),
+				jobPostingLink: z.string().optional(),
+				isAnyOpenRole: z.boolean().optional(),
+				isCreatedByUser: z.boolean().optional(),
+				status: z.nativeEnum(ReferralRequestStatus).optional(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const updatedRequest = await ctx.prisma.referralRequest.update({
+				where: { id: input.id },
+				data: {
+					jobTitle: input.jobTitle,
+					jobPostingLink: input.jobPostingLink,
+					isAnyOpenRole: input.isAnyOpenRole,
+					status: input.status,
+				},
+			});
+			return updatedRequest;
+		}),
+
 	createRequest: protectedProcedure
 		.input(
 			z.object({
