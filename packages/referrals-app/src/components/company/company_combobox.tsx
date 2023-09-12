@@ -18,7 +18,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from 'src/components/ui/popover';
-import { api } from '~/utils/api';
+import { trpc } from '~/utils/api';
 import { RInput } from '../ui/input';
 import { Label } from '../ui/label';
 import Image from 'next/image';
@@ -47,7 +47,7 @@ export function CompanyCombobox({
 		initialCompany ?? null
 	);
 	const [value, setValue] = useState('');
-	const { data: companies = [] } = api.company.getCompanyList.useQuery({
+	const { data: companies = [] } = trpc.company.getCompanyList.useQuery({
 		keyword: value,
 	});
 

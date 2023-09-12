@@ -8,3 +8,5 @@ export const EMAIL = {
 	SENT: 'sent',
 	DELIVERED: 'delivered'
 };
+
+export const EMAIL_FAILURE_ALLOW_COUNT = 3;
