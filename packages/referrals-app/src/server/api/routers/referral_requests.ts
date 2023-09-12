@@ -34,6 +34,10 @@ export const referralRequestRouter = createTRPCRouter({
 				include: {
 					company: true,
 					referrer: true,
+					Link: true,
+				},
+				orderBy: {
+					createdAt: 'desc',
 				},
 			});
 
@@ -142,6 +146,7 @@ export const referralRequestRouter = createTRPCRouter({
 					referralRequestId: request.id,
 					createdByLoggedInUser: true,
 					createdById: ctx.session.user.id,
+					isDefaultLinkForRequest: true,
 				});
 				return request;
 			} catch (e) {

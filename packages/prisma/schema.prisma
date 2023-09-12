@@ -129,17 +129,18 @@ model UserProfile {
 }
 
 model Link {
-    id                    String           @id // This has to be passed in by the request
-    user                  User             @relation(fields: [userId], references: [id])
-    userId                String
-    specificRequest       ReferralRequest? @relation(fields: [referralRequestId], references: [id]) // If this link associated with just one referral request
-    referralRequestId     String?
-    blurb                 String?
-    blurbAuthorName       String?
-    createdById           String? // Added only if the link was created by a user on the platform
-    createdByLoggedInUser Boolean
-    createdAt             DateTime         @default(now())
-    updatedAt             DateTime         @updatedAt
+    id                      String           @id // This has to be passed in by the request
+    user                    User             @relation(fields: [userId], references: [id])
+    userId                  String
+    specificRequest         ReferralRequest? @relation(fields: [referralRequestId], references: [id]) // If this link associated with just one referral request
+    referralRequestId       String?
+    blurb                   String?
+    blurbAuthorName         String?
+    createdById             String? // Added only if the link was created by a user on the platform
+    isDefaultLinkForRequest Boolean          @default(false) // Was this the link the original "primary" link for this request
+    createdByLoggedInUser   Boolean
+    createdAt               DateTime         @default(now())
+    updatedAt               DateTime         @updatedAt
 }
 
 // Necessary for Next auth
