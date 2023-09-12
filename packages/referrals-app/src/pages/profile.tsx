@@ -18,6 +18,7 @@ import PersonalInfoSection from '~/components/profile/personal_info_section';
 import ResumeSection from '~/components/profile/resume_section';
 import { generateValidLink } from '~/utils/links';
 import Spinner from '~/components/ui/spinner';
+import ExperienceSection from '~/components/profile/experience_section';
 
 interface ProfiePageProps {
 	linkCode: string; // Replace 'any' with the actual type of 'link'
@@ -54,6 +55,8 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 						<PersonalInfoSection />
 						<Separator />
 						<ResumeSection />
+						<Separator />
+						<ExperienceSection />
 					</div>
 				) : (
 					<div className="flex max-h-fit w-full flex-col items-center justify-center gap-[36px]">

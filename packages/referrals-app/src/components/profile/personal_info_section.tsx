@@ -36,7 +36,8 @@ export default function PersonalInfoSection() {
 	const [personalSiteUrl, setPersonalSiteUrl] = useState('');
 	const [currentLocation, setCurrentLocation] = useState('');
 	const [education, setEducation] = useState('');
-	const [defaultBlurb, setDefaultBlurb] = useState('');
+	const [defaultMessage, setDefaultMessage] = useState('');
+	const [experienceBlurb, setExperienceBlurb] = useState('');
 
 	const [hasFormErrors, setHasFormErrors] = useState(false);
 	const [savedStatus, setSavedStatus] = useState('Saved');
@@ -110,11 +111,14 @@ export default function PersonalInfoSection() {
 		if (profileData?.education) {
 			setEducation(profileData.education as string);
 		}
-		if (profileData?.defaultBlurb) {
-			setDefaultBlurb(profileData.defaultBlurb as string);
+		if (profileData?.defaultMessage) {
+			setDefaultMessage(profileData.defaultMessage as string);
 		}
 		if (profileData?.avatarUrl) {
 			setLocalAvatarUrl(profileData.avatarUrl as string);
+		}
+		if (profileData?.experienceBlurb) {
+			setExperienceBlurb(profileData.experienceBlurb as string);
 		}
 	}, [profileData]);
 
@@ -141,7 +145,7 @@ export default function PersonalInfoSection() {
 				personalSiteUrl,
 				currentLocation,
 				education,
-				defaultBlurb,
+				defaultMessage,
 				avatarUrl: '',
 			});
 
@@ -376,6 +380,40 @@ export default function PersonalInfoSection() {
 								/>
 							}
 						/>
+						<RLabeledSection
+							label="Current Location"
+							body={
+								<RInput
+									value={currentLocation as string}
+									onInput={(e) => {
+										setCurrentLocation(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter a city"
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Education"
+							body={
+								<RInput
+									value={education as string}
+									onInput={(e) => {
+										setEducation(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter a school name"
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
 					</div>
 					<div className="mt-[24px] flex h-full w-full flex-col gap-[24px] pr-[5%] lg:mt-[0px] lg:w-[45%]">
 						<div className="flex items-center gap-6">
@@ -407,9 +445,9 @@ export default function PersonalInfoSection() {
 								<RTextarea
 									placeholder="enter short blurb describing yourself"
 									className="min-h-[120px]"
-									value={defaultBlurb as string}
+									value={experienceBlurb as string}
 									onInput={(e) => {
-										setDefaultBlurb(
+										setExperienceBlurb(
 											(e.target as HTMLInputElement).value
 										);
 										setSavedStatus('Unsaved');
@@ -418,34 +456,17 @@ export default function PersonalInfoSection() {
 							}
 						/>
 						<RLabeledSection
-							label="Current Location"
+							label="Default Link Message"
+							subtitle="This message will appear on link pages you share."
 							body={
-								<RInput
-									value={currentLocation as string}
+								<RTextarea
+									placeholder="enter short message to thank your referrers or provide them additional context."
+									className="min-h-[120px]"
+									value={defaultMessage as string}
 									onInput={(e) => {
-										setCurrentLocation(
+										setDefaultMessage(
 											(e.target as HTMLInputElement).value
 										);
-									}}
-									placeholder="enter a city"
-									onChange={() => {
-										setSavedStatus('Unsaved');
-									}}
-								/>
-							}
-						/>
-						<RLabeledSection
-							label="Education"
-							body={
-								<RInput
-									value={education as string}
-									onInput={(e) => {
-										setEducation(
-											(e.target as HTMLInputElement).value
-										);
-									}}
-									placeholder="enter a school name"
-									onChange={() => {
 										setSavedStatus('Unsaved');
 									}}
 								/>

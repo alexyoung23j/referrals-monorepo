@@ -51,10 +51,52 @@ export const referralRequestRouter = createTRPCRouter({
 				jobPostingLink: z.string().optional(),
 				isAnyOpenRole: z.boolean().optional(),
 				isCreatedByUser: z.boolean().optional(),
+				referrerName: z.string().optional(),
+				referrerEmail: z.string().optional(),
 				status: z.nativeEnum(ReferralRequestStatus).optional(),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
+			// if we have a referrer name and email create a NonLoggedInUser and link it to the request
+			let referrer = null;
+			if (input.referrerName && input.referrerEmail) {
+				referrer = await ctx.prisma.nonLoggedInUser.findFirst({
+					where: {
+						email: input.referrerEmail,
+					},
+				});
+
+				if (!referrer) {
+					referrer = await ctx.prisma.nonLoggedInUser.create({
+						data: {
+							name: input.referrerName,
+							email: input.referrerEmail,
+						},
+					});
+				} else {
+					await ctx.prisma.nonLoggedInUser.update({
+						where: {
+							id: referrer.id,
+						},
+						data: {
+							name: input.referrerName,
+						},
+					});
+				}
+			} else if (input.referrerName) {
+				referrer = await ctx.prisma.nonLoggedInUser.create({
+					data: {
+						name: input.referrerName as string,
+					},
+				});
+			} else if (input.referrerEmail) {
+				referrer = await ctx.prisma.nonLoggedInUser.create({
+					data: {
+						email: input.referrerEmail as string,
+					},
+				});
+			}
+
 			const updatedRequest = await ctx.prisma.referralRequest.update({
 				where: { id: input.id },
 				data: {
@@ -62,6 +104,7 @@ export const referralRequestRouter = createTRPCRouter({
 					jobPostingLink: input.jobPostingLink,
 					isAnyOpenRole: input.isAnyOpenRole,
 					status: input.status,
+					notLoggedInReferrerId: referrer?.id,
 				},
 			});
 			return updatedRequest;
@@ -156,5 +199,19 @@ export const referralRequestRouter = createTRPCRouter({
 					message: 'Error creating request.',
 				});
 			}
+		}),
+	deleteRequest: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const request = await ctx.prisma.referralRequest.delete({
+				where: {
+					id: input.id,
+				},
+			});
+			return request;
 		}),
 });

@@ -85,7 +85,7 @@ model ReferralRequest {
 
 model NonLoggedInUser {
     id              String            @id @default(cuid())
-    email           String            @unique
+    email           String?           @unique
     name            String?
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
@@ -120,7 +120,8 @@ model UserProfile {
     personalSiteUrl  String?
     currentLocation  String?
     education        String?
-    defaultBlurb     String?
+    defaultMessage   String?
+    experienceBlurb  String?
     resumeUrl        String?
     linkedInUrl      String?
     createdAt        DateTime        @default(now())
