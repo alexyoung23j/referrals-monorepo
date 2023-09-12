@@ -2,7 +2,7 @@ import { type GetServerSidePropsContext } from 'next';
 import { type NextPage } from 'next';
 import { RButton } from '~/components/ui/button';
 import { RSelector } from '~/components/ui/select';
-import { trpc } from '~/utils/api';
+import { api } from '~/utils/api';
 import { redirectIfNotAuthed } from '~/utils/routing';
 import {useForm} from 'react-hook-form';
 
@@ -48,9 +48,9 @@ function EmailForm() {
 		resolver: zodResolver(formSchema),
 	});
 	const { mutate: queueEmailJob } =
-		trpc.email.queueEmailJob.useMutation();
+		api.email.queueEmailJob.useMutation();
 	const { data: usersToRefer = [] } =
-		trpc.email.getUsersToRefer.useQuery();
+		api.email.getUsersToRefer.useQuery();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const onSubmit = ({seeker, emailType, referrerName, referrerEmail, companyName}: any) => {

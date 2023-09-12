@@ -18,6 +18,7 @@ export default async function sendEmail({toAddress, body, emailType, attachmentU
 		to: toAddress,
 		subject: emailTypeToSubject[emailType],
 		html: body,
+		// TODO: change this after EmailAttachment schema is created
 		attachments: attachmentUrls.map(url => ({filename: 'Bora Yuksel\'s Resume.pdf', path: url})),
 		cc: toCC
 	});

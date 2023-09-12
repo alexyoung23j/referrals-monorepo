@@ -1,5 +1,5 @@
 import { RButton } from '~/components/ui/button';
-import { trpc } from '~/utils/api';
+import { api } from '~/utils/api';
 import { RText } from '~/components/ui/text';
 import { RLabeledSection } from '~/components/ui/labeled_section';
 import { RInput } from '~/components/ui/input';
@@ -18,10 +18,10 @@ const supabase = createClient(
 
 export default function ResumeSection() {
 	const { toast } = useToast();
-	const { data: profileData } = trpc.profiles.getProfile.useQuery(undefined, {
+	const { data: profileData } = api.profiles.getProfile.useQuery(undefined, {
 		refetchOnWindowFocus: false,
 	});
-	const updateProfile = trpc.profiles.updateProfile.useMutation();
+	const updateProfile = api.profiles.updateProfile.useMutation();
 	const [localResumeUrl, setLocalResumeUrl] = useState('');
 
 	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {

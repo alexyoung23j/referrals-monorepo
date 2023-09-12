@@ -14,7 +14,7 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from './separator';
 import RSpinner from './spinner';
 import { useMediaQuery } from 'react-responsive';
-import { trpc } from '~/utils/api';
+import { api } from '~/utils/api';
 import { RText } from './text';
 
 const options = {
@@ -60,7 +60,7 @@ export const PDFRenderer = ({
 	const pdfContainerRef = useRef<HTMLDivElement>(null);
 	const [scale, setScale] = useState<number>(1);
 	const { data: { publicUrl: resumeUrl } = {} } =
-		trpc.supabase.getResume.useQuery({ fileName });
+		api.supabase.getResume.useQuery({ fileName });
 
 	const updateScale = () => {
 		const containerWidth = pdfContainerRef?.current?.clientWidth;
