@@ -1,10 +1,10 @@
-import { EmailJobStatus, type EmailJob } from '@prisma/client';
+import { EmailJobStatus } from '@prisma/client';
 import {prisma} from '..';
 import getEmail from './getEmail';
 import sendEmail from './sendEmail';
 import { EMAIL, EMAIL_FAILURE_ALLOW_COUNT } from '../constants';
 import { type CreateEmailResponse, type GetEmailResponse } from 'resend/build/src/emails/interfaces';
-import { type EmailError } from '.';
+import { type EmailWithAttachment, type EmailError } from '.';
 
 type ResendResponse = CreateEmailResponse | GetEmailResponse | EmailError
 const responseIsEmailError = (response: ResendResponse): response is EmailError => !('id' in response);
@@ -13,7 +13,7 @@ const responseIsEmailError = (response: ResendResponse): response is EmailError 
 // TODO: should implement something where in case the email-service goes down completely,
 // TODO: we can query all the last PROCESSING emails, and re-process if needed.
 // TODO: which means, we probably want to store emailId in the schema as well
-export default async function processEmailQueue(emailQueue: Array<EmailJob>) {
+export default async function processEmailQueue(emailQueue: Array<EmailWithAttachment>) {
 	if (!emailQueue.length) {
 		console.log('No emails to process.');
 		return;

@@ -27,7 +27,7 @@ export default function PersonalInfoSection() {
 		}
 	);
 
-	const updateProfile = trpc.profiles.updateProfile.useMutation();
+	const updateProfile = api.profiles.updateProfile.useMutation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [publicEmail, setPublicEmail] = useState('');

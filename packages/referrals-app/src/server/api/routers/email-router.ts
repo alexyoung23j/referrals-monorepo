@@ -16,7 +16,7 @@ export const emailRouter = createTRPCRouter({
 				toAddress: z.string().optional(),
 				message: z.string().optional(),
 				referralRequestId: z.string().optional(),
-				scheduledAt: z.string().optional(),
+				scheduledAt: z.date().optional(),
 				emailType: z.enum([
 					'REFERRAL_REMINDER',
 					'REFERRAL_REMINDER_NOTIFICATION',
@@ -27,37 +27,58 @@ export const emailRouter = createTRPCRouter({
 				seekerUserId: z.string(),
 				referrerName: z.string(),
 				referrerEmail: z.string(),
-				companyName: z.string()
 			})
 		)
 		.mutation(async ({input, ctx}) => {
 			const {
 				message,
-				referralRequestId,
-				scheduledAt = new Date(),
+				referralRequestId = '0',
+				scheduledAt,
 				emailType,
 				seekerUserId,
 				referrerName,
 				referrerEmail,
-				companyName
 			} = input;
 			
-			const seeker = await ctx.prisma.user.findUnique(
-				{
-					where: {
-						id: seekerUserId
-					}
+			const referralRequest = await ctx.prisma.referralRequest.findFirst({
+				where: {
+					id: referralRequestId
+				},
+				include: {
+					company: true
+				}
+			});
+
+			if(!referralRequest) {
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: `Cannot find ReferralRequest with id: ${referralRequestId}`,
 				});
+			}
+
+			const {company} = referralRequest;
+
+			const seeker = await ctx.prisma.user.findUnique({
+				where: {
+					id: seekerUserId
+				}
+			});
+			
+			if(!seeker) {
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: `Cannot find requester with id: ${seekerUserId}`,
+				});
+			}
 
 			let emailBody = '';
-
 			try {
 				emailBody = message || constructEmailMessage(emailType, {
-					seekerName: seeker?.name ?? '',
-					seekerEmail: seeker?.email ?? '',
+					seekerName: seeker.name ?? '',
+					seekerEmail: seeker.email ?? '',
 					referrerName,
 					referrerEmail,
-					companyName,
+					companyName: company.name,
 					// TODO: link to a proper page when implemented
 					referralsLink: 'http://localhost:3000/email'
 				});
@@ -66,6 +87,47 @@ export const emailRouter = createTRPCRouter({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: `Something went wrong when constructing email body: ${e}`,
 				});
+			}
+
+			// may or may not need nonLoggedInUser later
+			const nonLoggedInUser = await ctx.prisma.nonLoggedInUser.upsert({
+				where: {
+					email: referrerEmail
+				},
+				update: {},
+				create: {
+					email: referrerEmail,
+					name: referrerName,
+					ReferralRequest: {
+						connect: [{id: referralRequest.id}]
+					}
+				},
+				include: {
+					ReferralRequest: true,
+				},
+			});
+
+			// If new reminder or referred before reminder email is sent, cancel email job
+			if (emailType === EmailJobType.REFERRAL_REMINDER || 
+				emailType === EmailJobType.REFERRAL_CONFIRMATION) {
+				const existingEmailjob = await ctx.prisma.emailJob.findFirst({
+					where: {
+						referralRequestId,
+						emailType: EmailJobType.REFERRAL_REMINDER,
+						toAddress: referrerEmail,
+						status: EmailJobStatus.QUEUED
+					}
+				});
+				if (existingEmailjob) {
+					await ctx.prisma.emailJob.update({
+						where: {
+							id: existingEmailjob.id
+						},
+						data: {
+							status: EmailJobStatus.CANCELLED
+						}
+					});
+				}
 			}
 
 			const seekerUserProfile = await ctx.prisma.userProfile.findFirst(
@@ -80,8 +142,7 @@ export const emailRouter = createTRPCRouter({
 			let toAddress;
 			const toCC = [];
 
-			// TODO: create a new EmailAttachment schema that consists of email URL and filename, and set relation
-			const attachmentUrls = [];
+			let resumeAttachment;
 			switch(emailType) {
 				case EmailJobType.MESSAGE_FROM_REFERRER:
 				case EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION:
@@ -89,28 +150,31 @@ export const emailRouter = createTRPCRouter({
 					toAddress = seeker?.email ?? '';
 					break;
 				case EmailJobType.REFERRAL_REMINDER:
-					toAddress = referrerEmail;
 					seeker?.email && toCC.push(seeker.email);
-					seekerResumeUrl && attachmentUrls.push(seekerResumeUrl);
-					break;
-				default:
+					if (seekerResumeUrl) {resumeAttachment = {filename: `${seeker.name}\'s Resume.pdf`, url: seekerResumeUrl};}
+				case EmailJobType.REFERRAL_CONFIRMATION:
 					toAddress = referrerEmail;
+					break;
 			}
 
+			const emailAttachments = resumeAttachment ? [resumeAttachment] : [];
 			await ctx.prisma.emailJob.create({
 				data:
 					{
 						toAddress,
 						body: emailBody,
 						referralRequestId,
-						attachmentUrls,
 						toCC,
 						emailType,
 						status: EmailJobStatus.QUEUED,
-						scheduledAt
+						scheduledAt,
+						attachments: {
+							create: emailAttachments
+						}
 					}
 			});
 		}),
+	// TODO: i don't even think we need this, queueEmailJob can handle cancelling when sending confirmation email
 	cancelEmailJob: publicProcedure
 		.input(
 			z.object({
@@ -125,29 +189,11 @@ export const emailRouter = createTRPCRouter({
 				},
 				data:
 					{
-						status: EmailJobStatus.QUEUED,
+						status: EmailJobStatus.CANCELLED,
 					}
 			});
 		}),
-	editEmailJob: publicProcedure
-		.input(
-			z.object({
-				emailId: z.string(),
-				fields: z.object({}).optional()
-			})
-		)
-		.mutation(async ({ input, ctx }) => {
-			const {emailId} = input;
-			await ctx.prisma.emailJob.update({
-				where: {
-					id: emailId
-				},
-				data:
-					{
-						status: EmailJobStatus.QUEUED,
-					}
-			});
-		}),
+	// TODO: everything below is for testing purposes on email page, remove later
 	createMockEmailJobEntries: publicProcedure
 		.mutation(async ({ ctx }) => {
 			await ctx.prisma.emailJob.createMany({
@@ -155,7 +201,6 @@ export const emailRouter = createTRPCRouter({
 					{
 						toAddress: 'borayuksel1903@gmail.com',
 						body: 'Email from referrals scheduled for NOW',
-						attachmentUrls: [],
 						toCC: [],
 						emailType: 'REFERRAL_REMINDER',
 						status: 'QUEUED',
@@ -164,7 +209,6 @@ export const emailRouter = createTRPCRouter({
 					{
 						toAddress: 'borayuksel1903@gmail.com',
 						body: 'Email from referrals one minute later',
-						attachmentUrls: [],
 						toCC: [],
 						emailType: 'REFERRAL_REMINDER',
 						status: 'QUEUED',
@@ -173,7 +217,6 @@ export const emailRouter = createTRPCRouter({
 					{
 						toAddress: 'borayuksel1903@gmail.com',
 						body: 'Email from referrals with Attachment',
-						attachmentUrls: ['https://okljwshacdhibnfafwxw.supabase.co/storage/v1/object/public/resumes/Bora_Yuksel_Resume.pdf'],
 						toCC: [],
 						emailType: 'REFERRAL_REMINDER',
 						status: 'QUEUED'
@@ -200,5 +243,26 @@ export const emailRouter = createTRPCRouter({
 		.query(async ({ ctx }) => {
 			const users = await ctx.prisma.user.findMany();
 			return users.map(user => ({value: user.id, content: user.name}));
+		}),
+	getReferralRequests: publicProcedure
+		.input(
+			z.object({
+				userId: z.string()
+			})
+		)
+		.query(async ({ ctx, input }) => {
+			const {userId} = input;
+
+			if(!userId) {return [];};
+
+			const referralRequests = await ctx.prisma.referralRequest.findMany({
+				where: {
+					requesterId: userId
+				},
+				include: {
+					company: true
+				}
+			});
+			return referralRequests.map(request => ({value: request.id, content: `${request.company.name} - ${request.jobTitle}`}));
 		}),
 });

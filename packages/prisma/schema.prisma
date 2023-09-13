@@ -31,22 +31,30 @@ enum EmailJobStatus {
     FAILED
 }
 
+model EmailAttachment {
+    id         String   @id @default(cuid())
+    emailJob   EmailJob @relation(fields: [emailJobId], references: [id])
+    emailJobId String
+    filename   String
+    url        String
+}
+
 model EmailJob {
-    id                        String           @id @default(cuid())
+    id                        String            @id @default(cuid())
     toAddress                 String
     body                      String
-    attachmentUrls            String[]
+    attachments               EmailAttachment[]
     toCC                      String[]
-    associatedReferralRequest ReferralRequest? @relation(fields: [referralRequestId], references: [id])
+    associatedReferralRequest ReferralRequest?  @relation(fields: [referralRequestId], references: [id])
     referralRequestId         String?
     emailType                 EmailJobType
     status                    EmailJobStatus
     scheduledAt               DateTime?
     sentAt                    DateTime?
-    createdAt                 DateTime         @default(now())
-    updatedAt                 DateTime         @updatedAt
+    createdAt                 DateTime          @default(now())
+    updatedAt                 DateTime          @updatedAt
     resendEmailId             String?
-    failCount                 Int              @default(0)
+    failCount                 Int               @default(0)
 }
 
 model Company {

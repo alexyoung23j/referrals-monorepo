@@ -19,6 +19,8 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { CompanyCombobox } from '~/components/company/company_combobox';
+import { useState } from 'react';
+import { RCalendar } from '~/components/ui/calendar';
 
 const emailTypeEnum = [
 	{value: 'REFERRAL_REMINDER', content: 'REFERRAL_REMINDER'},
@@ -36,26 +38,29 @@ const formSchema = z.object({
 		'REFERRAL_CONFIRMATION_NOTIFICATION',
 		'MESSAGE_FROM_REFERRER'
 	]),
-	seeker: z.string(),
+	seekerUserId: z.string(),
 	referrerName: z.string(),
 	referrerEmail: z.string(),
-	companyName: z.string(),
-	meetingLink: z.string().optional()
+	referralRequestId: z.string(),
+	meetingLink: z.string().optional(),
+	scheduledAt: z.date()
 });
  
 function EmailForm() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 	});
+	const [userId, setUserId] = useState<string>('');
 	const { mutate: queueEmailJob } =
 		api.email.queueEmailJob.useMutation();
 	const { data: usersToRefer = [] } =
 		api.email.getUsersToRefer.useQuery();
+	const { data: referralRequests = [] } =
+		api.email.getReferralRequests.useQuery({userId});
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const onSubmit = ({seeker, emailType, referrerName, referrerEmail, companyName}: any) => {
-		console.log('seeker', seeker);
-		queueEmailJob({emailType, seekerUserId: seeker, referrerName, referrerEmail, companyName});
+	const onSubmit = (data: any) => {
+		queueEmailJob(data);
 	};
 
 	return (
@@ -63,13 +68,32 @@ function EmailForm() {
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 				<FormField
 					control={form.control}
-					name="seeker"
+					name="seekerUserId"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Choose Seeker</FormLabel>
 							<FormControl>
 								<RSelector
 									items={usersToRefer}
+									onSelect={value => {
+										setUserId(value);
+										field.onChange(value);
+									}}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="referralRequestId"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Choose Referral Request</FormLabel>
+							<FormControl>
+								<RSelector
+									items={referralRequests}
 									onSelect={field.onChange}
 								/>
 							</FormControl>
@@ -121,12 +145,12 @@ function EmailForm() {
 				/>
 				<FormField
 					control={form.control}
-					name="companyName"
+					name="scheduledAt"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Select Company</FormLabel>
+							<FormLabel>Meeting Link</FormLabel>
 							<FormControl>
-								<CompanyCombobox onSelectCompany={(company => field.onChange(company.name))} />
+								<RCalendar date={new Date()} onSelect={field.onChange} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -153,10 +177,13 @@ function EmailForm() {
 
 const EmailPage: NextPage = () => {
 	const { mutate: createMockEmailJobEntries } =
-		trpc.email.createMockEmailJobEntries.useMutation();
+		api.email.createMockEmailJobEntries.useMutation();
 
 	const { mutate: deleteMockEmails } =
-		trpc.email.deleteMockEmails.useMutation();
+		api.email.deleteMockEmails.useMutation();
+
+	const { mutate: cancelEmailJob } =
+		api.email.deleteMockEmails.useMutation();
 
 	// const handleQueueEmail = async () => {
 	// 	await queueEmailJob();
@@ -170,11 +197,16 @@ const EmailPage: NextPage = () => {
 		await deleteMockEmails();
 	};
 
+	const handleCancelEmailJob = async () => {
+		await cancelEmailJob();
+	};
+
 	return (
 		<div className="flex flex-col gap-3 p-5">
 			<EmailForm />
 			<RButton onClick={handleGenerateMockEmailJobs}>Generate Mock EmailJob Entries</RButton>
 			<RButton onClick={handleDeleteMockEmailJobs}>Delete Test Entries</RButton>
+			<RButton onClick={handleCancelEmailJob}>Edit Email Job</RButton>
 		</div>
 	);
 };
