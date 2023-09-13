@@ -42,10 +42,36 @@ const frameworks = [
 	},
 ];
 
-// Maybe use this?
-export function Combobox() {
-	const [open, setOpen] = React.useState(false);
-	const [value, setValue] = React.useState('');
+import { useEffect, useState } from 'react';
+import axios from 'axios'; // or use any other library for making HTTP requests
+
+interface ComboBoxProps {
+	placeholder?: string;
+	dataFetchFn: (
+		value: string
+	) => Promise<[{ value: React.ReactNode; label: string }]>;
+}
+
+export function Combobox({ placeholder, dataFetchFn }: ComboBoxProps) {
+	const [open, setOpen] = useState(false);
+	const [value, setValue] = useState('');
+	const [frameworks, setFrameworks] = useState<
+		Array<{ value: React.ReactNode; label: string }>
+	>([]);
+
+	useEffect(() => {
+		// This function will be called whenever `value` changes
+		const fetchData = async () => {
+			try {
+				const response = await dataFetchFn(value);
+				setFrameworks(response);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		fetchData();
+	}, [value]);
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -54,8 +80,9 @@ export function Combobox() {
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="w-[200px] justify-between"
+					className="h-10 w-[200px] justify-between"
 				>
+					{/* You can pass any JSX or React component here */}
 					{value
 						? frameworks.find(
 								(framework) => framework.value === value
@@ -67,14 +94,16 @@ export function Combobox() {
 			<PopoverContent className="w-[200px] p-0">
 				<Command>
 					<CommandInput
-						placeholder="Search companies..."
-						className="h-9"
+						placeholder={placeholder}
+						className="h-10"
+						value={value}
+						onChange={(e) => setValue(e.target.value)}
 					/>
 					<CommandEmpty>No framework found.</CommandEmpty>
 					<CommandGroup>
 						{frameworks.map((framework) => (
 							<CommandItem
-								key={framework.value}
+								key={framework.value?.toString()}
 								onSelect={(currentValue) => {
 									setValue(
 										currentValue === value

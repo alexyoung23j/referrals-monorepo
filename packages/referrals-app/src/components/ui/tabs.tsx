@@ -6,6 +6,7 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { cn } from 'src/lib/utils';
 import Icon from './icons';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import { RText } from './text';
 
 const Tabs = TabsPrimitive.Root;
 
@@ -16,7 +17,7 @@ const TabsList = React.forwardRef<
 	<TabsPrimitive.List
 		ref={ref}
 		className={cn(
-			'bg-border text-muted-foreground inline-flex items-center justify-center rounded-md p-1',
+			'bg-backgroundGrey text-muted-foreground inline-flex items-center justify-center rounded-md p-1',
 			className
 		)}
 		{...props}
@@ -61,36 +62,48 @@ type TabsSectionProps = {
 		logoName?: string;
 		onTabSelect?: (tab: string) => void;
 	}>;
+	tabLabel?: string;
 	tabContents?: Array<React.ReactNode>;
 	onTabsChange?: (tab: string) => void;
 };
 
 export const RTabsSection = ({
 	tabs,
+	tabLabel,
 	tabContents,
 	onTabsChange,
 }: TabsSectionProps) => {
 	return (
 		<Tabs defaultValue={tabs[0]?.label}>
-			<TabsList>
-				{tabs.map((tab, index) => (
-					<TabsTrigger
-						key={tab.label}
-						value={tab.label}
-						onClick={() => {
-							if (tab.onTabSelect) {
-								tab.onTabSelect(tab.label);
-							}
-							if (onTabsChange) {
-								onTabsChange(tab.label);
-							}
-						}}
-					>
-						{tab.iconName && <Icon name={tab.iconName} size={14} />}
-						{tab.label}
-					</TabsTrigger>
-				))}
-			</TabsList>
+			<div>
+				<TabsList>
+					{tabs.map((tab, index) => (
+						<TabsTrigger
+							key={tab.label}
+							value={tab.label}
+							onClick={() => {
+								if (tab.onTabSelect) {
+									tab.onTabSelect(tab.label);
+								}
+								if (onTabsChange) {
+									onTabsChange(tab.label);
+								}
+							}}
+						>
+							{tab.iconName && (
+								<Icon name={tab.iconName} size={14} />
+							)}
+							{tab.label}
+						</TabsTrigger>
+					))}
+				</TabsList>
+				{tabLabel && (
+					<RText color="tertiary" fontWeight="light" className="ml-4">
+						{tabLabel}
+					</RText>
+				)}
+			</div>
+
 			{tabContents?.map((content, index) => (
 				<TabsContent key={index} value={tabs[index]?.label as string}>
 					{content}

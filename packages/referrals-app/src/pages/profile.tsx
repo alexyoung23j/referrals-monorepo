@@ -16,8 +16,14 @@ import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
 import PersonalInfoSection from '~/components/profile/personal_info_section';
 import ResumeSection from '~/components/profile/resume_section';
+import { generateValidLink } from '~/utils/links';
+import Spinner from '~/components/ui/spinner';
+import ExperienceSection from '~/components/profile/experience_section';
 
-export default function ProfilePage() {
+interface ProfiePageProps {
+	linkCode: string; // Replace 'any' with the actual type of 'link'
+}
+export default function ProfilePage({ linkCode }: ProfiePageProps) {
 	const { data: profileData, status } = api.profiles.getProfile.useQuery(
 		undefined,
 		{
@@ -30,17 +36,31 @@ export default function ProfilePage() {
 			pageTitle="Profile"
 			pageSubtitle="Your profile is used to provide context for your referrals and help your referrers get applications submitted."
 			topRightContent={
-				<RButton size="lg" iconName="plus">
-					View public profile
+				<RButton
+					size="lg"
+					iconName="external-link"
+					onClick={() => {
+						window.open(
+							`${process.env.NEXT_PUBLIC_SERVER_URL}/${linkCode}`
+						);
+					}}
+				>
+					View profile link
 				</RButton>
 			}
 		>
 			<div className="flex h-[200vh] w-full">
-				{status === 'success' && (
+				{status === 'success' ? (
 					<div className="flex max-h-fit w-full flex-col gap-[36px]">
 						<PersonalInfoSection />
 						<Separator />
 						<ResumeSection />
+						<Separator />
+						<ExperienceSection />
+					</div>
+				) : (
+					<div className="flex max-h-fit w-full flex-col items-center justify-center gap-[36px]">
+						<Spinner size="large" />
 					</div>
 				)}
 			</div>
@@ -56,6 +76,20 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 		redirectUrl: '/',
 		callback: async (session) => {
 			try {
+				let link = await prisma.link.findFirst({
+					where: {
+						userId: session?.user.id,
+						specificRequest: null,
+					},
+				});
+
+				if (!link) {
+					link = await generateValidLink({
+						userId: session?.user.id as string,
+						createdByLoggedInUser: true,
+					});
+				}
+
 				const existingProfile = await prisma.userProfile.findFirst({
 					where: {
 						userId: session?.user.id,
@@ -64,7 +98,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
 				if (existingProfile) {
 					return {
-						props: { session },
+						props: { session, linkCode: link.id },
 					};
 				}
 
@@ -83,7 +117,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 				});
 
 				return {
-					props: { session },
+					props: { session, linkCode: link.id },
 				};
 			} catch (e) {
 				console.log(e);

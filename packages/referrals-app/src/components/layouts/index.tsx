@@ -52,7 +52,9 @@ const Sidebar = () => {
 					}
 					content={
 						<div>
-							<RText fontSize="b2">Coming Soon!</RText>
+							<RText fontSize="b2">
+								Notifications Coming Soon!
+							</RText>
 						</div>
 					}
 					align="start"

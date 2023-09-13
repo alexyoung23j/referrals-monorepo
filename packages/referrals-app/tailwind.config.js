@@ -60,6 +60,10 @@ module.exports = {
 					DEFAULT: 'var(--blue)',
 					border: 'var(--blue-border)',
 				},
+				purple: {
+					DEFAULT: 'var(--purple)',
+					border: 'var(--purple-border)',
+				},
 				backgroundGrey: 'var(--background-grey)',
 				grey: 'var(--grey)',
 				profileBackgroundGrey: 'var(--profile-background-grey)',

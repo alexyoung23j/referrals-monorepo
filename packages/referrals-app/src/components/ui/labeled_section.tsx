@@ -2,6 +2,7 @@ import { RText } from './text';
 
 interface LabeledSectionProps {
 	label: string;
+	labelSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2';
 	subtitle?: string;
 	rightContent?: React.ReactNode;
 	body: React.ReactNode;
@@ -9,6 +10,7 @@ interface LabeledSectionProps {
 
 export const RLabeledSection = ({
 	label,
+	labelSize = 'b1',
 	subtitle,
 	rightContent,
 	body,
@@ -16,8 +18,8 @@ export const RLabeledSection = ({
 	return (
 		<div className="labeled-section w-full">
 			<div className="flex flex-col gap-[8px] text-lg font-bold">
-				<div className="flex max-w-fit flex-row items-center gap-2">
-					<RText fontSize="b1" fontWeight="medium">
+				<div className="flex w-full flex-row items-center justify-between gap-2">
+					<RText fontSize={labelSize} fontWeight="medium">
 						{label}
 					</RText>
 					{rightContent && rightContent}

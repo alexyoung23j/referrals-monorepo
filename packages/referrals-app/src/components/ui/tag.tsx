@@ -1,7 +1,7 @@
 import { RText } from './text';
 
 type RTagProps = {
-	color?: 'default' | 'green' | 'blue';
+	color?: 'default' | 'green' | 'blue' | 'purple';
 	label: string;
 	leftContent?: React.ReactNode;
 	rightContent?: React.ReactNode;
@@ -12,6 +12,7 @@ const colorMap = {
 	default: 'bg-lightGrey border-border',
 	green: 'bg-green border-green-border',
 	blue: 'bg-blue border-blue-border',
+	purple: 'bg-purple border-purple-border',
 };
 
 export const RTag = ({

@@ -17,10 +17,12 @@ type ActivityModalProps = {
 	headerRightContent?: React.ReactNode;
 	subtitleText?: string;
 	bottomRowContent?: React.ReactNode;
-	sections?: Array<{
-		type: 'single-column' | 'two-column';
-		content: React.ReactNode[];
-	}>;
+	sections?:
+		| Array<{
+				type: 'single-column' | 'two-column';
+				content: React.ReactNode[];
+		  }>
+		| null[];
 };
 
 export default function ActivityModal({
@@ -57,6 +59,9 @@ export default function ActivityModal({
 				)}
 				<div className="mt-[32px] flex flex-col gap-[32px]">
 					{sections?.map((section, index) => {
+						if (!section) {
+							return null;
+						}
 						if (section.type === 'single-column') {
 							return (
 								<div key={index} className="w-full">

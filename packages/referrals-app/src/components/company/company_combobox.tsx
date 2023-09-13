@@ -24,7 +24,7 @@ import { Label } from '../ui/label';
 import Image from 'next/image';
 import { RText } from '../ui/text';
 
-type Company = {
+export type Company = {
 	name: string;
 	domain: string;
 	logo: string;
@@ -32,17 +32,19 @@ type Company = {
 
 type CompanyComboboxProps = {
 	onSelectCompany?: (company: Company) => void;
-	onCreateCompany?: (companyName: string) => void;
+	onCreateCompany?: (company: Company) => void;
+	initialCompany?: Company;
 };
 
 // Maybe use this?
 export function CompanyCombobox({
 	onCreateCompany,
 	onSelectCompany,
+	initialCompany,
 }: CompanyComboboxProps) {
 	const [open, setOpen] = useState(false);
 	const [selectedCompany, setSelectedCompany] = useState<Company | null>(
-		null
+		initialCompany ?? null
 	);
 	const [value, setValue] = useState('');
 	const { data: companies = [] } = api.company.getCompanyList.useQuery({
@@ -65,7 +67,11 @@ export function CompanyCombobox({
 	const onCompanyCreate = (companyName: string) => {
 		setOpen(false);
 		if (onCreateCompany) {
-			onCreateCompany(companyName);
+			onCreateCompany({
+				name: companyName,
+				domain: '',
+				logo: 'https://wtshcihzoimxpnrbnnau.supabase.co/storage/v1/object/public/avatar_images/default_logo.png',
+			});
 		}
 		setSelectedCompany({
 			name: companyName,
@@ -84,7 +90,7 @@ export function CompanyCombobox({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className="h-10 w-full max-w-[400px] justify-between"
+					className="h-10 w-full justify-between"
 				>
 					{selectedCompany ? (
 						<div className="mx-1 my-3 flex items-center space-x-2">
@@ -94,18 +100,22 @@ export function CompanyCombobox({
 								height={20}
 								width={20}
 							/>
-							<Label>{selectedCompany.name}</Label>
+							<RText className="overflow-hidden whitespace-nowrap">
+								{selectedCompany.name}
+							</RText>
 						</div>
 					) : (
-						'Select company...'
+						<RText className="overflow-hidden whitespace-nowrap">
+							Search companies..
+						</RText>
 					)}
 					<CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="h-fit w-[400px] p-0">
+			<PopoverContent className="h-fit max-w-[280px] p-0">
 				<Command>
 					<CommandInput
-						placeholder="Search companies..."
+						placeholder="Type to search"
 						className="h-9"
 						onValueChange={(value) => {
 							debounceOnChange(value);

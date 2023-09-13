@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Label } from './label';
 
 import { cn } from 'src/lib/utils';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from './icons';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
 
@@ -28,11 +28,13 @@ Textarea.displayName = 'Textarea';
 interface RTextareaProps extends TextareaProps {
 	copyEnabled?: boolean;
 	highlighted?: boolean;
+	onDebounceFn?: () => void;
 }
 
 export const RTextarea = ({
 	copyEnabled,
 	highlighted,
+	onDebounceFn,
 	...props
 }: RTextareaProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -57,6 +59,37 @@ export const RTextarea = ({
 			setIcon('copy');
 		}
 	};
+
+	const [typingTimeout, setTypingTimeout] = useState<
+		NodeJS.Timeout | undefined
+	>(undefined);
+
+	useEffect(() => {
+		return () => {
+			if (typingTimeout) {
+				clearTimeout(typingTimeout);
+			}
+		};
+	}, []);
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		if (typingTimeout) {
+			clearTimeout(typingTimeout);
+		}
+
+		setTypingTimeout(
+			setTimeout(() => {
+				if (onDebounceFn) {
+					onDebounceFn();
+				}
+			}, 500)
+		);
+
+		if (props.onChange) {
+			props.onChange(e);
+		}
+	};
+
 	return (
 		<div className="relative">
 			<Textarea
@@ -70,6 +103,7 @@ export const RTextarea = ({
 					},
 					props.className
 				)}
+				onChange={handleInputChange}
 			/>
 			{copyEnabled && (
 				<Icon

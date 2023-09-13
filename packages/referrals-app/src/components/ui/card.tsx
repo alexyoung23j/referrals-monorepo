@@ -35,6 +35,7 @@ type RowTableProps = {
 		cells: Array<{ content: React.ReactNode; label: string }>;
 		label: string;
 	}>;
+	mobileWidth?: number;
 };
 
 /**
@@ -42,18 +43,22 @@ type RowTableProps = {
  * @param param0
  * @returns
  */
-export const RowTable = ({ columns, rows }: RowTableProps) => {
+export const RowTable = ({
+	columns,
+	rows,
+	mobileWidth = 640,
+}: RowTableProps) => {
 	const finalColumn = columns[columns.length - 1];
 	const finalColumnWidth = finalColumn?.minWidth;
 
 	const isMobile = useMediaQuery({
-		query: '(max-width: 640px)',
+		query: `(max-width: ${mobileWidth}px)`,
 	});
 
 	return (
 		<div className="flex w-full flex-col gap-[8px]">
 			<div className="max-sm: flex justify-between pl-[32px] pr-[32px] max-sm:pl-[16px] max-sm:pr-[16px]">
-				<div className="flex">
+				<div className="flex items-center">
 					{columns
 						.slice(0, columns.length - 1)
 						.map((column, index) => {
@@ -86,7 +91,6 @@ export const RowTable = ({ columns, rows }: RowTableProps) => {
 							);
 						})}
 				</div>
-
 				<div
 					className={`flex flex-row items-center gap-[4px] ${finalColumnWidth} cursor-pointer`}
 					onClick={finalColumn?.onClick}
@@ -112,9 +116,9 @@ export const RowTable = ({ columns, rows }: RowTableProps) => {
 					return (
 						<RCard
 							key={row.label}
-							className="border-border flex w-full flex-row justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]"
+							className="border-border flex w-full flex-row items-center justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]"
 						>
-							<div className="flex">
+							<div className="flex items-center">
 								{row.cells
 									.slice(0, row.cells.length - 1)
 									.map((cell, cellIdx) => {

@@ -50,6 +50,7 @@ model Company {
     id              String            @id @default(cuid())
     name            String
     logoUrl         String?
+    isCreatedByUser Boolean
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
     ReferralRequest ReferralRequest[]
@@ -57,9 +58,10 @@ model Company {
 }
 
 enum ReferralRequestStatus {
-    PENDING
-    ACCEPTED
+    COMMITTED
+    COMPLETED
     REJECTED
+    OPEN
 }
 
 model ReferralRequest {
@@ -72,8 +74,8 @@ model ReferralRequest {
     status                ReferralRequestStatus?
     isAnyOpenRole         Boolean
     jobPostingLink        String?
-    referrer              NonLoggedInUser        @relation(fields: [notLoggedInReferrerId], references: [id])
-    notLoggedInReferrerId String
+    referrer              NonLoggedInUser?       @relation(fields: [notLoggedInReferrerId], references: [id])
+    notLoggedInReferrerId String?
     referrerUserId        String? // only if the referrer happens to be a user on the platform
     createdAt             DateTime               @default(now())
     updatedAt             DateTime               @updatedAt
@@ -83,7 +85,8 @@ model ReferralRequest {
 
 model NonLoggedInUser {
     id              String            @id @default(cuid())
-    email           String            @unique
+    email           String?           @unique
+    name            String?
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
     ReferralRequest ReferralRequest[]
@@ -117,7 +120,8 @@ model UserProfile {
     personalSiteUrl  String?
     currentLocation  String?
     education        String?
-    defaultBlurb     String?
+    defaultMessage   String?
+    experienceBlurb  String?
     resumeUrl        String?
     linkedInUrl      String?
     createdAt        DateTime        @default(now())
@@ -126,17 +130,18 @@ model UserProfile {
 }
 
 model Link {
-    id                    String           @id // This has to be passed in by the request
-    user                  User             @relation(fields: [userId], references: [id])
-    userId                String
-    specificRequest       ReferralRequest? @relation(fields: [referralRequestId], references: [id]) // If this link associated with just one referral request
-    referralRequestId     String?
-    blurb                 String?
-    blurbAuthorName       String?
-    createdById           String // If the link was created by a user on the platform
-    createdByLoggedInUser Boolean
-    createdAt             DateTime         @default(now())
-    updatedAt             DateTime         @updatedAt
+    id                      String           @id // This has to be passed in by the request
+    user                    User             @relation(fields: [userId], references: [id])
+    userId                  String
+    specificRequest         ReferralRequest? @relation(fields: [referralRequestId], references: [id]) // If this link associated with just one referral request
+    referralRequestId       String?
+    blurb                   String?
+    blurbAuthorName         String?
+    createdById             String? // Added only if the link was created by a user on the platform
+    isDefaultLinkForRequest Boolean          @default(false) // Was this the link the original "primary" link for this request
+    createdByLoggedInUser   Boolean
+    createdAt               DateTime         @default(now())
+    updatedAt               DateTime         @updatedAt
 }
 
 // Necessary for Next auth
