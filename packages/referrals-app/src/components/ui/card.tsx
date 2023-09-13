@@ -15,7 +15,7 @@ export const RCard = ({
 }: RCardProps) => {
 	return (
 		<div
-			className={`border-border max-w-fit rounded-[6px] border p-4 shadow-${elevation}`}
+			className={`border-border rounded-[6px] border p-4 shadow-${elevation}`}
 			{...props}
 		>
 			{children}
@@ -36,6 +36,7 @@ type RowTableProps = {
 		label: string;
 	}>;
 	mobileWidth?: number;
+	cardElevation?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
 };
 
 /**
@@ -47,6 +48,7 @@ export const RowTable = ({
 	columns,
 	rows,
 	mobileWidth = 640,
+	cardElevation = 'none',
 }: RowTableProps) => {
 	const finalColumn = columns[columns.length - 1];
 	const finalColumnWidth = finalColumn?.minWidth;
@@ -116,7 +118,7 @@ export const RowTable = ({
 					return (
 						<RCard
 							key={row.label}
-							className="border-border flex w-full flex-row items-center justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]"
+							className={`border-border shadow-${cardElevation} flex w-full flex-row items-center justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]`}
 						>
 							<div className="flex items-center">
 								{row.cells

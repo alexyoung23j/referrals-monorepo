@@ -53,7 +53,13 @@ const LinkPageMobile = ({
 			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[12px] p-[24px]">
 				<div className="flex flex-col items-center gap-[8px]">
 					<Avatar className="h-[56px] w-[56px]">
-						<AvatarImage src={avatarUrl} />
+						<AvatarImage
+							src={avatarUrl}
+							style={{
+								objectFit: 'cover',
+								objectPosition: 'top',
+							}}
+						/>
 						<AvatarFallback>
 							{profileName[0] as string}
 						</AvatarFallback>
@@ -485,7 +491,7 @@ const LinkPageDesktop = ({
 					</div>
 				</div>
 			</div>
-			<div className="flex h-screen w-full flex-col items-center overflow-y-auto p-[104px]">
+			<div className="flex h-screen w-full flex-col items-center overflow-y-auto">
 				{children}
 				<Toaster />
 			</div>
