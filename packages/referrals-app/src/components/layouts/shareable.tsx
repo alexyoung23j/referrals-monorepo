@@ -150,10 +150,10 @@ const LinkPageMobile = ({
 													logoUrl={
 														experience.companyLogoUrl
 													}
-													size={28}
+													size={32}
 												/>
 												<div className="flex flex-col gap-2">
-													<div className="flex gap-2">
+													<div className="flex items-center gap-2">
 														<RText
 															fontSize="b1"
 															fontWeight="medium"
@@ -171,6 +171,7 @@ const LinkPageMobile = ({
 														<RText
 															fontWeight="light"
 															color="tertiary"
+															fontSize="b2"
 														>{`${
 															experience.startDate
 														} - ${
@@ -293,7 +294,7 @@ const LinkPageDesktop = ({
 					</RText>
 					<div className="flex flex-col gap-3">
 						{currentRoleTitle && (
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-3">
 								<Icon name="tag" size="16px" color="#64748b" />
 								<RText color="secondary" fontWeight="medium">
 									{currentRoleTitle}
@@ -301,7 +302,7 @@ const LinkPageDesktop = ({
 							</div>
 						)}
 						{location && (
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-3">
 								<Icon
 									name="map-pin"
 									size="16px"
@@ -313,7 +314,7 @@ const LinkPageDesktop = ({
 							</div>
 						)}
 						{education && (
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-3">
 								<Icon
 									name="graduation-cap"
 									size="16px"
@@ -392,7 +393,7 @@ const LinkPageDesktop = ({
 																size={28}
 															/>
 															<div className="flex flex-col gap-2">
-																<div className="flex gap-2">
+																<div className="flex items-center gap-3">
 																	<RText
 																		fontSize="b1"
 																		fontWeight="medium"
@@ -411,6 +412,7 @@ const LinkPageDesktop = ({
 																	<RText
 																		fontWeight="light"
 																		color="tertiary"
+																		fontSize="b2"
 																	>{`${
 																		experience.startDate
 																	} - ${
