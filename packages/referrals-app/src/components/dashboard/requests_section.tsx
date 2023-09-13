@@ -78,6 +78,7 @@ export default function RequestsSection({
 		status: string | null;
 		notLoggedInReferrerId: string | null;
 		jobPostingLink: string | null;
+		isAnyOpenRole: boolean;
 	}>(null);
 	const [showShareBlurbInModal, setShowShareBlurbInModal] = useState(false);
 	const [shareableMessage, setShareableMessage] = useState('');
@@ -105,7 +106,8 @@ export default function RequestsSection({
 		);
 		setSelectedRequestJobTitle(selectedRequest?.jobTitle as string);
 		setSelectedRequestAnyOpenRole(
-			selectedRequest?.jobPostingLink ? false : true
+			selectedRequest?.isAnyOpenRole ??
+				(selectedRequest?.jobPostingLink ? false : true)
 		);
 	}, [selectedRequest]);
 
@@ -191,11 +193,14 @@ export default function RequestsSection({
 	}, [shareableMessage]); // Depend on shareableBlurb state
 
 	const saveEdits = async () => {
+		console.log({ selectedRequestReferrerEmail });
 		try {
 			await updateRequest.mutateAsync({
 				id: selectedRequest?.id as string,
-				referrerName: selectedRequestReferrerName as string,
-				referrerEmail: selectedRequestReferrerEmail as string,
+				referrerName:
+					(selectedRequestReferrerName as string) ?? undefined,
+				referrerEmail:
+					(selectedRequestReferrerEmail as string) ?? undefined,
 				status: selectedRequestStatus as ReferralRequestStatus,
 				jobPostingLink: selectedRequestJobLink,
 				jobTitle: selectedRequestJobTitle,

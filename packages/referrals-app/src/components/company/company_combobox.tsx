@@ -33,16 +33,18 @@ export type Company = {
 type CompanyComboboxProps = {
 	onSelectCompany?: (company: Company) => void;
 	onCreateCompany?: (company: Company) => void;
+	initialCompany?: Company;
 };
 
 // Maybe use this?
 export function CompanyCombobox({
 	onCreateCompany,
 	onSelectCompany,
+	initialCompany,
 }: CompanyComboboxProps) {
 	const [open, setOpen] = useState(false);
 	const [selectedCompany, setSelectedCompany] = useState<Company | null>(
-		null
+		initialCompany ?? null
 	);
 	const [value, setValue] = useState('');
 	const { data: companies = [] } = api.company.getCompanyList.useQuery({

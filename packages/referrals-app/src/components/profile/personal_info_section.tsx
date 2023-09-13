@@ -11,6 +11,7 @@ import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import Spinner from '../ui/spinner';
+import RSpinner from '../ui/spinner';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -43,9 +44,13 @@ export default function PersonalInfoSection() {
 	const [savedStatus, setSavedStatus] = useState('Saved');
 
 	const [localAvatarUrl, setLocalAvatarUrl] = useState('');
+	const [avatarLoading, setAvatarLoading] = useState(true);
 
 	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		setAvatarLoading(true);
+
 		const { files } = event.target;
+		console.log('im here');
 
 		let file;
 		if (files && files[0]) {
@@ -81,7 +86,10 @@ export default function PersonalInfoSection() {
 		} catch (e) {
 			console.error('Error while generating presigned URL: ', e);
 		}
+		setAvatarLoading(false);
+		console.log('im here');
 	};
+	console.log({ avatarLoading });
 
 	useEffect(() => {
 		if (profileData?.firstName) {
@@ -426,8 +434,11 @@ export default function PersonalInfoSection() {
 									}}
 								/>
 								<AvatarFallback>
-									{firstName[0]}
-									{lastName[0]}
+									{avatarLoading ? (
+										<RSpinner size="medium" />
+									) : (
+										`${firstName[0]}${lastName[0]}`
+									)}
 								</AvatarFallback>
 							</Avatar>
 							<RButton

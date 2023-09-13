@@ -57,6 +57,7 @@ export const referralRequestRouter = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
+			console.log({ input });
 			// if we have a referrer name and email create a NonLoggedInUser and link it to the request
 			let referrer = null;
 			if (input.referrerName && input.referrerEmail) {

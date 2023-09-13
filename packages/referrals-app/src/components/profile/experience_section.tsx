@@ -31,6 +31,8 @@ export default function ExperienceSection() {
 		}
 	);
 	const createJobExperience = api.profiles.createJobExperience.useMutation();
+	const updateJobExperience = api.profiles.updateJobExperience.useMutation();
+	const deleteJobExperience = api.profiles.deleteJobExperience.useMutation();
 	const jobExperiences = profileData?.JobExperience;
 	const [addModalOpen, setAddModalOpen] = useState(false);
 	const [editModalOpen, setEditModalOpen] = useState(false);
@@ -86,6 +88,71 @@ export default function ExperienceSection() {
 			console.log(e);
 			toast({
 				title: 'Failed to add experience. Make sure all fields are filled out.',
+				duration: 2000,
+			});
+		}
+	};
+
+	const editExperience = async () => {
+		try {
+			await updateJobExperience.mutateAsync({
+				id: selectedExperience?.id as string,
+				title: jobTitle,
+				startDate: startDate as Date,
+				endDate,
+				currentlyWorkHere,
+				isCreatedByUser: companyIsCreatedByUser,
+				companyLogo: company?.logo as string,
+				companyName: company?.name as string,
+			});
+			toast({
+				title: 'Updated job experience!',
+				duration: 2000,
+			});
+			refetch();
+
+			setEditModalOpen(false);
+			setCompany(null);
+			setCompanyIsCreatedByUser(false);
+			setStartDate(
+				new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+			);
+			setEndDate(undefined);
+			setCurrentlyWorkHere(false);
+			setJobTitle('');
+		} catch (e) {
+			console.log(e);
+			toast({
+				title: 'Failed to edit experience.',
+				duration: 2000,
+			});
+		}
+	};
+
+	const deleteExperience = async () => {
+		try {
+			await deleteJobExperience.mutateAsync({
+				id: selectedExperience?.id as string,
+			});
+			toast({
+				title: 'Deleted job experience.',
+				duration: 2000,
+			});
+			refetch();
+
+			setEditModalOpen(false);
+			setCompany(null);
+			setCompanyIsCreatedByUser(false);
+			setStartDate(
+				new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+			);
+			setEndDate(undefined);
+			setCurrentlyWorkHere(false);
+			setJobTitle('');
+		} catch (e) {
+			console.log(e);
+			toast({
+				title: 'Failed to delete experience.',
 				duration: 2000,
 			});
 		}
@@ -194,6 +261,9 @@ export default function ExperienceSection() {
 									onCheckedChange={(checked) => {
 										if (typeof checked === 'boolean') {
 											setCurrentlyWorkHere(checked);
+											if (checked) {
+												setEndDate(undefined);
+											}
 										}
 									}}
 								/>
@@ -208,10 +278,14 @@ export default function ExperienceSection() {
 				subtitleText="Edit a previous work experience saved on your profile."
 				bottomRowContent={
 					<div className="flex gap-2">
-						<RButton iconName="check" onClick={createExperience}>
+						<RButton iconName="check" onClick={editExperience}>
 							Save changes
 						</RButton>
-						<RButton iconName="trash" variant="secondary">
+						<RButton
+							iconName="trash"
+							variant="secondary"
+							onClick={deleteExperience}
+						>
 							Delete
 						</RButton>
 					</div>
@@ -233,6 +307,9 @@ export default function ExperienceSection() {
 										onSelectCompany={(company) => {
 											setCompany(company);
 										}}
+										initialCompany={
+											selectedExperience?.company as Company
+										}
 									/>
 								}
 								key="2"
@@ -293,6 +370,9 @@ export default function ExperienceSection() {
 									onCheckedChange={(checked) => {
 										if (typeof checked === 'boolean') {
 											setCurrentlyWorkHere(checked);
+											if (checked) {
+												setEndDate(undefined);
+											}
 										}
 									}}
 								/>
@@ -315,126 +395,138 @@ export default function ExperienceSection() {
 					Add new
 				</RButton>
 			</div>
-			<RowTable
-				mobileWidth={840}
-				columns={[
-					{
-						label: 'Company',
-						hideOnMobile: false,
-						minWidth: isMobile ? 300 : 300,
-					},
-					{
-						label: 'Job title',
-						hideOnMobile: true,
-						minWidth: isMobile ? 100 : 300,
-					},
-					{
-						label: 'Tenure',
-						hideOnMobile: false,
-						minWidth: isMobile ? 100 : 300,
-					},
-					{ label: '', hideOnMobile: false },
-				]}
-				rows={
-					jobExperiences?.map((jobExperience) => {
-						const row = {
-							label: jobExperience.id,
-							cells: [
-								{
-									label: 'company',
-									content: (
-										<div className="flex items-center gap-3">
-											<Image
-												src={
-													jobExperience?.company
-														?.logoUrl as string
-												}
-												alt="Logo"
-												height={24}
-												width={24}
-											/>
-											<RText fontWeight="medium">
-												{jobExperience.company?.name}
-											</RText>
-										</div>
-									),
-								},
-								{
-									label: 'job title',
-									content: (
-										<RText color="secondary">
-											{jobExperience.title}
-										</RText>
-									),
-								},
-								{
-									label: 'tenue',
-									content: (
-										<RText fontWeight="light">
-											{jobExperience.startDate
-												? new Date(
-														jobExperience.startDate
-												  ).toLocaleDateString(
-														'en-US',
-														{
-															month: 'short',
-															year: 'numeric',
-														}
-												  )
-												: ''}{' '}
-											-{' '}
-											{jobExperience.endDate
-												? new Date(
-														jobExperience.endDate
-												  ).toLocaleDateString(
-														'en-US',
-														{
-															month: 'short',
-															year: 'numeric',
-														}
-												  )
-												: 'Present'}
-										</RText>
-									),
-								},
-								{
-									label: 'actions',
-									content: (
-										<Icon
-											name="pencil"
-											size="22"
-											className="cursor-pointer"
-											onClick={() => {
-												setSelectedExperience({
-													...jobExperience,
-													company:
+			{jobExperiences && jobExperiences?.length > 0 ? (
+				<RowTable
+					mobileWidth={840}
+					columns={[
+						{
+							label: 'Company',
+							hideOnMobile: false,
+							minWidth: isMobile ? 300 : 300,
+						},
+						{
+							label: 'Job title',
+							hideOnMobile: true,
+							minWidth: isMobile ? 100 : 300,
+						},
+						{
+							label: 'Tenure',
+							hideOnMobile: false,
+							minWidth: isMobile ? 100 : 300,
+						},
+						{ label: '', hideOnMobile: false },
+					]}
+					rows={
+						jobExperiences?.map((jobExperience) => {
+							const row = {
+								label: jobExperience.id,
+								cells: [
+									{
+										label: 'company',
+										content: (
+											<div className="flex items-center gap-3">
+												<Image
+													src={
+														jobExperience?.company
+															?.logoUrl as string
+													}
+													alt="Logo"
+													height={24}
+													width={24}
+												/>
+												<RText fontWeight="medium">
+													{
 														jobExperience.company
-															? {
-																	name: jobExperience
-																		.company
-																		.name,
-																	logo:
-																		jobExperience
+															?.name
+													}
+												</RText>
+											</div>
+										),
+									},
+									{
+										label: 'job title',
+										content: (
+											<RText color="secondary">
+												{jobExperience.title}
+											</RText>
+										),
+									},
+									{
+										label: 'tenue',
+										content: (
+											<RText fontWeight="light">
+												{jobExperience.startDate
+													? new Date(
+															jobExperience.startDate
+													  ).toLocaleDateString(
+															'en-US',
+															{
+																month: 'short',
+																year: 'numeric',
+															}
+													  )
+													: ''}{' '}
+												-{' '}
+												{jobExperience.endDate
+													? new Date(
+															jobExperience.endDate
+													  ).toLocaleDateString(
+															'en-US',
+															{
+																month: 'short',
+																year: 'numeric',
+															}
+													  )
+													: 'Present'}
+											</RText>
+										),
+									},
+									{
+										label: 'actions',
+										content: (
+											<Icon
+												name="pencil"
+												size="22"
+												className="cursor-pointer"
+												color="#64748b"
+												onClick={() => {
+													setSelectedExperience({
+														...jobExperience,
+														company:
+															jobExperience.company
+																? {
+																		name: jobExperience
 																			.company
-																			.logoUrl ||
-																		'',
-															  }
-															: {
-																	name: 'none',
-																	logo: '',
-															  },
-												});
-												setEditModalOpen(true);
-											}}
-										/>
-									),
-								},
-							],
-						};
-						return row;
-					}) ?? []
-				}
-			/>
+																			.name,
+																		logo:
+																			jobExperience
+																				.company
+																				.logoUrl ||
+																			'',
+																  }
+																: {
+																		name: 'none',
+																		logo: '',
+																  },
+													});
+													setEditModalOpen(true);
+												}}
+											/>
+										),
+									},
+								],
+							};
+							return row;
+						}) ?? []
+					}
+				/>
+			) : (
+				<div className="mt-[20px] flex w-full">
+					<RText color="tertiary">
+						Add past work experience to your profile.
+					</RText>
+				</div>
+			)}
 		</div>
 	);
 }
