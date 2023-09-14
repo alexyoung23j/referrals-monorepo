@@ -11,6 +11,8 @@ import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
 import { PDFRenderer, handleDownload } from '../ui/pdf';
 import { supabase } from '~/server/api/routers/supabase_bucket';
+import { RPopover } from '../ui/popover';
+import ActivityModal from '../modals/activity_modal';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
@@ -30,6 +32,8 @@ type LinkPageLayoutProps = {
 		endDate?: string;
 	}>;
 	children?: React.ReactNode;
+	showInfoModal: boolean;
+	setShowInfoModal: (open: boolean) => void;
 };
 
 const LinkPageMobile = ({
@@ -83,11 +87,13 @@ const LinkPageMobile = ({
 					}}
 				/>
 			</div>
-			<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
-				<Toaster />
-				{showRequests ? (
-					children
-				) : (
+			<Toaster />
+			{showRequests ? (
+				<div className="scrollbar flex h-full flex-col items-center">
+					{children}
+				</div>
+			) : (
+				<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
 					<div className="mt-2 flex w-full max-w-[360px] flex-col gap-6">
 						<div className="flex flex-col gap-3 px-[24px]">
 							{currentRoleTitle && (
@@ -222,7 +228,13 @@ const LinkPageMobile = ({
 								/>
 							</div>
 						)}
-						<div className="bg-background fixed bottom-[0px] left-[0px] flex w-full justify-center gap-4 pb-[16px] pt-[4px]">
+						<div
+							className="bg-background fixed bottom-[0px] left-[0px] flex w-full justify-center gap-8 pb-[16px] pt-[32px]"
+							style={{
+								background:
+									'linear-gradient(to bottom, rgba(255,255,255,0.0) 0%, rgba(255,255,255,1) 40%)',
+							}}
+						>
 							{twitterUrl && (
 								<Icon
 									name="twitter"
@@ -261,8 +273,8 @@ const LinkPageMobile = ({
 							)}
 						</div>
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 		</div>
 	);
 };
@@ -370,7 +382,7 @@ const LinkPageDesktop = ({
 							/>
 						)}
 					</div>
-					<div className="mt-[36px] flex flex-col gap-[24px]">
+					<div className="mt-[24px] flex flex-col gap-[24px]">
 						{(resumeUrl ||
 							(jobExperience && jobExperience.length > 0)) && (
 							<RTabsSection
@@ -504,10 +516,69 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 		query: '(max-width: 840px)',
 	});
 
+	const InfoModal = () => (
+		<ActivityModal
+			headerText="About"
+			sections={[
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText
+								fontSize={isMobile ? 'b1' : 'h3'}
+								fontWeight="light"
+							>{`COMPANYNAME simplifies the process of accessing job
+		seekers' information and contact details, making it
+		incredibly easy to provide referrals or share the
+		request within your network.`}</RText>
+							<RText
+								fontSize={isMobile ? 'b1' : 'h3'}
+								fontWeight="light"
+							>{`We provide all the details 
+		you need to facilitate a successful and speedy referral (along 
+		with the ability to set a reminder!) or pass along the request
+		to someone else with your own added context.`}</RText>
+							<RText
+								fontSize={isMobile ? 'b1' : 'h3'}
+								fontWeight="light"
+							>
+								You can create your own referral request link{' '}
+								<RText
+									fontSize={isMobile ? 'b1' : 'h3'}
+									fontWeight="normal"
+									className="cursor-pointer underline"
+									onClick={() => {
+										window.open(
+											`${process.env.NEXT_PUBLIC_SERVER_URL}`,
+											'_blank'
+										);
+									}}
+								>
+									here
+								</RText>
+								.
+							</RText>
+						</div>,
+					],
+				},
+			]}
+			open={props.showInfoModal}
+			onOpenChange={(open: boolean) => {
+				props.setShowInfoModal(open);
+			}}
+		/>
+	);
+
 	return isMobile ? (
-		<LinkPageMobile {...props} />
+		<>
+			<InfoModal />
+			<LinkPageMobile {...props} />
+		</>
 	) : (
-		<LinkPageDesktop {...props} />
+		<>
+			<InfoModal />
+			<LinkPageDesktop {...props} />
+		</>
 	);
 };
 

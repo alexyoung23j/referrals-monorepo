@@ -20,6 +20,9 @@ import {
 	UserProfile,
 } from '@prisma/client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { useMediaQuery } from 'react-responsive';
+import ActivityModal from '~/components/modals/activity_modal';
+import { useState } from 'react';
 
 const LinkPageLayout = dynamic(() => import('~/components/layouts/shareable'), {
 	ssr: false,
@@ -46,6 +49,11 @@ export default function LinkPage({
 		link,
 		requests,
 		userProfile,
+	});
+	const [showInfoModal, setShowInfoModal] = useState(false);
+
+	const isMobile = useMediaQuery({
+		query: '(max-width: 840px)',
 	});
 
 	const linkMessage = link.blurb ?? userProfile.defaultMessage ?? null;
@@ -101,53 +109,89 @@ export default function LinkPage({
 						: ('Present' as string),
 				})) ?? []
 			}
+			showInfoModal={showInfoModal}
+			setShowInfoModal={setShowInfoModal}
 		>
 			<div
+				className={`fixed ${
+					isMobile ? 'right-5 top-5' : 'right-10 top-10'
+				} cursor-pointer`}
+				onClick={() => {
+					setShowInfoModal(true);
+				}}
+			>
+				<Icon name="info" size="22" color="#64748b" />
+			</div>
+
+			<div
+				className={`to-background fixed bottom-0 z-50 flex max-h-fit items-center justify-center ${
+					isMobile
+						? 'w-[100vw] pb-[24px] pt-[50px]'
+						: 'w-[60vw] pb-[32px] pt-[80px]'
+				}`}
+				style={{
+					background:
+						'linear-gradient(to bottom, rgba(255,255,255,0.0) 0%, rgba(255,255,255,1) 40%)',
+				}}
+			>
+				<RButton size="lg" iconName="share">
+					Share {requests.length > 1 ? 'page' : 'request'}
+				</RButton>
+			</div>
+			<div
 				className={`${
-					linkMessage ? 'mt-[10vh]' : 'mt-[10vh]'
-				} flex h-full w-full flex-col gap-[28px] px-[104px] ${
+					isMobile ? 'mt-[3vh]' : 'mt-[10vh]'
+				} flex h-full w-full flex-col gap-[28px] ${
+					isMobile ? 'px-[24px]' : 'px-[104px]'
+				} ${
 					requests && requests.length > 1
 						? 'flex-col'
 						: 'flex-col-reverse justify-end'
-				} relative`}
+				} relative mb-[35vh]`}
 			>
-				<div className="fixed bottom-1">
-					<RButton iconName="link">Share</RButton>
-				</div>
-
-				<RText
-					fontWeight="normal"
-					color="secondary"
-				>{`If you can offer a referral, click “Refer ${userProfile.firstName}”. If someone in your network might be able to, click “Share request” and generate a new link to give them some context!`}</RText>
+				{!isMobile && (
+					<RText
+						fontWeight="normal"
+						color="secondary"
+					>{`If you can offer a referral, click “Refer ${userProfile.firstName}”. If someone in your network might be able to, click “Share request” and generate a new link to give them some context!`}</RText>
+				)}
 
 				{linkMessage && (
 					<div className="w-full">
 						<RCard elevation={requests.length > 1 ? 'md' : 'none'}>
-							<div className="flex flex-col gap-[16px] p-[12px]">
+							<div
+								className={`flex flex-col  ${
+									isMobile
+										? 'gap-[8px] p-[4px]'
+										: 'gap-[16px] p-[12px]'
+								}`}
+							>
 								<div className="flex items-center gap-3">
-									<Avatar className="h-[32px] w-[32px]">
-										<AvatarImage
-											src={
-												userProfile.avatarUrl as string
-											}
-											style={{
-												objectFit: 'cover',
-												objectPosition: 'top',
-											}}
-										/>
-										<AvatarFallback>
-											{userProfile.firstName
-												? (userProfile
-														.firstName[0] as string)
-												: ''}
-										</AvatarFallback>
-									</Avatar>
+									{userProfile.avatarUrl && (
+										<Avatar className="h-[32px] w-[32px]">
+											<AvatarImage
+												src={
+													userProfile.avatarUrl as string
+												}
+												style={{
+													objectFit: 'cover',
+													objectPosition: 'top',
+												}}
+											/>
+											<AvatarFallback>
+												{userProfile.firstName
+													? (userProfile
+															.firstName[0] as string)
+													: ''}
+											</AvatarFallback>
+										</Avatar>
+									)}
 									<RText fontSize="h2" fontWeight="medium">
-										From {userProfile.firstName}:
+										From {link.blurbAuthorName}:
 									</RText>
 								</div>
 								<RText
-									fontSize="h3"
+									fontSize={isMobile ? 'b1' : 'h3'}
 									color="secondary"
 									fontWeight="light"
 								>
@@ -158,7 +202,10 @@ export default function LinkPage({
 					</div>
 				)}
 				<div className="flex flex-col gap-[16px]">
-					<RText fontSize="h2" fontWeight="medium">
+					<RText
+						fontSize={isMobile ? 'h3' : 'h2'}
+						fontWeight="medium"
+					>
 						{requests.length > 1
 							? 'Referral Requests'
 							: 'Referral Request'}
@@ -169,7 +216,7 @@ export default function LinkPage({
 						columns={[
 							{
 								label: 'Company',
-								minWidth: 200,
+								minWidth: isMobile ? 75 : 200,
 								hideOnMobile: false,
 							},
 							{
@@ -304,7 +351,10 @@ export default function LinkPage({
 														variant="secondary"
 														size="md"
 													>
-														Share request
+														Share{' '}
+														{isMobile
+															? ''
+															: 'request'}
 													</RButton>
 													<RButton size="md">
 														Refer
