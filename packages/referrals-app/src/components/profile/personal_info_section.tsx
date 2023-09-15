@@ -50,7 +50,6 @@ export default function PersonalInfoSection() {
 		setAvatarLoading(true);
 
 		const { files } = event.target;
-		console.log('im here');
 
 		let file;
 		if (files && files[0]) {
@@ -89,7 +88,6 @@ export default function PersonalInfoSection() {
 		setAvatarLoading(false);
 		console.log('im here');
 	};
-	console.log({ avatarLoading });
 
 	useEffect(() => {
 		if (profileData?.firstName) {
@@ -128,6 +126,7 @@ export default function PersonalInfoSection() {
 		if (profileData?.experienceBlurb) {
 			setExperienceBlurb(profileData.experienceBlurb as string);
 		}
+		setAvatarLoading(false);
 	}, [profileData]);
 
 	if (!profileData) {
@@ -154,7 +153,6 @@ export default function PersonalInfoSection() {
 				currentLocation,
 				education,
 				defaultMessage,
-				avatarUrl: '',
 			});
 
 			setSavedStatus('Saved');

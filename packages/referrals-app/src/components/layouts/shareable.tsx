@@ -11,6 +11,8 @@ import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
 import { PDFRenderer, handleDownload } from '../ui/pdf';
 import { supabase } from '~/server/api/routers/supabase_bucket';
+import { RPopover } from '../ui/popover';
+import ActivityModal from '../modals/activity_modal';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
@@ -30,6 +32,8 @@ type LinkPageLayoutProps = {
 		endDate?: string;
 	}>;
 	children?: React.ReactNode;
+	showInfoModal: boolean;
+	setShowInfoModal: (open: boolean) => void;
 };
 
 const LinkPageMobile = ({
@@ -53,7 +57,13 @@ const LinkPageMobile = ({
 			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[12px] p-[24px]">
 				<div className="flex flex-col items-center gap-[8px]">
 					<Avatar className="h-[56px] w-[56px]">
-						<AvatarImage src={avatarUrl} />
+						<AvatarImage
+							src={avatarUrl}
+							style={{
+								objectFit: 'cover',
+								objectPosition: 'top',
+							}}
+						/>
 						<AvatarFallback>
 							{profileName[0] as string}
 						</AvatarFallback>
@@ -77,11 +87,13 @@ const LinkPageMobile = ({
 					}}
 				/>
 			</div>
-			<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
-				<Toaster />
-				{showRequests ? (
-					children
-				) : (
+			<Toaster />
+			{showRequests ? (
+				<div className="scrollbar flex h-full flex-col items-center">
+					{children}
+				</div>
+			) : (
+				<div className="scrollbar flex h-full flex-col items-center overflow-auto p-5">
 					<div className="mt-2 flex w-full max-w-[360px] flex-col gap-6">
 						<div className="flex flex-col gap-3 px-[24px]">
 							{currentRoleTitle && (
@@ -150,10 +162,10 @@ const LinkPageMobile = ({
 													logoUrl={
 														experience.companyLogoUrl
 													}
-													size={28}
+													size={32}
 												/>
 												<div className="flex flex-col gap-2">
-													<div className="flex gap-2">
+													<div className="flex items-center gap-2">
 														<RText
 															fontSize="b1"
 															fontWeight="medium"
@@ -171,6 +183,7 @@ const LinkPageMobile = ({
 														<RText
 															fontWeight="light"
 															color="tertiary"
+															fontSize="b2"
 														>{`${
 															experience.startDate
 														} - ${
@@ -215,7 +228,13 @@ const LinkPageMobile = ({
 								/>
 							</div>
 						)}
-						<div className="bg-background fixed bottom-[0px] left-[0px] flex w-full justify-center gap-4 pb-[16px] pt-[4px]">
+						<div
+							className="bg-background fixed bottom-[0px] left-[0px] flex w-full justify-center gap-8 pb-[16px] pt-[32px]"
+							style={{
+								background:
+									'linear-gradient(to bottom, rgba(255,255,255,0.0) 0%, rgba(255,255,255,1) 40%)',
+							}}
+						>
 							{twitterUrl && (
 								<Icon
 									name="twitter"
@@ -254,8 +273,8 @@ const LinkPageMobile = ({
 							)}
 						</div>
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 		</div>
 	);
 };
@@ -278,7 +297,7 @@ const LinkPageDesktop = ({
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
 				<div className="flex flex-col gap-[20px] pt-[10vh]">
-					<Avatar className="h-[112px] w-[112px]">
+					<Avatar className="h-[76px] w-[76px]">
 						<AvatarImage
 							src={avatarUrl}
 							style={{
@@ -288,12 +307,12 @@ const LinkPageDesktop = ({
 						/>
 						<AvatarFallback>{profileName[0]}</AvatarFallback>
 					</Avatar>
-					<RText fontSize="h1" fontWeight="medium">
+					<RText fontSize="h2" fontWeight="medium">
 						{profileName}
 					</RText>
 					<div className="flex flex-col gap-3">
 						{currentRoleTitle && (
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-3">
 								<Icon name="tag" size="16px" color="#64748b" />
 								<RText color="secondary" fontWeight="medium">
 									{currentRoleTitle}
@@ -301,7 +320,7 @@ const LinkPageDesktop = ({
 							</div>
 						)}
 						{location && (
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-3">
 								<Icon
 									name="map-pin"
 									size="16px"
@@ -313,7 +332,7 @@ const LinkPageDesktop = ({
 							</div>
 						)}
 						{education && (
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-3">
 								<Icon
 									name="graduation-cap"
 									size="16px"
@@ -363,7 +382,7 @@ const LinkPageDesktop = ({
 							/>
 						)}
 					</div>
-					<div className="mt-[36px] flex flex-col gap-[24px]">
+					<div className="mt-[24px] flex flex-col gap-[24px]">
 						{(resumeUrl ||
 							(jobExperience && jobExperience.length > 0)) && (
 							<RTabsSection
@@ -392,7 +411,7 @@ const LinkPageDesktop = ({
 																size={28}
 															/>
 															<div className="flex flex-col gap-2">
-																<div className="flex gap-2">
+																<div className="flex items-center gap-3">
 																	<RText
 																		fontSize="b1"
 																		fontWeight="medium"
@@ -411,6 +430,7 @@ const LinkPageDesktop = ({
 																	<RText
 																		fontWeight="light"
 																		color="tertiary"
+																		fontSize="b2"
 																	>{`${
 																		experience.startDate
 																	} - ${
@@ -483,7 +503,7 @@ const LinkPageDesktop = ({
 					</div>
 				</div>
 			</div>
-			<div className="flex h-screen w-full flex-col items-center overflow-y-auto p-[104px]">
+			<div className="flex h-screen w-full flex-col items-center overflow-y-auto">
 				{children}
 				<Toaster />
 			</div>
@@ -496,10 +516,61 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 		query: '(max-width: 840px)',
 	});
 
+	const InfoModal = () => (
+		<ActivityModal
+			headerText="Instructions"
+			sections={[
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText
+								fontSize={isMobile ? 'b1' : 'h3'}
+								fontWeight="light"
+							>{`Click 'Refer' for all the details needed for a quick referral, and optionally schedule an email reminder.
+							 Or, 'Share' the request with your network and add your own context.`}</RText>
+
+							<RText
+								fontSize={isMobile ? 'b1' : 'h3'}
+								fontWeight="light"
+							>
+								You can create your own referral request link{' '}
+								<RText
+									fontSize={isMobile ? 'b1' : 'h3'}
+									fontWeight="normal"
+									className="cursor-pointer underline"
+									onClick={() => {
+										window.open(
+											`${process.env.NEXT_PUBLIC_SERVER_URL}`,
+											'_blank'
+										);
+									}}
+								>
+									here
+								</RText>
+								.
+							</RText>
+						</div>,
+					],
+				},
+			]}
+			open={props.showInfoModal}
+			onOpenChange={(open: boolean) => {
+				props.setShowInfoModal(open);
+			}}
+		/>
+	);
+
 	return isMobile ? (
-		<LinkPageMobile {...props} />
+		<>
+			<InfoModal />
+			<LinkPageMobile {...props} />
+		</>
 	) : (
-		<LinkPageDesktop {...props} />
+		<>
+			<InfoModal />
+			<LinkPageDesktop {...props} />
+		</>
 	);
 };
 

@@ -87,6 +87,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 					link = await generateValidLink({
 						userId: session?.user.id as string,
 						createdByLoggedInUser: true,
+						blurbAuthorName: session?.user.name as string,
 					});
 				}
 
