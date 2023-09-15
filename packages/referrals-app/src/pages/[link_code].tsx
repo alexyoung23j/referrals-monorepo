@@ -45,18 +45,13 @@ export default function LinkPage({
 	requests,
 	userProfile,
 }: LinkPageProps) {
-	console.log({
-		link,
-		requests,
-		userProfile,
-	});
 	const [showInfoModal, setShowInfoModal] = useState(false);
 
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
 
-	const linkMessage = link.blurb ?? userProfile.defaultMessage ?? null;
+	const linkMessage = link?.blurb ?? userProfile?.defaultMessage ?? null;
 
 	return (
 		<LinkPageLayout
@@ -112,16 +107,32 @@ export default function LinkPage({
 			showInfoModal={showInfoModal}
 			setShowInfoModal={setShowInfoModal}
 		>
-			<div
-				className={`fixed ${
-					isMobile ? 'right-5 top-5' : 'right-10 top-10'
-				} cursor-pointer`}
-				onClick={() => {
-					setShowInfoModal(true);
-				}}
-			>
-				<Icon name="info" size="22" color="#64748b" />
-			</div>
+			{isMobile ? (
+				<div
+					className={`fixed right-5 top-5 flex cursor-pointer items-center gap-2`}
+					onClick={() => {
+						setShowInfoModal(true);
+					}}
+				>
+					<Icon name="info" size="18" color="#64748b" />
+				</div>
+			) : (
+				<div className="flex w-full justify-end p-8">
+					<div
+						className={`${
+							isMobile ? 'right-5 top-5' : 'right-10 top-10'
+						} flex cursor-pointer items-center gap-2`}
+						onClick={() => {
+							setShowInfoModal(true);
+						}}
+					>
+						<RText color="secondary" fontSize="b1">
+							How it works
+						</RText>
+						<Icon name="info" size="18" color="#64748b" />
+					</div>
+				</div>
+			)}
 
 			<div
 				className={`to-background fixed bottom-0 z-50 flex max-h-fit items-center justify-center ${
@@ -138,238 +149,239 @@ export default function LinkPage({
 					Share {requests.length > 1 ? 'page' : 'request'}
 				</RButton>
 			</div>
+
 			<div
 				className={`${
-					isMobile ? 'mt-[3vh]' : 'mt-[10vh]'
+					isMobile ? 'mt-[3vh]' : 'mt-[5vh]'
 				} flex h-full w-full flex-col gap-[28px] ${
 					isMobile ? 'px-[24px]' : 'px-[104px]'
-				} ${
-					requests && requests.length > 1
-						? 'flex-col'
-						: 'flex-col-reverse justify-end'
-				} relative mb-[35vh]`}
+				} relative mb-[35vh] flex-col`}
 			>
-				{!isMobile && (
-					<RText
-						fontWeight="normal"
-						color="secondary"
-					>{`If you can offer a referral, click “Refer ${userProfile.firstName}”. If someone in your network might be able to, click “Share request” and generate a new link to give them some context!`}</RText>
-				)}
-
-				{linkMessage && (
-					<div className="w-full">
-						<RCard elevation={requests.length > 1 ? 'md' : 'none'}>
-							<div
-								className={`flex flex-col  ${
-									isMobile
-										? 'gap-[8px] p-[4px]'
-										: 'gap-[16px] p-[12px]'
-								}`}
+				<RText
+					fontSize={isMobile ? 'h3' : 'h1point5'}
+					fontWeight="medium"
+				>
+					{`${
+						userProfile.firstName
+					} is on a referral hunt! Can you lend a hand${
+						isMobile
+							? '?'
+							: ` with ${
+									requests.length > 1
+										? 'these companies?'
+										: 'this company?'
+							  }`
+					}`}
+				</RText>
+				<div
+					className={`flex gap-[28px] ${
+						requests && requests.length > 1
+							? 'flex-col'
+							: 'flex-col-reverse justify-end'
+					} `}
+				>
+					{linkMessage && (
+						<div className="w-full">
+							<RCard
+								elevation={requests.length > 1 ? 'md' : 'none'}
 							>
-								<div className="flex items-center gap-3">
-									{userProfile.avatarUrl && (
-										<Avatar className="h-[32px] w-[32px]">
-											<AvatarImage
-												src={
-													userProfile.avatarUrl as string
-												}
-												style={{
-													objectFit: 'cover',
-													objectPosition: 'top',
-												}}
-											/>
-											<AvatarFallback>
-												{userProfile.firstName
-													? (userProfile
-															.firstName[0] as string)
-													: ''}
-											</AvatarFallback>
-										</Avatar>
-									)}
-									<RText fontSize="h2" fontWeight="medium">
-										From {link.blurbAuthorName}:
+								<div
+									className={`flex flex-col  ${
+										isMobile
+											? 'gap-[8px] p-[4px]'
+											: 'gap-[8px] p-[8px]'
+									}`}
+								>
+									<div className="flex items-center gap-3">
+										<RText
+											fontSize="h3"
+											fontWeight="medium"
+										>
+											From{' '}
+											{
+												link.blurbAuthorName?.split(
+													' '
+												)[0]
+											}
+											:
+										</RText>
+									</div>
+									<RText
+										fontSize={isMobile ? 'b2' : 'b1'}
+										color="secondary"
+										fontWeight="light"
+									>
+										{`"${linkMessage}"`}
 									</RText>
 								</div>
-								<RText
-									fontSize={isMobile ? 'b1' : 'h3'}
-									color="secondary"
-									fontWeight="light"
-								>
-									{`"${linkMessage}"`}
-								</RText>
-							</div>
-						</RCard>
-					</div>
-				)}
-				<div className="flex flex-col gap-[16px]">
-					<RText
-						fontSize={isMobile ? 'h3' : 'h2'}
-						fontWeight="medium"
-					>
-						{requests.length > 1
-							? 'Referral Requests'
-							: 'Referral Request'}
-					</RText>
-					<RowTable
-						cardElevation={requests.length > 1 ? 'none' : 'md'}
-						mobileWidth={1024}
-						columns={[
-							{
-								label: 'Company',
-								minWidth: isMobile ? 75 : 200,
-								hideOnMobile: false,
-							},
-							{
-								label: 'Job listing',
-								minWidth: 200,
-								hideOnMobile: true,
-							},
-							{
-								label: (
-									<RPopover
-										align="end"
-										trigger={
-											<div className="flex gap-2">
-												<RText
-													fontSize="b2"
-													color="tertiary"
-												>
-													Action
-												</RText>
-												<Icon
-													name="info"
-													size="12"
-													color="#94a3b8"
-												/>
-											</div>
-										}
-										content={
-											<div>
-												<RText
-													fontSize="b2"
-													color="secondary"
-												>
-													{`"Share request" allows you
+							</RCard>
+						</div>
+					)}
+					<div className="flex flex-col gap-[16px]">
+						<RowTable
+							cardElevation={requests.length > 1 ? 'none' : 'md'}
+							mobileWidth={1024}
+							columns={[
+								{
+									label: 'Company',
+									minWidth: isMobile ? 75 : 200,
+									hideOnMobile: false,
+								},
+								{
+									label: 'Job listing',
+									minWidth: 200,
+									hideOnMobile: true,
+								},
+								{
+									label: (
+										<RPopover
+											align="end"
+											trigger={
+												<div className="flex gap-2">
+													<RText
+														fontSize="b2"
+														color="tertiary"
+													>
+														Action
+													</RText>
+													<Icon
+														name="info"
+														size="12"
+														color="#94a3b8"
+													/>
+												</div>
+											}
+											content={
+												<div>
+													<RText
+														fontSize="b2"
+														color="secondary"
+													>
+														{`"Share request" allows you
 													to pass on this request to
 													someone else in your
 													network. "Refer" allows you
 													to refer this person to the
 													company.`}
-												</RText>
-											</div>
-										}
-									/>
-								),
-								hideOnMobile: false,
-								minWidth: 200,
-							},
-						]}
-						rows={
-							requests.map((request) => {
-								const row = {
-									label: request.id,
-									cells: [
-										{
-											content: (
-												<div className="flex items-center gap-3">
-													<Image
-														src={
-															request?.company
-																?.logoUrl as string
-														}
-														alt="Logo"
-														height={24}
-														width={24}
-													/>
-													<RText fontWeight="medium">
-														{request.company?.name}
 													</RText>
 												</div>
-											),
-											label: 'Company',
-										},
-										{
-											content: (
-												<div>
-													{request.jobPostingLink ? (
-														<div
-															className="flex cursor-pointer items-center gap-3"
-															onClick={() => {
-																if (
-																	request.jobPostingLink
-																) {
-																	window.open(
-																		request.jobPostingLink as string,
-																		'_blank'
-																	);
-																}
-															}}
-														>
-															<RText color="secondary">
-																{request.jobTitle &&
-																	(request
-																		.jobTitle
-																		.length >
-																	20
-																		? `${request.jobTitle.slice(
-																				0,
-																				20
-																		  )}...`
-																		: request.jobTitle)}
-																{!request.jobTitle &&
-																	request.jobPostingLink &&
-																	(request
-																		.jobPostingLink
-																		.length >
-																	15
-																		? `${request.jobPostingLink.slice(
-																				0,
-																				15
-																		  )}...`
-																		: request.jobPostingLink)}
-															</RText>
-															<Icon
-																name="link"
-																size="14"
-																color="#64748b"
-															/>
-														</div>
-													) : (
-														<RTag
-															label="Any open role"
-															color="default"
+											}
+										/>
+									),
+									hideOnMobile: false,
+									minWidth: 200,
+								},
+							]}
+							rows={
+								requests.map((request) => {
+									const row = {
+										label: request.id,
+										cells: [
+											{
+												content: (
+													<div className="flex items-center gap-3">
+														<Image
+															src={
+																request?.company
+																	?.logoUrl as string
+															}
+															alt="Logo"
+															height={24}
+															width={24}
 														/>
-													)}
-												</div>
-											),
-											label: 'jobTitle',
-										},
-										{
-											content: (
-												<div className="flex gap-2">
-													<RButton
-														variant="secondary"
-														size="md"
-													>
-														Share{' '}
-														{isMobile
-															? ''
-															: 'request'}
-													</RButton>
-													<RButton size="md">
-														Refer
-													</RButton>
-												</div>
-											),
-											label: 'action',
-										},
-									],
-								};
+														<RText fontWeight="medium">
+															{
+																request.company
+																	?.name
+															}
+														</RText>
+													</div>
+												),
+												label: 'Company',
+											},
+											{
+												content: (
+													<div>
+														{request.jobPostingLink ? (
+															<div
+																className="flex cursor-pointer items-center gap-3"
+																onClick={() => {
+																	if (
+																		request.jobPostingLink
+																	) {
+																		window.open(
+																			request.jobPostingLink as string,
+																			'_blank'
+																		);
+																	}
+																}}
+															>
+																<RText color="secondary">
+																	{request.jobTitle &&
+																		(request
+																			.jobTitle
+																			.length >
+																		20
+																			? `${request.jobTitle.slice(
+																					0,
+																					20
+																			  )}...`
+																			: request.jobTitle)}
+																	{!request.jobTitle &&
+																		request.jobPostingLink &&
+																		(request
+																			.jobPostingLink
+																			.length >
+																		15
+																			? `${request.jobPostingLink.slice(
+																					0,
+																					15
+																			  )}...`
+																			: request.jobPostingLink)}
+																</RText>
+																<Icon
+																	name="link"
+																	size="14"
+																	color="#64748b"
+																/>
+															</div>
+														) : (
+															<RTag
+																label="Any open role"
+																color="default"
+															/>
+														)}
+													</div>
+												),
+												label: 'jobTitle',
+											},
+											{
+												content: (
+													<div className="flex gap-2">
+														<RButton
+															variant="secondary"
+															size="md"
+														>
+															Share{' '}
+															{isMobile
+																? ''
+																: 'request'}
+														</RButton>
+														<RButton size="md">
+															Refer
+														</RButton>
+													</div>
+												),
+												label: 'action',
+											},
+										],
+									};
 
-								return row;
-							}) ?? []
-						}
-					/>
+									return row;
+								}) ?? []
+							}
+						/>
+					</div>
 				</div>
 			</div>
 		</LinkPageLayout>

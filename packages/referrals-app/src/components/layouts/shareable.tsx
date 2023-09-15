@@ -297,7 +297,7 @@ const LinkPageDesktop = ({
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
 				<div className="flex flex-col gap-[20px] pt-[10vh]">
-					<Avatar className="h-[112px] w-[112px]">
+					<Avatar className="h-[76px] w-[76px]">
 						<AvatarImage
 							src={avatarUrl}
 							style={{
@@ -307,7 +307,7 @@ const LinkPageDesktop = ({
 						/>
 						<AvatarFallback>{profileName[0]}</AvatarFallback>
 					</Avatar>
-					<RText fontSize="h1" fontWeight="medium">
+					<RText fontSize="h2" fontWeight="medium">
 						{profileName}
 					</RText>
 					<div className="flex flex-col gap-3">
@@ -518,7 +518,7 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 
 	const InfoModal = () => (
 		<ActivityModal
-			headerText="About"
+			headerText="Instructions"
 			sections={[
 				{
 					type: 'single-column',
@@ -527,17 +527,9 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 							<RText
 								fontSize={isMobile ? 'b1' : 'h3'}
 								fontWeight="light"
-							>{`COMPANYNAME simplifies the process of accessing job
-		seekers' information and contact details, making it
-		incredibly easy to provide referrals or share the
-		request within your network.`}</RText>
-							<RText
-								fontSize={isMobile ? 'b1' : 'h3'}
-								fontWeight="light"
-							>{`We provide all the details 
-		you need to facilitate a successful and speedy referral (along 
-		with the ability to set a reminder!) or pass along the request
-		to someone else with your own added context.`}</RText>
+							>{`Click 'Refer' for all the details needed for a quick referral, and optionally schedule an email reminder.
+							 Or, 'Share' the request with your network and add your own context.`}</RText>
+
 							<RText
 								fontSize={isMobile ? 'b1' : 'h3'}
 								fontWeight="light"

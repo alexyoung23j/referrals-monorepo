@@ -118,7 +118,7 @@ export const RowTable = ({
 					return (
 						<RCard
 							key={row.label}
-							className={`border-border shadow-${cardElevation} flex w-full flex-row items-center justify-between rounded-[6px] border pb-[16px] pl-[32px] pr-[32px] pt-[16px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]`}
+							className={`border-border shadow-${cardElevation} flex w-full flex-row items-center justify-between rounded-[6px] border py-[12px] pl-[32px] pr-[32px] max-sm:pb-[6px]  max-sm:pl-[16px] max-sm:pr-[16px] max-sm:pt-[6px]`}
 						>
 							<div className="flex items-center">
 								{row.cells

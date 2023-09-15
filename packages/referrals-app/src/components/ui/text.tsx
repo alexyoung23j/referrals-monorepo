@@ -1,5 +1,5 @@
 interface TextProps {
-	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2';
+	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2' | 'h1point5';
 	color?: 'primary' | 'secondary' | 'tertiary' | 'red';
 	fontWeight?: 'bold' | 'normal' | 'medium' | 'light';
 	children: React.ReactNode;
@@ -9,6 +9,7 @@ interface TextProps {
 
 const fontSizeMap = {
 	h1: 'text-[24px]',
+	h1point5: 'text-[20px]',
 	h2: 'text-[18px]',
 	h3: 'text-[16px]',
 	b1: 'text-[14px] leading-[18px]',
