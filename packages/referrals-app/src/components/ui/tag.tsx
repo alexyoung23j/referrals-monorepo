@@ -25,12 +25,14 @@ export const RTag = ({
 	return (
 		<div
 			onClick={onClick}
-			className={`${colorMap[color]} m-top-[5px] m-bottom-[5px] flex h-[24px] max-w-fit cursor-pointer flex-row items-center gap-[5px] rounded-[6px] border-[1px] px-2 `}
+			className={`${colorMap[color]} m-top-[5px] m-bottom-[5px] flex h-[24px] max-w-fit cursor-pointer flex-row items-center justify-center gap-[5px] rounded-[6px] border-[1px] px-2 `}
 		>
 			{leftContent && leftContent}
-			<RText fontSize="b1" fontWeight="normal" color="secondary">
+
+			<div className="text-textSecondary flex items-center justify-center text-[14px] leading-[0px]">
 				{label}
-			</RText>
+			</div>
+
 			{rightContent && rightContent}
 		</div>
 	);

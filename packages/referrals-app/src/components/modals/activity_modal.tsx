@@ -20,8 +20,8 @@ type ActivityModalProps = {
 	sections?:
 		| Array<{
 				type: 'single-column' | 'two-column';
-				content: React.ReactNode[];
-		  }>
+				content: React.ReactNode[] | null;
+		  } | null>
 		| null[];
 };
 

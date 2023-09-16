@@ -17,12 +17,14 @@ import {
 	JobExperience,
 	Link,
 	ReferralRequest,
+	User,
 	UserProfile,
 } from '@prisma/client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useMediaQuery } from 'react-responsive';
-import ActivityModal from '~/components/modals/activity_modal';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import ShareModal from '~/components/link_page/share_modal';
 
 const LinkPageLayout = dynamic(() => import('~/components/layouts/shareable'), {
 	ssr: false,
@@ -37,6 +39,7 @@ type LinkPageProps = {
 	>;
 	userProfile: UserProfile & {
 		JobExperience: Array<JobExperience & { company: Company }>;
+		user: User;
 	};
 };
 
@@ -46,12 +49,28 @@ export default function LinkPage({
 	userProfile,
 }: LinkPageProps) {
 	const [showInfoModal, setShowInfoModal] = useState(false);
+	const router = useRouter();
 
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
 
 	const linkMessage = link?.blurb ?? userProfile?.defaultMessage ?? null;
+
+	const { query } = useRouter();
+	const { ref_id, all, share } = query;
+
+	const [shareModalOpen, setShareModalOpen] = useState(share === 'true');
+	const [selectedRequest, setSelectedRequest] = useState<
+		| null
+		| (ReferralRequest & {
+				company: Company;
+		  })
+	>(
+		ref_id
+			? requests.find((request) => request.id === ref_id) || null
+			: null
+	);
 
 	return (
 		<LinkPageLayout
@@ -107,6 +126,15 @@ export default function LinkPage({
 			showInfoModal={showInfoModal}
 			setShowInfoModal={setShowInfoModal}
 		>
+			<ShareModal
+				isOpen={shareModalOpen}
+				onOpenChange={(open) => {
+					setShareModalOpen(open);
+				}}
+				referralRequest={selectedRequest}
+				isAllRequests={false}
+				userProfile={userProfile}
+			/>
 			{isMobile ? (
 				<div
 					className={`fixed right-5 top-5 flex cursor-pointer items-center gap-2`}
@@ -361,6 +389,14 @@ export default function LinkPage({
 														<RButton
 															variant="secondary"
 															size="md"
+															onClick={() => {
+																setSelectedRequest(
+																	request
+																);
+																setShareModalOpen(
+																	true
+																);
+															}}
 														>
 															Share{' '}
 															{isMobile
@@ -417,6 +453,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 					endDate: 'desc',
 				},
 			},
+			user: true,
 		},
 	});
 
