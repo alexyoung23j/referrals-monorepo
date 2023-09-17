@@ -18,6 +18,23 @@ import { RInput } from '../ui/input';
 import Spinner from '../ui/spinner';
 import { RTag } from '../ui/tag';
 import Image from 'next/image';
+import { RButton } from '../ui/button';
+import { toast } from '../ui/use-toast';
+
+const defaultEmailText = (
+	link: string,
+	name: string,
+	requesterName: string,
+	isAllRequests: boolean
+) => {
+	return `Hey [[Contact name]],\n\nI was wondering if you'd be able to help ${requesterName} get a referral to the job${
+		isAllRequests ? 's' : ''
+	} listed here: https://${link}. I would really appreciate it! \n\nThanks,\n${name}`;
+};
+
+const defaultDMText = (link: string, name: string) => {
+	return `Hey [[Contact name]], I'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: https://${link}. I would really appreciate it, thanks!`;
+};
 
 export default function ShareModal({
 	isOpen,
@@ -25,6 +42,8 @@ export default function ShareModal({
 	referralRequest,
 	isAllRequests,
 	userProfile,
+	pageViewerName,
+	setPageViewerName,
 }: {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
@@ -38,14 +57,14 @@ export default function ShareModal({
 		JobExperience: Array<JobExperience & { company: Company }>;
 		user: User;
 	};
+	pageViewerName?: string;
+	setPageViewerName: (name: string) => void;
 }) {
 	const [shareableLink, setShareableLink] = useState<Link | null>(null);
 	const [generatedLink, setGeneratedLink] = useState<Link | null>(null);
 	const [defaultLink, setDefaultLink] = useState<Link | null>(null);
 	const [shareableMessage, setShareableMessage] = useState<string>('');
 	const [name, setName] = useState<string>('');
-	const [generatedLinkAlreadyExists, setGeneratedLinkAlreadyExists] =
-		useState<boolean>(false);
 
 	const getLinkMutation = api.links.getLinkMutation.useMutation();
 	const generateLinkMutation = api.links.createLink.useMutation();
@@ -68,7 +87,12 @@ export default function ShareModal({
 					setShareableLink(linkData);
 					setDefaultLink(linkData);
 					setShareableMessage(linkData?.blurb as string);
-					setName(linkData?.blurbAuthorName as string);
+					setName(
+						linkData.isDefaultLinkForRequest
+							? pageViewerName ?? ''
+							: linkData?.blurbAuthorName ?? pageViewerName ?? ''
+					);
+					// setName(linkData?.blurbAuthorName as string);
 
 					if (linkId !== undefined) {
 						setGeneratedLink(linkData);
@@ -114,14 +138,16 @@ export default function ShareModal({
 
 	useEffect(() => {
 		const updateLinkAsync = async () => {
-			try {
-				await updateLink.mutateAsync({
-					id: generatedLink?.id as string,
-					blurb: shareableMessage ? shareableMessage : undefined,
-					blurbAuthorName: name ? (name as string) : undefined,
-				});
-			} catch (e) {
-				console.log(e);
+			if (generatedLink) {
+				try {
+					await updateLink.mutateAsync({
+						id: generatedLink?.id as string,
+						blurb: shareableMessage ? shareableMessage : undefined,
+						blurbAuthorName: name ? (name as string) : undefined,
+					});
+				} catch (e) {
+					console.log(e);
+				}
 			}
 		};
 
@@ -165,7 +191,10 @@ export default function ShareModal({
 						<RInput
 							placeholder="enter your name"
 							value={name}
-							onChange={(e) => setName(e.target.value)}
+							onChange={(e) => {
+								setName(e.target.value);
+								setPageViewerName(e.target.value);
+							}}
 						/>
 					}
 				/>,
@@ -205,6 +234,42 @@ export default function ShareModal({
 										<Spinner size="small" />
 									)}
 								</div>,
+								<div key="email">
+									{shareableLink ? (
+										<RTextarea
+											readOnly
+											value={defaultEmailText(
+												`${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${shareableLink?.id}`,
+												name,
+												userProfile.firstName as string,
+												false
+											)}
+											className="h-[180px] text-[#334155]"
+											copyEnabled
+											highlighted
+										/>
+									) : (
+										<Spinner size="small" />
+									)}
+								</div>,
+								<div key="dm">
+									{shareableLink ? (
+										<RTextarea
+											readOnly
+											value={defaultEmailText(
+												`${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${shareableLink?.id}`,
+												name,
+												userProfile.firstName as string,
+												false
+											)}
+											className="h-[180px] text-[#334155]"
+											copyEnabled
+											highlighted
+										/>
+									) : (
+										<Spinner size="small" />
+									)}
+								</div>,
 							]}
 						/>
 					}
@@ -236,14 +301,34 @@ export default function ShareModal({
 							: (referralRequest?.jobTitle as string)
 					}
 					rightContent={
-						<Image
-							src={referralRequest?.company?.logoUrl as string}
-							alt="Logo"
-							height={14}
-							width={14}
-						/>
+						<div className="mt-[3px]">
+							<Image
+								src={
+									referralRequest?.company?.logoUrl as string
+								}
+								alt="Logo"
+								height={14}
+								width={14}
+							/>
+						</div>
 					}
 				/>
+			}
+			bottomRowContent={
+				<RButton
+					iconName="copy"
+					onClick={() => {
+						navigator.clipboard.writeText(
+							`https://${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${shareableLink?.id}`
+						);
+						toast({
+							title: 'Copied link to request!',
+							duration: 2000,
+						});
+					}}
+				>
+					Copy link
+				</RButton>
 			}
 		/>
 	);

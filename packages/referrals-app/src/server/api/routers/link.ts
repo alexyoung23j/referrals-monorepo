@@ -25,7 +25,7 @@ export const linkRouter = createTRPCRouter({
 			return newLink;
 		}),
 
-	updateLink: protectedProcedure
+	updateLink: publicProcedure
 		.input(
 			z.object({
 				id: z.string(),

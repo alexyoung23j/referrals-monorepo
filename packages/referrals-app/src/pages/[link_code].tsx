@@ -71,6 +71,7 @@ export default function LinkPage({
 			? requests.find((request) => request.id === ref_id) || null
 			: null
 	);
+	const [pageViewerName, setPageViewerName] = useState('');
 
 	return (
 		<LinkPageLayout
@@ -134,6 +135,8 @@ export default function LinkPage({
 				referralRequest={selectedRequest}
 				isAllRequests={false}
 				userProfile={userProfile}
+				pageViewerName={pageViewerName}
+				setPageViewerName={setPageViewerName}
 			/>
 			{isMobile ? (
 				<div
