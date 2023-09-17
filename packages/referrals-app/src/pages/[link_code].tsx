@@ -72,6 +72,8 @@ export default function LinkPage({
 			: null
 	);
 	const [pageViewerName, setPageViewerName] = useState('');
+	const [shareModalIsAllRequests, setShareModalIsAllRequests] =
+		useState(false);
 
 	return (
 		<LinkPageLayout
@@ -131,12 +133,16 @@ export default function LinkPage({
 				isOpen={shareModalOpen}
 				onOpenChange={(open) => {
 					setShareModalOpen(open);
+					if (!open) {
+						setSelectedRequest(null);
+					}
 				}}
 				referralRequest={selectedRequest}
-				isAllRequests={false}
+				isAllRequests={shareModalIsAllRequests}
 				userProfile={userProfile}
 				pageViewerName={pageViewerName}
 				setPageViewerName={setPageViewerName}
+				existingPageLink={link}
 			/>
 			{isMobile ? (
 				<div
@@ -176,7 +182,21 @@ export default function LinkPage({
 						'linear-gradient(to bottom, rgba(255,255,255,0.0) 0%, rgba(255,255,255,1) 40%)',
 				}}
 			>
-				<RButton size="lg" iconName="share">
+				<RButton
+					size="lg"
+					iconName="share"
+					onClick={() => {
+						if (requests.length > 1) {
+							setShareModalIsAllRequests(true);
+							setShareModalOpen(true);
+						} else if (requests.length === 1) {
+							if (requests[0]) {
+								setSelectedRequest(requests[0]);
+								setShareModalOpen(true);
+							}
+						}
+					}}
+				>
 					Share {requests.length > 1 ? 'page' : 'request'}
 				</RButton>
 			</div>
@@ -393,6 +413,9 @@ export default function LinkPage({
 															variant="secondary"
 															size="md"
 															onClick={() => {
+																setShareModalIsAllRequests(
+																	false
+																);
 																setSelectedRequest(
 																	request
 																);

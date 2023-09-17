@@ -44,6 +44,7 @@ export default function ShareModal({
 	userProfile,
 	pageViewerName,
 	setPageViewerName,
+	existingPageLink,
 }: {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
@@ -59,6 +60,7 @@ export default function ShareModal({
 	};
 	pageViewerName?: string;
 	setPageViewerName: (name: string) => void;
+	existingPageLink: Link;
 }) {
 	const [shareableLink, setShareableLink] = useState<Link | null>(null);
 	const [generatedLink, setGeneratedLink] = useState<Link | null>(null);
@@ -78,33 +80,39 @@ export default function ShareModal({
 				);
 				const linkId = storedLinkId ? storedLinkId : undefined;
 
-				try {
-					const linkData = await getLinkMutation.mutateAsync({
-						referralRequestId: referralRequest?.id as string,
-						linkId: linkId,
-					});
+				if (isAllRequests) {
+					setShareableLink(existingPageLink);
+					setDefaultLink(existingPageLink);
+				} else {
+					try {
+						const linkData = await getLinkMutation.mutateAsync({
+							referralRequestId: referralRequest?.id as string,
+							linkId: linkId,
+						});
 
-					setShareableLink(linkData);
-					setDefaultLink(linkData);
-					setShareableMessage(linkData?.blurb as string);
-					setName(
-						linkData.isDefaultLinkForRequest
-							? pageViewerName ?? ''
-							: linkData?.blurbAuthorName ?? pageViewerName ?? ''
-					);
-					// setName(linkData?.blurbAuthorName as string);
+						setShareableLink(linkData);
+						setDefaultLink(linkData);
+						setShareableMessage(linkData?.blurb as string);
+						setName(
+							linkData.isDefaultLinkForRequest
+								? pageViewerName ?? ''
+								: linkData?.blurbAuthorName ??
+										pageViewerName ??
+										''
+						);
 
-					if (linkId !== undefined) {
-						setGeneratedLink(linkData);
-					}
-				} catch (e) {}
+						if (linkId !== undefined) {
+							setGeneratedLink(linkData);
+						}
+					} catch (e) {}
+				}
 			}
 		};
 
 		if (isOpen) {
 			initialFetchLink();
 		}
-	}, [isOpen]);
+	}, [isOpen, isAllRequests]);
 
 	useEffect(() => {
 		const handleMessageChange = async () => {
@@ -117,7 +125,9 @@ export default function ShareModal({
 						await generateLinkMutation.mutateAsync({
 							userId: userProfile.user.id,
 							createdByLoggedInUser: false,
-							referralRequestId: referralRequest?.id as string,
+							referralRequestId: referralRequest
+								? (referralRequest?.id as string)
+								: undefined,
 						});
 
 					setGeneratedLink(newGeneratedLink);
@@ -168,7 +178,7 @@ export default function ShareModal({
 				<RLabeledSection
 					key="message"
 					label="Custom Message"
-					subtitle={`Include a message to give some context about ${userProfile.firstName}`}
+					subtitle={`Include a message to provide some context about ${userProfile.firstName}.`}
 					body={
 						<RTextarea
 							placeholder="enter optional message"
@@ -212,7 +222,7 @@ export default function ShareModal({
 				<RLabeledSection
 					key="sharing"
 					label="Sharing options"
-					subtitle="Pass on the request without any extra typing 🙏"
+					subtitle="Pass on the request without any extra typing 🙏."
 					body={
 						<RTabsSection
 							tabs={[
@@ -290,29 +300,36 @@ export default function ShareModal({
 					setDefaultLink(null);
 				}
 			}}
-			headerText="Share referral request"
-			subtitleText={`Pass along ${userProfile.firstName}'s request to someone in your network with a special link.`}
+			headerText={`Share referral request${isAllRequests ? 's' : ''}`}
+			subtitleText={`Pass along ${userProfile.firstName}'s request${
+				isAllRequests ? 's' : ''
+			} to someone in your network with a special link.`}
 			sections={sections}
 			headerRightContent={
-				<RTag
-					label={
-						referralRequest?.isAnyOpenRole
-							? 'any open role'
-							: (referralRequest?.jobTitle as string)
-					}
-					rightContent={
-						<div className="mt-[3px]">
-							<Image
-								src={
-									referralRequest?.company?.logoUrl as string
-								}
-								alt="Logo"
-								height={14}
-								width={14}
-							/>
-						</div>
-					}
-				/>
+				isAllRequests ? (
+					<RTag label="All referral requests" />
+				) : (
+					<RTag
+						label={
+							referralRequest?.isAnyOpenRole
+								? 'any open role'
+								: (referralRequest?.jobTitle as string)
+						}
+						leftContent={
+							<div className="mt-[3px]">
+								<Image
+									src={
+										referralRequest?.company
+											?.logoUrl as string
+									}
+									alt="Logo"
+									height={14}
+									width={14}
+								/>
+							</div>
+						}
+					/>
+				)
 			}
 			bottomRowContent={
 				<RButton
