@@ -9,10 +9,6 @@ interface LinkInput extends Partial<Link> {
 }
 
 export const generateValidLink = async (linkInput: LinkInput) => {
-	if (!linkInput.userId) {
-		throw new Error('userId is required');
-	}
-
 	let attempts = 0;
 	while (attempts < 3) {
 		const id = nanoid(6);

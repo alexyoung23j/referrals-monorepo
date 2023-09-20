@@ -296,7 +296,7 @@ const LinkPageDesktop = ({
 	return (
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
-				<div className="flex flex-col gap-[20px] pt-[10vh]">
+				<div className="flex flex-col gap-[20px] pt-[15vh]">
 					<Avatar className="h-[76px] w-[76px]">
 						<AvatarImage
 							src={avatarUrl}
