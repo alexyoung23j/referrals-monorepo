@@ -25,6 +25,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import ShareModal from '~/components/link_page/share_modal';
+import ReferModal from '~/components/link_page/refer_modal';
 
 const LinkPageLayout = dynamic(() => import('~/components/layouts/shareable'), {
 	ssr: false,
@@ -74,6 +75,8 @@ export default function LinkPage({
 	const [pageViewerName, setPageViewerName] = useState('');
 	const [shareModalIsAllRequests, setShareModalIsAllRequests] =
 		useState(false);
+
+	const [referModalOpen, setReferModalOpen] = useState(false);
 
 	return (
 		<LinkPageLayout
@@ -136,6 +139,18 @@ export default function LinkPage({
 					if (!open) {
 						setSelectedRequest(null);
 					}
+				}}
+				referralRequest={selectedRequest}
+				isAllRequests={shareModalIsAllRequests}
+				userProfile={userProfile}
+				pageViewerName={pageViewerName}
+				setPageViewerName={setPageViewerName}
+				existingPageLink={link}
+			/>
+			<ReferModal
+				isOpen={referModalOpen}
+				onOpenChange={(open) => {
+					setReferModalOpen(open);
 				}}
 				referralRequest={selectedRequest}
 				isAllRequests={shareModalIsAllRequests}
@@ -429,7 +444,20 @@ export default function LinkPage({
 																? ''
 																: 'request'}
 														</RButton>
-														<RButton size="md">
+														<RButton
+															size="md"
+															onClick={() => {
+																setShareModalIsAllRequests(
+																	false
+																);
+																setSelectedRequest(
+																	request
+																);
+																setReferModalOpen(
+																	true
+																);
+															}}
+														>
 															Refer
 														</RButton>
 													</div>

@@ -6,6 +6,7 @@ type RTagProps = {
 	leftContent?: React.ReactNode;
 	rightContent?: React.ReactNode;
 	onClick?: () => void;
+	className?: string;
 };
 
 const colorMap = {
@@ -21,11 +22,12 @@ export const RTag = ({
 	leftContent,
 	rightContent,
 	onClick,
+	className,
 }: RTagProps) => {
 	return (
 		<div
 			onClick={onClick}
-			className={`${colorMap[color]} m-top-[5px] m-bottom-[5px] flex h-[24px] max-w-fit cursor-pointer flex-row items-center justify-center gap-[5px] rounded-[6px] border-[1px] px-2 `}
+			className={`${className} ${colorMap[color]} m-top-[5px] m-bottom-[5px] flex h-[24px] max-w-fit cursor-pointer flex-row items-center justify-center gap-[5px] rounded-[6px] border-[1px] px-2 `}
 		>
 			{leftContent && leftContent}
 

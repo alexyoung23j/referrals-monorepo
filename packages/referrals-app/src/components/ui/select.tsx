@@ -139,7 +139,11 @@ export const RSelector = ({
 			</SelectTrigger>
 			<SelectContent>
 				{items.map((item) => (
-					<SelectItem key={item.value} value={item.value}>
+					<SelectItem
+						key={item.value}
+						value={item.value}
+						className="cursor-pointer"
+					>
 						{item.content}
 					</SelectItem>
 				))}
