@@ -178,7 +178,7 @@ export default function ShareModal({
 				<RLabeledSection
 					key="message"
 					label="Custom Message"
-					subtitle={`Include a message to provide some context about ${userProfile.firstName}.`}
+					subtitle={`Include a message to provide some context about ${userProfile.firstName}. This will appear in the link you share.`}
 					body={
 						<RTextarea
 							placeholder="enter optional message"
@@ -241,7 +241,9 @@ export default function ShareModal({
 											highlighted
 										/>
 									) : (
-										<Spinner size="small" />
+										<div className="flex w-full items-center justify-center">
+											<Spinner size="small" />
+										</div>
 									)}
 								</div>,
 								<div key="email">
@@ -259,7 +261,9 @@ export default function ShareModal({
 											highlighted
 										/>
 									) : (
-										<Spinner size="small" />
+										<div className="flex w-full items-center justify-center">
+											<Spinner size="small" />
+										</div>
 									)}
 								</div>,
 								<div key="dm">
@@ -277,7 +281,9 @@ export default function ShareModal({
 											highlighted
 										/>
 									) : (
-										<Spinner size="small" />
+										<div className="flex w-full items-center justify-center">
+											<Spinner size="small" />
+										</div>
 									)}
 								</div>,
 							]}

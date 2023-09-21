@@ -24,6 +24,31 @@ import { RSelector } from '../ui/select';
 import { RText } from '../ui/text';
 import { useMediaQuery } from 'react-responsive';
 import { RCalendar } from '../ui/calendar';
+import { handleDownload } from '../ui/pdf';
+import { z } from 'zod';
+
+const buildIntroMessage = ({
+	blurb,
+	firstName,
+	jobTitle,
+	companyName,
+	jobPostingLink,
+	isAnyOpenRole,
+}: {
+	blurb: string;
+	firstName: string;
+	jobTitle: string;
+	companyName: string;
+	jobPostingLink: string;
+	isAnyOpenRole: boolean;
+}) => {
+	return `Hey [[contact name]], \n\nI'd like to introduce ${firstName}, who is interested in ${
+		isAnyOpenRole ? 'a' : 'the ' + jobTitle
+	} role at ${companyName}${
+		isAnyOpenRole ? '' : ` (${jobPostingLink})`
+	}. I've CC'd ${firstName} on this email and attached a current resume. Here's a little bit about ${firstName}:\n\n"${blurb}"\n\nI'll let you take it from here!\n\nThanks,\n[[your name]]
+	`;
+};
 
 const RemindSection = ({
 	link,
@@ -131,6 +156,7 @@ const RemindSection = ({
 const ChoicesSection = ({
 	referralRequest,
 	userProfile,
+	setSelectedReferralOption,
 }: {
 	referralRequest:
 		| null
@@ -141,6 +167,7 @@ const ChoicesSection = ({
 		JobExperience: Array<JobExperience & { company: Company }>;
 		user: User;
 	};
+	setSelectedReferralOption: (value: string | null) => void;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
@@ -200,7 +227,7 @@ const ChoicesSection = ({
 												} items-start`}
 											>
 												<RText>
-													{`${userProfile.firstName} connects with recruiter via email`}
+													{`Connect ${userProfile.firstName} with recruiter/HR`}
 												</RText>
 											</div>
 										),
@@ -232,7 +259,7 @@ const ChoicesSection = ({
 												} items-start`}
 											>
 												<RText>
-													{`I want to connect with ${userProfile.firstName} before referring`}
+													{`I want to connect with ${userProfile.firstName} first`}
 												</RText>
 											</div>
 										),
@@ -254,6 +281,9 @@ const ChoicesSection = ({
 										</div>
 									),
 								}}
+								onSelect={(value) => {
+									setSelectedReferralOption(value);
+								}}
 							/>
 						}
 					/>
@@ -263,6 +293,67 @@ const ChoicesSection = ({
 	];
 };
 
+interface InfoSectionProps {
+	firstName: string;
+	publicEmail: string;
+	experienceBlurb: string;
+	onClickDownload?: () => void;
+	includeBlurb?: boolean;
+}
+
+const InfoSection: React.FC<InfoSectionProps> = ({
+	firstName,
+	publicEmail,
+	experienceBlurb,
+	onClickDownload,
+	includeBlurb = true,
+}) => {
+	return (
+		<RLabeledSection
+			label={`${firstName}'s information`}
+			subtitle="Quick access to the info you need to get this referral submitted."
+			body={
+				<div className="flex flex-col gap-4">
+					<div className="flex flex-col justify-between gap-4 sm:flex-row">
+						<RInput
+							readOnly
+							copyEnabled
+							value={publicEmail}
+							className="min-w-[240px]"
+							highlighted
+						/>
+						<RButton
+							variant="secondary"
+							iconName="download"
+							onClick={onClickDownload}
+						>
+							Download Resume
+						</RButton>
+					</div>
+					{includeBlurb && (
+						<div className="flex flex-col gap-1">
+							<RText fontSize="b2" color="tertiary">
+								Blurb
+							</RText>
+							<RTextarea
+								value={
+									experienceBlurb
+										? experienceBlurb
+										: 'No blurb set'
+								}
+								readOnly
+								copyEnabled
+								highlighted
+								className="text-textSecondary h-[140px]"
+							/>
+						</div>
+					)}
+				</div>
+			}
+		/>
+	);
+};
+
 const mainBody = ({
 	link,
 	name,
@@ -270,6 +361,18 @@ const mainBody = ({
 	isAllRequests,
 	referNow,
 	selectedReferralOption,
+	referralRequest,
+	userProfile,
+	emailAddress,
+	setEmailAddress,
+	setPageViewerName,
+	messageToRequester,
+	setMessageToRequester,
+	specialJobPostingLink,
+	setSpecialJobPostingLink,
+	meetingScheduleLink,
+	setMeetingScheduleLink,
+	isMobile,
 }: {
 	link: Link;
 	name: string;
@@ -277,11 +380,491 @@ const mainBody = ({
 	isAllRequests: boolean;
 	referNow: boolean;
 	selectedReferralOption: string | null;
+	referralRequest:
+		| null
+		| (ReferralRequest & {
+				company: Company;
+		  });
+	userProfile: UserProfile & {
+		JobExperience: Array<JobExperience & { company: Company }>;
+		user: User;
+	};
+	emailAddress: string;
+	setEmailAddress: (email: string) => void;
+	setPageViewerName: (name: string) => void;
+	messageToRequester: string;
+	setMessageToRequester: (message: string) => void;
+	specialJobPostingLink: string;
+	setSpecialJobPostingLink: (link: string) => void;
+	meetingScheduleLink: string;
+	setMeetingScheduleLink: (link: string) => void;
+	isMobile: boolean;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
 }[] => {
-	return [{ type: 'single-column', content: [<div key="1"></div>] }];
+	if (!referNow) {
+		return [];
+	}
+
+	switch (selectedReferralOption) {
+		case ReferralTypeOptions.CONTACT: {
+			return [
+				{
+					type: 'two-column',
+					content: [
+						<div key="name" className="w-full">
+							<RLabeledSection
+								label="Your Name*"
+								body={
+									<RInput
+										value={requesterName}
+										onInput={(e) => {
+											setPageViewerName(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter name"
+									/>
+								}
+							/>
+						</div>,
+						<div key="email" className="w-full">
+							<RLabeledSection
+								label="Your Email*"
+								body={
+									<RInput
+										value={emailAddress}
+										onInput={(e) => {
+											setEmailAddress(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter email"
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Scheduling link"
+								subtitle="Include an optional scheduling link to meet."
+								body={
+									<RInput
+										placeholder="enter link, e.g. calendly.com/.."
+										value={meetingScheduleLink}
+										onInput={(e) => {
+											setMeetingScheduleLink(
+												e.currentTarget.value
+											);
+										}}
+										validationSchema={z.string().url()}
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Message*"
+								subtitle={`A message to ${userProfile.firstName}, included in the email.`}
+								body={
+									<RTextarea
+										value={messageToRequester}
+										onInput={(e) => {
+											setMessageToRequester(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="type your message here"
+										required
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="1"
+							className="flex flex-col items-center gap-3 sm:flex-row"
+						>
+							<RInput
+								readOnly
+								highlighted
+								copyEnabled
+								value={userProfile.publicEmail as string}
+								className="min-w-[240px]"
+							/>
+							<RText
+								fontSize="b2"
+								fontWeight="light"
+								color="tertiary"
+							>
+								Feel free to reach out manually instead
+							</RText>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="button"
+							className="mt-[8px] flex w-full justify-center"
+						>
+							<RButton
+								iconName="send"
+								onClick={() => {
+									// Send email do some form validation
+								}}
+							>
+								Send message
+							</RButton>
+						</div>,
+					],
+				},
+			];
+		}
+		case ReferralTypeOptions.INTRO: {
+			return [
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<InfoSection
+								publicEmail={userProfile.publicEmail as string}
+								firstName={userProfile.firstName as string}
+								experienceBlurb={
+									userProfile.experienceBlurb as string
+								}
+								onClickDownload={() => {
+									if (userProfile.resumeUrl) {
+										handleDownload(
+											userProfile.resumeUrl as string
+										);
+									}
+								}}
+								includeBlurb={false}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Intro message template"
+								subtitle="An example intro message to send to your recruiter/HR contact. Edit as needed!"
+								body={
+									<RTextarea
+										defaultValue={buildIntroMessage({
+											blurb: userProfile.experienceBlurb as string,
+											firstName:
+												userProfile.firstName as string,
+											jobTitle:
+												referralRequest?.jobTitle as string,
+											companyName: referralRequest
+												?.company.name as string,
+											jobPostingLink:
+												referralRequest?.jobPostingLink as string,
+											isAnyOpenRole:
+												referralRequest?.isAnyOpenRole as boolean,
+										})}
+										placeholder="type your message here"
+										highlighted
+										copyEnabled
+										className={
+											isMobile ? 'h-[500px]' : 'h-[300px]'
+										}
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'two-column',
+					content: [
+						<div key="name" className="w-full">
+							<RLabeledSection
+								label="Your Name*"
+								body={
+									<RInput
+										value={requesterName}
+										onInput={(e) => {
+											setPageViewerName(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter name"
+									/>
+								}
+							/>
+						</div>,
+						<div key="email" className="w-full">
+							<RLabeledSection
+								label="Your Email*"
+								body={
+									<RInput
+										value={emailAddress}
+										onInput={(e) => {
+											setEmailAddress(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter email"
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="button"
+							className="mt-[8px] flex w-full justify-center"
+						>
+							<RButton
+								iconName="check"
+								onClick={() => {
+									// Send email do some form validation
+									// Update referral request with info
+								}}
+							>
+								Confirm intro sent
+							</RButton>
+						</div>,
+					],
+				},
+			];
+		}
+		case ReferralTypeOptions.LINK: {
+			return [
+				{
+					type: 'two-column',
+					content: [
+						<div key="name" className="w-full">
+							<RLabeledSection
+								label="Your Name*"
+								body={
+									<RInput
+										value={requesterName}
+										onInput={(e) => {
+											setPageViewerName(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter name"
+									/>
+								}
+							/>
+						</div>,
+						<div key="email" className="w-full">
+							<RLabeledSection
+								label="Your Email*"
+								body={
+									<RInput
+										value={emailAddress}
+										onInput={(e) => {
+											setEmailAddress(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter email"
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Special job posting link*"
+								subtitle={`This link will be sent to ${userProfile.firstName}. `}
+								body={
+									<RInput
+										placeholder="enter link"
+										value={specialJobPostingLink}
+										onInput={(e) => {
+											setSpecialJobPostingLink(
+												e.currentTarget.value
+											);
+										}}
+										validationSchema={z.string().url()}
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Message"
+								subtitle={`A message to ${userProfile.firstName}, included with the job posting link.`}
+								body={
+									<RTextarea
+										value={messageToRequester}
+										onInput={(e) => {
+											setMessageToRequester(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="type your message here"
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="button"
+							className="mt-[8px] flex w-full justify-center"
+						>
+							<RButton
+								iconName="send"
+								onClick={() => {
+									// Send email do some form validation
+								}}
+							>
+								Send Link
+							</RButton>
+						</div>,
+					],
+				},
+			];
+		}
+		case ReferralTypeOptions.INTERNAL: {
+			return [
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<InfoSection
+								publicEmail={userProfile.publicEmail as string}
+								firstName={userProfile.firstName as string}
+								experienceBlurb={
+									userProfile.experienceBlurb as string
+								}
+								onClickDownload={() => {
+									if (userProfile.resumeUrl) {
+										handleDownload(
+											userProfile.resumeUrl as string
+										);
+									}
+								}}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'two-column',
+					content: [
+						<div key="name" className="w-full">
+							<RLabeledSection
+								label="Your Name*"
+								body={
+									<RInput
+										value={requesterName}
+										onInput={(e) => {
+											setPageViewerName(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter name"
+									/>
+								}
+							/>
+						</div>,
+						<div key="email" className="w-full">
+							<RLabeledSection
+								label="Your Email*"
+								body={
+									<RInput
+										value={emailAddress}
+										onInput={(e) => {
+											setEmailAddress(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="enter email"
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Message"
+								subtitle={`A message to ${userProfile.firstName}, included in a confirmation email. `}
+								body={
+									<RTextarea
+										value={messageToRequester}
+										onInput={(e) => {
+											setMessageToRequester(
+												e.currentTarget.value
+											);
+										}}
+										placeholder="type your message here"
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="button"
+							className="mt-[8px] flex w-full justify-center"
+						>
+							<RButton
+								iconName="check"
+								onClick={() => {
+									// Send email do some form validation
+									// Update referral request with info
+								}}
+							>
+								Confirm referral submitted
+							</RButton>
+						</div>,
+					],
+				},
+			];
+		}
+		default: {
+			return [{ type: 'single-column', content: [<div key="1"></div>] }];
+		}
+	}
 };
 
 const ReferralTypeOptions = {
@@ -318,9 +901,19 @@ export default function ReferModal({
 	setPageViewerName: (name: string) => void;
 	existingPageLink: Link;
 }) {
+	const isMobile = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
+
 	const [referNow, setReferNow] = useState(true);
-	const [selectedReferralOption, setSelectedReferralOption] = useState(null);
+	const [selectedReferralOption, setSelectedReferralOption] = useState<
+		string | null
+	>(null);
 	const [emailAddress, setEmailAddress] = useState('');
+	const [messageToRequester, setMessageToRequester] = useState('');
+	const [specialJobPostingLink, setSpecialJobPostingLink] = useState('');
+	const [meetingScheduleLink, setMeetingScheduleLink] = useState('');
+
 	const topSection: {
 		type: 'single-column' | 'two-column';
 		content: JSX.Element[] | null;
@@ -328,6 +921,7 @@ export default function ReferModal({
 		? ChoicesSection({
 				referralRequest,
 				userProfile,
+				setSelectedReferralOption,
 		  })
 		: RemindSection({
 				link: existingPageLink,
@@ -355,7 +949,7 @@ export default function ReferModal({
 								label: 'Refer now',
 							},
 							{
-								label: 'Set reminder',
+								label: 'Email reminder',
 								iconName: 'calendar-plus',
 							},
 						]}
@@ -378,6 +972,18 @@ export default function ReferModal({
 			isAllRequests,
 			referNow,
 			selectedReferralOption,
+			referralRequest,
+			userProfile,
+			emailAddress,
+			setEmailAddress,
+			setPageViewerName,
+			messageToRequester,
+			setMessageToRequester,
+			specialJobPostingLink,
+			setSpecialJobPostingLink,
+			meetingScheduleLink,
+			setMeetingScheduleLink,
+			isMobile,
 		}),
 	];
 
@@ -388,6 +994,8 @@ export default function ReferModal({
 				onOpenChange(open);
 				if (!open) {
 					setReferNow(true);
+					setMessageToRequester('');
+					setSelectedReferralOption(null);
 				}
 			}}
 			headerText={`Refer ${userProfile.firstName} to ${referralRequest?.company.name}`}

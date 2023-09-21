@@ -265,7 +265,7 @@ export default function LinkPage({
 										>
 											From{' '}
 											{
-												link.blurbAuthorName?.split(
+												link?.blurbAuthorName?.split(
 													' '
 												)[0]
 											}
