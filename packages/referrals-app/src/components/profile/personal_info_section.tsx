@@ -153,6 +153,7 @@ export default function PersonalInfoSection() {
 				currentLocation,
 				education,
 				defaultMessage,
+				experienceBlurb,
 			});
 
 			setSavedStatus('Saved');
