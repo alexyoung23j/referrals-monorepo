@@ -48,6 +48,7 @@ const LinkPageMobile = ({
 	personalSiteUrl,
 	jobExperience,
 	children,
+	setShowInfoModal,
 }: LinkPageLayoutProps) => {
 	const [showRequests, setShowRequests] = useState(true);
 	const [maxExperiences, setMaxExperiences] = useState(3);
@@ -55,6 +56,16 @@ const LinkPageMobile = ({
 	return (
 		<div className="bg-background flex h-screen flex-col">
 			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[12px] p-[24px]">
+				<div className="absolute right-5 top-5 flex w-full justify-end">
+					<div
+						className={` flex cursor-pointer items-center gap-2`}
+						onClick={() => {
+							setShowInfoModal(true);
+						}}
+					>
+						<Icon name="info" size="18" color="#64748b" />
+					</div>
+				</div>
 				<div className="flex flex-col items-center gap-[8px]">
 					<Avatar className="h-[56px] w-[56px]">
 						<AvatarImage

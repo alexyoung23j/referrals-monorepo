@@ -159,16 +159,7 @@ export default function LinkPage({
 				setPageViewerName={setPageViewerName}
 				existingPageLink={link}
 			/>
-			{isMobile ? (
-				<div
-					className={`fixed right-5 top-5 flex cursor-pointer items-center gap-2`}
-					onClick={() => {
-						setShowInfoModal(true);
-					}}
-				>
-					<Icon name="info" size="18" color="#64748b" />
-				</div>
-			) : (
+			{!isMobile && (
 				<div className="flex w-full justify-end p-8">
 					<div
 						className={`${
