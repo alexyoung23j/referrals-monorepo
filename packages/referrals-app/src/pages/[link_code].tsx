@@ -49,7 +49,11 @@ export default function LinkPage({
 	requests,
 	userProfile,
 }: LinkPageProps) {
-	const [showInfoModal, setShowInfoModal] = useState(false);
+	const isClient = typeof window === 'object';
+
+	const [showInfoModal, setShowInfoModal] = useState(
+		isClient && localStorage.getItem('hasSeenInstructions') ? false : true
+	);
 	const router = useRouter();
 
 	const isMobile = useMediaQuery({

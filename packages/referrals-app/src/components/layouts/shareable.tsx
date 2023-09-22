@@ -529,26 +529,40 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 
 	const InfoModal = () => (
 		<ActivityModal
-			headerText="Instructions"
+			headerText="ReferLink Guide"
 			sections={[
 				{
 					type: 'single-column',
 					content: [
 						<div key="about" className="flex flex-col gap-4">
-							<RText
-								fontSize={isMobile ? 'b1' : 'h3'}
-								fontWeight="light"
-							>{`Click 'Refer' for all the details needed for a quick referral, and optionally schedule an email reminder.
-							 Or, 'Share' the request with your network and add your own context.`}</RText>
+							<RText fontSize={isMobile ? 'b1' : 'h3'}>
+								Click{' '}
+								<RText
+									fontSize={isMobile ? 'b1' : 'h3'}
+									fontWeight="bold"
+								>
+									Refer
+								</RText>{' '}
+								to quickly facilitate a referral or set a
+								reminder.
+							</RText>
+							<RText fontSize={isMobile ? 'b1' : 'h3'}>
+								Click{' '}
+								<RText
+									fontSize={isMobile ? 'b1' : 'h3'}
+									fontWeight="bold"
+								>
+									Share
+								</RText>{' '}
+								to spread the word in your network with a
+								personal touch.
+							</RText>
 
-							<RText
-								fontSize={isMobile ? 'b1' : 'h3'}
-								fontWeight="light"
-							>
+							<RText fontSize={isMobile ? 'b1' : 'h3'}>
 								You can create your own referral request link{' '}
 								<RText
 									fontSize={isMobile ? 'b1' : 'h3'}
-									fontWeight="normal"
+									fontWeight="bold"
 									className="cursor-pointer underline"
 									onClick={() => {
 										window.open(
