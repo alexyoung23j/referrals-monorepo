@@ -28,6 +28,7 @@ const config = {
 			'assets.commonwealth.im',
 			'logo.clearbit.com',
 			'wtshcihzoimxpnrbnnau.supabase.co',
+			'zbagogohvyzfxgiyqepp.supabase.co',
 		],
 	},
 };

@@ -51,7 +51,7 @@ function AuthShowcase() {
 						? () => void signOut()
 						: () => {
 								void signIn('google', {
-									callbackUrl: '/dashboard',
+									callbackUrl: '/profile',
 								});
 						  }
 				}
