@@ -1,4 +1,4 @@
-import Icon, { IconName } from './icons';
+import Icon, { type IconName } from './icons';
 import { RText } from './text';
 import { useMediaQuery } from 'react-responsive';
 
@@ -72,7 +72,7 @@ export const RowTable = ({
 								<div
 									style={{ minWidth: column.minWidth }}
 									key={column.label?.toString()}
-									className={`flex cursor-pointer flex-row items-center gap-[4px]`}
+									className={'flex cursor-pointer flex-row items-center gap-[4px]'}
 									onClick={column?.onClick}
 								>
 									{typeof column.label === 'string' ? (

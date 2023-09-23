@@ -4,7 +4,7 @@ import { Label } from './label';
 import { cn } from 'src/lib/utils';
 import { useEffect, useRef, useState } from 'react';
 import Icon from './icons';
-import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import type dynamicIconImports from 'lucide-react/dynamicIconImports';
 
 export interface TextareaProps
 	extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}

@@ -20,7 +20,7 @@ import { RTabsSection } from '../ui/tabs';
 import { useToast } from '../ui/use-toast';
 import { RSelector } from '../ui/select';
 import { Separator } from '../ui/separator';
-import { ReferralRequestStatus } from '@prisma/client';
+import { type ReferralRequestStatus } from '@prisma/client';
 import { ConfirmationModal } from '../modals/confirmation_modal';
 import RSpinner from '../ui/spinner';
 

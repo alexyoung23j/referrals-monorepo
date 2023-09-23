@@ -15,7 +15,7 @@ import { RLabeledSection } from '~/components/ui/labeled_section';
 import { RInput } from '~/components/ui/input';
 import { z } from 'zod';
 import {
-	Company,
+	type Company,
 	CompanyCombobox,
 } from '~/components/company/company_combobox';
 import { api } from '~/utils/api';

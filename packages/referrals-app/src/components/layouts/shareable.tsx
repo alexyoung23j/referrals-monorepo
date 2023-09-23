@@ -59,7 +59,7 @@ const LinkPageMobile = ({
 			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[12px] p-[24px]">
 				<div className="absolute right-5 top-5 flex w-full justify-end">
 					<div
-						className={` flex cursor-pointer items-center gap-2`}
+						className={' flex cursor-pointer items-center gap-2'}
 						onClick={() => {
 							setShowInfoModal(true);
 						}}

@@ -11,14 +11,14 @@ import { RText } from '~/components/ui/text';
 import { prisma } from '~/server/db';
 import Image from 'next/image';
 
-import { GetServerSidePropsContext } from 'next';
+import { type GetServerSidePropsContext } from 'next';
 import {
-	Company,
-	JobExperience,
-	Link,
-	ReferralRequest,
-	User,
-	UserProfile,
+	type Company,
+	type JobExperience,
+	type Link,
+	type ReferralRequest,
+	type User,
+	type UserProfile,
 } from '@prisma/client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useMediaQuery } from 'react-responsive';

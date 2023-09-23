@@ -7,10 +7,10 @@ import Icon from './icons';
 import { useEffect, useRef, useState } from 'react';
 import * as z from 'zod';
 
-import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import type dynamicIconImports from 'lucide-react/dynamicIconImports';
 import { RText } from './text';
 import { useDebouncedCallback } from 'use-debounce';
-import { ZodSchema } from 'zod';
+import { type ZodSchema } from 'zod';
 
 export interface InputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {}

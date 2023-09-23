@@ -1,11 +1,11 @@
 /* eslint-disable indent */
 import {
-	ReferralRequest,
-	Company,
-	Link,
-	JobExperience,
-	UserProfile,
-	User,
+	type ReferralRequest,
+	type Company,
+	type Link,
+	type JobExperience,
+	type UserProfile,
+	type User,
 } from '@prisma/client';
 import ActivityModal from '../modals/activity_modal';
 import { api } from '~/utils/api';

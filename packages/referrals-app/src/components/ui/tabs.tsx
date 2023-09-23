@@ -5,7 +5,7 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 
 import { cn } from 'src/lib/utils';
 import Icon from './icons';
-import dynamicIconImports from 'lucide-react/dynamicIconImports';
+import type dynamicIconImports from 'lucide-react/dynamicIconImports';
 import { RText } from './text';
 
 const Tabs = TabsPrimitive.Root;

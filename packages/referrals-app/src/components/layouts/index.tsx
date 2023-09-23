@@ -45,7 +45,7 @@ const Sidebar = () => {
 				<RTooltip
 					trigger={
 						<div
-							className={`hover:bg-lightGrey flex max-h-fit max-w-fit cursor-not-allowed cursor-pointer flex-col rounded-[6px] p-[8px]`}
+							className={'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-not-allowed cursor-pointer flex-col rounded-[6px] p-[8px]'}
 						>
 							<Icon name="bell" color={'#94A3B8'} size="24px" />
 						</div>
@@ -63,7 +63,7 @@ const Sidebar = () => {
 			</div>
 			<div>
 				<div
-					className={`hover:bg-lightGrey flex max-h-fit max-w-fit cursor-pointer flex-col rounded-[6px] p-[8px]`}
+					className={'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-pointer flex-col rounded-[6px] p-[8px]'}
 					onClick={() => {
 						void signOut();
 					}}

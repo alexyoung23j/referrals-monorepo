@@ -15,11 +15,11 @@ import { RowTable } from '../ui/card';
 import Image from 'next/image';
 import Icon from '../ui/icons';
 import ActivityModal from '../modals/activity_modal';
-import { Company, CompanyCombobox } from '../company/company_combobox';
+import { type Company, CompanyCombobox } from '../company/company_combobox';
 import DatePicker from '../ui/date_picker';
 import { Checkbox } from '../ui/checkbox';
 import { useMediaQuery } from 'react-responsive';
-import { JobExperience } from '@prisma/client';
+import { type JobExperience } from '@prisma/client';
 
 export default function ExperienceSection() {
 	const { toast } = useToast();
