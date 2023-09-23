@@ -22,7 +22,7 @@ import {
 } from '@prisma/client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useMediaQuery } from 'react-responsive';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ShareModal from '~/components/link_page/share_modal';
 import ReferModal from '~/components/link_page/refer_modal';
@@ -51,9 +51,22 @@ export default function LinkPage({
 }: LinkPageProps) {
 	const isClient = typeof window === 'object';
 
-	const [showInfoModal, setShowInfoModal] = useState(
-		isClient && localStorage.getItem('hasSeenInstructions') ? false : true
-	);
+	const [showInfoModal, setShowInfoModal] = useState(() => {
+		if (isClient) {
+			const visitCount = Number(localStorage.getItem('visitCount')) || 0;
+			return visitCount < 5;
+		}
+		return false;
+	});
+
+	useEffect(() => {
+		if (isClient) {
+			const visitCount = Number(localStorage.getItem('visitCount')) || 0;
+			if (visitCount < 5) {
+				localStorage.setItem('visitCount', String(visitCount + 1));
+			}
+		}
+	}, []);
 
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
