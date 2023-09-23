@@ -97,7 +97,6 @@ export function Combobox({ placeholder, dataFetchFn }: ComboBoxProps) {
 						placeholder={placeholder}
 						className="h-10"
 						value={value}
-						onChange={(e) => setValue(e.target.value)}
 					/>
 					<CommandEmpty>No framework found.</CommandEmpty>
 					<CommandGroup>

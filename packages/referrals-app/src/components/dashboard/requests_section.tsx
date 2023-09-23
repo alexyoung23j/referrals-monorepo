@@ -193,7 +193,6 @@ export default function RequestsSection({
 	}, [shareableMessage]); // Depend on shareableBlurb state
 
 	const saveEdits = async () => {
-		console.log({ selectedRequestReferrerEmail });
 		try {
 			await updateRequest.mutateAsync({
 				id: selectedRequest?.id as string,

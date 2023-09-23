@@ -1,16 +1,18 @@
 interface TextProps {
-	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2';
+	fontSize?: 'h1' | 'h2' | 'h3' | 'b1' | 'b2' | 'h1point5';
 	color?: 'primary' | 'secondary' | 'tertiary' | 'red';
 	fontWeight?: 'bold' | 'normal' | 'medium' | 'light';
 	children: React.ReactNode;
 	className?: string;
+	onClick?: () => void;
 }
 
 const fontSizeMap = {
 	h1: 'text-[24px]',
+	h1point5: 'text-[20px]',
 	h2: 'text-[18px]',
 	h3: 'text-[16px]',
-	b1: 'text-[14px] leading-[14px]',
+	b1: 'text-[14px] leading-[18px]',
 	b2: 'text-[12px] leading-[12px]',
 };
 
@@ -33,11 +35,13 @@ export const RText = ({
 	color = 'primary',
 	children,
 	fontWeight = 'normal',
+	onClick,
 	className,
 }: TextProps) => {
 	return (
 		<span
 			className={`${fontSizeMap[fontSize]} ${fontColorMap[color]} ${fontWeightMap[fontWeight]} ${className}`}
+			onClick={onClick}
 		>
 			{children}
 		</span>

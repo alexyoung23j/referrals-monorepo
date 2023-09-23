@@ -191,6 +191,7 @@ export const referralRequestRouter = createTRPCRouter({
 					createdByLoggedInUser: true,
 					createdById: ctx.session.user.id,
 					isDefaultLinkForRequest: true,
+					blurbAuthorName: ctx.session.user.name,
 				});
 				return request;
 			} catch (e) {

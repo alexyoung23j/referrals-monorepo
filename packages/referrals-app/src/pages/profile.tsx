@@ -5,15 +5,6 @@ import { prisma } from '~/server/db';
 import { redirectIfNotAuthed } from '~/utils/routing';
 import { api } from '~/utils/api';
 import { Separator } from '~/components/ui/separator';
-import { RText } from '~/components/ui/text';
-import { RLabeledSection } from '~/components/ui/labeled_section';
-import { RInput } from '~/components/ui/input';
-import { useState, useEffect } from 'react';
-import { z } from 'zod';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { RTextarea } from '~/components/ui/textarea';
-import { useToast } from '~/components/ui/use-toast';
-import { createClient } from '@supabase/supabase-js';
 import PersonalInfoSection from '~/components/profile/personal_info_section';
 import ResumeSection from '~/components/profile/resume_section';
 import { generateValidLink } from '~/utils/links';
@@ -87,6 +78,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 					link = await generateValidLink({
 						userId: session?.user.id as string,
 						createdByLoggedInUser: true,
+						blurbAuthorName: session?.user.name as string,
 					});
 				}
 

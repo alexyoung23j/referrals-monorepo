@@ -20,8 +20,8 @@ type ActivityModalProps = {
 	sections?:
 		| Array<{
 				type: 'single-column' | 'two-column';
-				content: React.ReactNode[];
-		  }>
+				content: React.ReactNode[] | null;
+		  } | null>
 		| null[];
 };
 
@@ -41,7 +41,12 @@ export default function ActivityModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
 				showClose={isMobile}
-				className="flex max-h-[94vh] w-[90vw] max-w-[640px] flex-col gap-[0px] overflow-auto rounded-[8px] p-[18px] sm:p-[24px]"
+				className={`flex ${
+					isMobile ? 'max-h-[80vh]' : 'max-h-[94vh]'
+				} w-[90vw] max-w-[640px] flex-col gap-[0px] overflow-auto rounded-[8px] p-[18px] sm:p-[24px]`}
+				onOpenAutoFocus={(event) => {
+					event.preventDefault();
+				}}
 			>
 				{headerText && (
 					<div className="flex w-full flex-col gap-[8px]">

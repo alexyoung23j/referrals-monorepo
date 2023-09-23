@@ -137,9 +137,11 @@ export const PDFRenderer = ({
 					<input ref={inputRef} hidden />
 				</DialogTrigger>
 				<DialogContent
-					className={
-						'h-[90vh] min-w-[50%] rounded border-4 border-opacity-100 p-0 pb-5 max-sm:h-screen max-sm:w-screen'
-					}
+					className={` ${
+						isBigScreen
+							? 'h-[90vh]'
+							: 'max-h-[80vh] min-h-[80vh] max-w-[96vw]'
+					} min-w-[50%] rounded border-4 border-opacity-100 p-0 pb-5 max-sm:h-screen max-sm:w-screen`}
 				>
 					<DialogHeader />
 					<div
