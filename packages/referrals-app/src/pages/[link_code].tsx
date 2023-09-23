@@ -54,7 +54,6 @@ export default function LinkPage({
 	const [showInfoModal, setShowInfoModal] = useState(
 		isClient && localStorage.getItem('hasSeenInstructions') ? false : true
 	);
-	const router = useRouter();
 
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',

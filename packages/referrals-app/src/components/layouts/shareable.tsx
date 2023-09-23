@@ -13,6 +13,7 @@ import { PDFRenderer, handleDownload } from '../ui/pdf';
 import { supabase } from '~/server/api/routers/supabase_bucket';
 import { RPopover } from '../ui/popover';
 import ActivityModal from '../modals/activity_modal';
+import { RButton } from '../ui/button';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
@@ -527,37 +528,53 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 		query: '(max-width: 840px)',
 	});
 
-	const InfoModal = () => (
+	const InfoModal = ({ firstName }: { firstName: string }) => (
 		<ActivityModal
-			headerText="ReferLink Guide"
+			headerText="Instructions"
 			sections={[
 				{
 					type: 'single-column',
 					content: [
 						<div key="about" className="flex flex-col gap-4">
 							<RText fontSize={isMobile ? 'b1' : 'h3'}>
-								Click{' '}
-								<RText
-									fontSize={isMobile ? 'b1' : 'h3'}
-									fontWeight="bold"
-								>
-									Refer
-								</RText>{' '}
-								to quickly facilitate a referral or set a
-								reminder.
+								{`Use ReferLink to easily refer ${firstName} or circulate ${firstName}'s referral requests within your network.`}
 							</RText>
-							<RText fontSize={isMobile ? 'b1' : 'h3'}>
-								Click{' '}
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText
+								fontWeight="bold"
+								fontSize={isMobile ? 'b1' : 'h3'}
+							>
+								Guide:
+							</RText>
+							<div className="flex items-center gap-2">
+								<RButton variant="disabled">Refer</RButton>
 								<RText
 									fontSize={isMobile ? 'b1' : 'h3'}
-									fontWeight="bold"
-								>
+								>{`→ I can refer ${firstName} to a job`}</RText>{' '}
+							</div>
+							<div className="flex items-center gap-2">
+								<RButton variant="disabled_secondary">
 									Share
-								</RText>{' '}
-								to spread the word in your network with a
-								personal touch.
-							</RText>
-
+								</RButton>
+								<RText
+									fontSize={isMobile ? 'b1' : 'h3'}
+								>{`→ I know someone who can refer${
+									isMobile ? '' : ' ' + firstName
+								}`}</RText>{' '}
+							</div>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
 							<RText fontSize={isMobile ? 'b1' : 'h3'}>
 								You can create your own referral request link{' '}
 								<RText
@@ -578,6 +595,29 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 						</div>,
 					],
 				},
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="about"
+							className="flex w-full flex-col items-end gap-[16px]"
+						>
+							<div className="w-full" key="separator">
+								<Separator />
+							</div>
+							<div
+								className="flex max-w-fit cursor-pointer rounded-[6px] bg-[#D0E6FF] px-[10px] py-[8px] hover:bg-[#F1F5F9]"
+								onClick={() => {
+									props.setShowInfoModal(false);
+								}}
+							>
+								<RText fontWeight="medium">
+									See requests →
+								</RText>
+							</div>
+						</div>,
+					],
+				},
 			]}
 			open={props.showInfoModal}
 			onOpenChange={(open: boolean) => {
@@ -588,12 +628,12 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 
 	return isMobile ? (
 		<>
-			<InfoModal />
+			<InfoModal firstName={props.profileName.split(' ')[0] as string} />
 			<LinkPageMobile {...props} />
 		</>
 	) : (
 		<>
-			<InfoModal />
+			<InfoModal firstName={props.profileName.split(' ')[0] as string} />
 			<LinkPageDesktop {...props} />
 		</>
 	);
