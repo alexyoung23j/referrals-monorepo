@@ -34,6 +34,8 @@ const config = {
 			path.join(__dirname, 'packages/referrals-app/src/pages'),
 		],
 	},
+	'ignorePatterns': ['pdf.worker.js'],
+
 };
 
 module.exports = config;
