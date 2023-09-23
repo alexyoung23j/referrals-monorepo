@@ -1,21 +1,18 @@
 import * as dotenv from 'dotenv';
+dotenv.config();
 import { PrismaClient } from '@prisma/client';
 import express from 'express';
+import { startEmailInterval } from './interval/email-interval';
+import { Resend } from 'resend';
 
 export const prisma = new PrismaClient({
 	log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
-function main() {
-	dotenv.config();
+export const resend = new Resend(process.env.RESEND_API_KEY);
 
-	if (
-		!process.env.GITHUB_APP_ID ||
-		!process.env.GITHUB_PRIVATE_KEY ||
-		!process.env.GITHUB_CLIENT_ID ||
-		!process.env.GITHUB_CLIENT_SECRET ||
-		!process.env.GITHUB_WEBHOOK_SECRET
-	) {
+function main() {
+	if (!process.env.RESEND_API_KEY) {
 		console.log('No Credentials, bot failed to start');
 		return;
 	}
@@ -33,6 +30,8 @@ function main() {
 		`----------------Referalls Bot Listening on port ${process.env.PORT ?? 3001
 		}----------------`
 	);
+
+	startEmailInterval();
 }
 
 main();
