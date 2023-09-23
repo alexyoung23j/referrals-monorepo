@@ -41,7 +41,9 @@ export default function ActivityModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
 				showClose={isMobile}
-				className="flex max-h-[94vh] w-[90vw] max-w-[640px] flex-col gap-[0px] overflow-auto rounded-[8px] p-[18px] sm:p-[24px]"
+				className={`flex ${
+					isMobile ? 'max-h-[80vh]' : 'max-h-[94vh]'
+				} w-[90vw] max-w-[640px] flex-col gap-[0px] overflow-auto rounded-[8px] p-[18px] sm:p-[24px]`}
 				onOpenAutoFocus={(event) => {
 					event.preventDefault();
 				}}
