@@ -19,7 +19,7 @@ import Spinner from '../ui/spinner';
 import { RTag } from '../ui/tag';
 import Image from 'next/image';
 import { RButton } from '../ui/button';
-import { toast } from '../ui/use-toast';
+import { toast, useToast } from '../ui/use-toast';
 import { RSelector } from '../ui/select';
 import { RText } from '../ui/text';
 import { useMediaQuery } from 'react-responsive';
@@ -60,6 +60,8 @@ const RemindSection = ({
 	setPageViewerName,
 	emailAddress,
 	setEmailAddress,
+	setEmailScheduledAt,
+	validateFormAndScheduleEmail
 }: {
 	link: Link;
 	name: string;
@@ -70,6 +72,8 @@ const RemindSection = ({
 	setPageViewerName: (name: string) => void;
 	emailAddress: string;
 	setEmailAddress: (email: string) => void;
+	setEmailScheduledAt: (date: Date) => void;
+	validateFormAndScheduleEmail: (emailType: EmailType) => () => void;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
@@ -123,7 +127,7 @@ const RemindSection = ({
 								<RCalendar
 									date={new Date()}
 									onSelect={(date: Date) => {
-										console.log(date);
+										setEmailScheduledAt(date);
 									}}
 								/>
 							</div>
@@ -141,9 +145,7 @@ const RemindSection = ({
 				>
 					<RButton
 						iconName="calendar-plus"
-						onClick={() => {
-							// Send email do some form validation
-						}}
+						onClick={validateFormAndScheduleEmail('REFERRAL_REMINDER')}
 					>
 						Schedule reminder
 					</RButton>
@@ -282,6 +284,7 @@ const ChoicesSection = ({
 									),
 								}}
 								onSelect={(value) => {
+									// TODO: this value is not persisting when you switch tabs from Refer Now to Schedule
 									setSelectedReferralOption(value);
 								}}
 							/>
@@ -373,6 +376,7 @@ const mainBody = ({
 	meetingScheduleLink,
 	setMeetingScheduleLink,
 	isMobile,
+	validateFormAndScheduleEmail
 }: {
 	link: Link;
 	name: string;
@@ -399,6 +403,7 @@ const mainBody = ({
 	meetingScheduleLink: string;
 	setMeetingScheduleLink: (link: string) => void;
 	isMobile: boolean;
+	validateFormAndScheduleEmail: (emailType: EmailType) => () => void;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
@@ -526,9 +531,7 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="send"
-								onClick={() => {
-									// Send email do some form validation
-								}}
+								onClick={validateFormAndScheduleEmail('MESSAGE_FROM_REFERRER')}
 							>
 								Send message
 							</RButton>
@@ -642,10 +645,7 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="check"
-								onClick={() => {
-									// Send email do some form validation
-									// Update referral request with info
-								}}
+								onClick={() => {}}
 							>
 								Confirm intro sent
 							</RButton>
@@ -747,9 +747,7 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="send"
-								onClick={() => {
-									// Send email do some form validation
-								}}
+								onClick={validateFormAndScheduleEmail('MESSAGE_FROM_REFERRER')}
 							>
 								Send Link
 							</RButton>
@@ -849,10 +847,7 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="check"
-								onClick={() => {
-									// Send email do some form validation
-									// Update referral request with info
-								}}
+								onClick={validateFormAndScheduleEmail('REFERRAL_CONFIRMATION')}
 							>
 								Confirm referral submitted
 							</RButton>
@@ -874,6 +869,12 @@ const ReferralTypeOptions = {
 	INTRO: 'intro',
 	EMAIL_ME: 'email_me',
 };
+
+type EmailType = 'REFERRAL_REMINDER' |
+'REFERRAL_REMINDER_NOTIFICATION' |
+'REFERRAL_CONFIRMATION' |
+'REFERRAL_CONFIRMATION_NOTIFICATION' |
+'MESSAGE_FROM_REFERRER';
 
 export default function ReferModal({
 	isOpen,
@@ -904,6 +905,8 @@ export default function ReferModal({
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
+	const { mutate: queueEmailJob } =
+		api.email.queueEmailJob.useMutation();
 
 	const [referNow, setReferNow] = useState(true);
 	const [selectedReferralOption, setSelectedReferralOption] = useState<
@@ -913,6 +916,32 @@ export default function ReferModal({
 	const [messageToRequester, setMessageToRequester] = useState('');
 	const [specialJobPostingLink, setSpecialJobPostingLink] = useState('');
 	const [meetingScheduleLink, setMeetingScheduleLink] = useState('');
+	const [emailScheduledAt, setEmailScheduledAt] = useState<Date>(new Date());
+	const {toast} = useToast();
+
+	const validateFormAndScheduleEmail = (emailType: EmailType) => () => {
+		if (!pageViewerName) {
+			toast({
+				title: 'Missing field: Your Name',
+				duration: 2000,
+			});
+			return;
+		}
+
+		queueEmailJob({
+			message: messageToRequester,
+			referralsLink: `${process.env.NEXT_PUBLIC_SERVER_URL}/${existingPageLink.id}`,
+			meetingScheduleLink,
+			scheduledAt: emailScheduledAt,
+			referrerName: pageViewerName,
+			referrerEmail: emailAddress,
+			emailType,
+			seekerUserId: userProfile.id,
+			referralRequestId: referralRequest?.id,
+			jobTitle: referralRequest?.jobTitle ?? '',
+			specialJobPostingLink
+		});
+	};
 
 	const topSection: {
 		type: 'single-column' | 'two-column';
@@ -933,6 +962,8 @@ export default function ReferModal({
 				setPageViewerName,
 				emailAddress,
 				setEmailAddress,
+				setEmailScheduledAt,
+				validateFormAndScheduleEmail
 		  });
 
 	const sections: {
@@ -984,6 +1015,7 @@ export default function ReferModal({
 			meetingScheduleLink,
 			setMeetingScheduleLink,
 			isMobile,
+			validateFormAndScheduleEmail
 		}),
 	];
 

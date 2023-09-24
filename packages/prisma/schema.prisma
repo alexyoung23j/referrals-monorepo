@@ -43,6 +43,7 @@ model EmailJob {
     id                        String            @id @default(cuid())
     toAddress                 String
     body                      String
+    subject                   String
     attachments               EmailAttachment[]
     toCC                      String[]
     associatedReferralRequest ReferralRequest?  @relation(fields: [referralRequestId], references: [id])

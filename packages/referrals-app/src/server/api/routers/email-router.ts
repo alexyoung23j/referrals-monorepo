@@ -5,12 +5,12 @@ import {
 	publicProcedure,
 } from '~/server/api/trpc';
 import { EmailJobStatus, EmailJobType } from '@prisma/client';
-import { constructEmailMessage } from '~/utils/emailTemplates';
+import { constructEmailMessage, constructEmailSubject } from '~/utils/emailTemplates';
 import { TRPCError } from '@trpc/server';
 
 // TODO: change publicProcedure to authed procedure
 export const emailRouter = createTRPCRouter({
-	queueEmailJob: protectedProcedure
+	queueEmailJob: publicProcedure
 		.input(
 			z.object({
 				toAddress: z.string().optional(),
@@ -27,17 +27,25 @@ export const emailRouter = createTRPCRouter({
 				seekerUserId: z.string(),
 				referrerName: z.string(),
 				referrerEmail: z.string(),
+				referralsLink: z.string(),
+				meetingScheduleLink: z.string().optional(),
+				jobTitle: z.string().optional(),
+				specialJobPostingLink: z.string().optional()
 			})
 		)
 		.mutation(async ({input, ctx}) => {
 			const {
-				message,
+				message = '',
 				referralRequestId = '0',
 				scheduledAt,
 				emailType,
 				seekerUserId,
 				referrerName,
 				referrerEmail,
+				referralsLink,
+				meetingScheduleLink = '',
+				jobTitle = '',
+				specialJobPostingLink = ''
 			} = input;
 			
 			const referralRequest = await ctx.prisma.referralRequest.findFirst({
@@ -58,11 +66,13 @@ export const emailRouter = createTRPCRouter({
 
 			const {company} = referralRequest;
 
-			const seeker = await ctx.prisma.user.findUnique({
-				where: {
-					id: seekerUserId
+			const seeker = await ctx.prisma.userProfile.findUnique(
+				{
+					where: {
+						id: seekerUserId
+					}
 				}
-			});
+			);
 			
 			if(!seeker) {
 				throw new TRPCError({
@@ -72,20 +82,30 @@ export const emailRouter = createTRPCRouter({
 			}
 
 			let emailBody = '';
+			let subject = '';
 			try {
-				emailBody = message || constructEmailMessage(emailType, {
-					seekerName: seeker.name ?? '',
-					seekerEmail: seeker.email ?? '',
+				emailBody = constructEmailMessage(emailType, {
+					seekerName: seeker.firstName ?? '',
+					seekerEmail: seeker.publicEmail ?? '',
 					referrerName,
 					referrerEmail,
 					companyName: company.name,
 					// TODO: link to a proper page when implemented
-					referralsLink: 'http://localhost:3000/email'
+					referralsLink,
+					message,
+					role: jobTitle,
+					meetingScheduleLink,
+					specialJobPostingLink
+				});
+				subject = constructEmailSubject(emailType, {
+					seekerName: seeker.firstName ?? '',
+					referrerName,
+					companyName: company.name,
 				});
 			} catch(e) {
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
-					message: `Something went wrong when constructing email body: ${e}`,
+					message: `Something went wrong when constructing email subject or body: ${e}`,
 				});
 			}
 
@@ -130,14 +150,7 @@ export const emailRouter = createTRPCRouter({
 				}
 			}
 
-			const seekerUserProfile = await ctx.prisma.userProfile.findFirst(
-				{
-					where: {
-						userId: seekerUserId
-					}
-				}
-			);
-			const seekerResumeUrl = seekerUserProfile?.resumeUrl;
+			const seekerResumeUrl = seeker?.resumeUrl;
 
 			let toAddress;
 			const toCC = [];
@@ -147,17 +160,18 @@ export const emailRouter = createTRPCRouter({
 				case EmailJobType.MESSAGE_FROM_REFERRER:
 				case EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION:
 				case EmailJobType.REFERRAL_REMINDER_NOTIFICATION:
-					toAddress = seeker?.email ?? '';
+					toAddress = seeker?.publicEmail ?? '';
 					break;
 				case EmailJobType.REFERRAL_REMINDER:
-					seeker?.email && toCC.push(seeker.email);
-					if (seekerResumeUrl) {resumeAttachment = {filename: `${seeker.name}\'s Resume.pdf`, url: seekerResumeUrl};}
+					seeker?.publicEmail && toCC.push(seeker.publicEmail);
+					if (seekerResumeUrl) {resumeAttachment = {filename: `${seeker.firstName} ${seeker.lastName}\'s Resume.pdf`, url: seekerResumeUrl};}
 				case EmailJobType.REFERRAL_CONFIRMATION:
 					toAddress = referrerEmail;
 					break;
 			}
 
 			const emailAttachments = resumeAttachment ? [resumeAttachment] : [];
+			// TODO: create subject in the EmailJob model
 			await ctx.prisma.emailJob.create({
 				data:
 					{
@@ -170,99 +184,136 @@ export const emailRouter = createTRPCRouter({
 						scheduledAt,
 						attachments: {
 							create: emailAttachments
-						}
-					}
-			});
-		}),
-	// TODO: i don't even think we need this, queueEmailJob can handle cancelling when sending confirmation email
-	cancelEmailJob: publicProcedure
-		.input(
-			z.object({
-				emailId: z.string()
-			})
-		)
-		.mutation(async ({ input, ctx }) => {
-			const {emailId} = input;
-			await ctx.prisma.emailJob.update({
-				where: {
-					id: emailId
-				},
-				data:
-					{
-						status: EmailJobStatus.CANCELLED,
-					}
-			});
-		}),
-	// TODO: everything below is for testing purposes on email page, remove later
-	createMockEmailJobEntries: publicProcedure
-		.mutation(async ({ ctx }) => {
-			await ctx.prisma.emailJob.createMany({
-				data: [
-					{
-						toAddress: 'borayuksel1903@gmail.com',
-						body: 'Email from referrals scheduled for NOW',
-						toCC: [],
-						emailType: 'REFERRAL_REMINDER',
-						status: 'QUEUED',
-						scheduledAt: new Date()
-					},
-					{
-						toAddress: 'borayuksel1903@gmail.com',
-						body: 'Email from referrals one minute later',
-						toCC: [],
-						emailType: 'REFERRAL_REMINDER',
-						status: 'QUEUED',
-						scheduledAt: new Date(new Date().getTime() + 60000)
-					},
-					{
-						toAddress: 'borayuksel1903@gmail.com',
-						body: 'Email from referrals with Attachment',
-						toCC: [],
-						emailType: 'REFERRAL_REMINDER',
-						status: 'QUEUED'
-					}
-				]
-			});
-		}),
-	deleteMockEmails: publicProcedure
-		.mutation(async ({ ctx }) => {
-			await ctx.prisma.emailJob.deleteMany({
-				where: {
-					OR: [
-						{
-							status: 'SENT'
 						},
+						subject
+					}
+			});
+
+			if (emailType === EmailJobType.REFERRAL_CONFIRMATION) {
+				try {
+					emailBody = constructEmailMessage(EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION, {
+						seekerName: seeker.firstName ?? '',
+						referrerName,
+						referrerEmail,
+						companyName: company.name,
+						message,
+						role: jobTitle,
+					});
+					subject = constructEmailSubject(EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION, {
+						seekerName: seeker.firstName ?? '',
+						referrerName,
+						companyName: company.name,
+					});
+				} catch(e) {
+					throw new TRPCError({
+						code: 'INTERNAL_SERVER_ERROR',
+						message: `Something went wrong when constructing email subject or body: ${e}`,
+					});
+				}
+				await ctx.prisma.emailJob.create({
+					data:
 						{
-							status: 'FAILED'
+							toAddress: seeker?.publicEmail ?? '',
+							body: emailBody,
+							referralRequestId,
+							toCC,
+							emailType: EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION,
+							status: EmailJobStatus.QUEUED,
+							scheduledAt,
+							subject
 						}
-					]
-				}
-			});
+				});
+			}
 		}),
-	getUsersToRefer: publicProcedure
-		.query(async ({ ctx }) => {
-			const users = await ctx.prisma.user.findMany();
-			return users.map(user => ({value: user.id, content: user.name}));
-		}),
-	getReferralRequests: publicProcedure
-		.input(
-			z.object({
-				userId: z.string()
-			})
-		)
-		.query(async ({ ctx, input }) => {
-			const {userId} = input;
+	// // TODO: i don't even think we need this, queueEmailJob can handle cancelling when sending confirmation email
+	// cancelEmailJob: publicProcedure
+	// 	.input(
+	// 		z.object({
+	// 			emailId: z.string()
+	// 		})
+	// 	)
+	// 	.mutation(async ({ input, ctx }) => {
+	// 		const {emailId} = input;
+	// 		await ctx.prisma.emailJob.update({
+	// 			where: {
+	// 				id: emailId
+	// 			},
+	// 			data:
+	// 				{
+	// 					status: EmailJobStatus.CANCELLED,
+	// 				}
+	// 		});
+	// 	}),
+	// // TODO: everything below is for testing purposes on email page, remove later
+	// createMockEmailJobEntries: publicProcedure
+	// 	.mutation(async ({ ctx }) => {
+	// 		await ctx.prisma.emailJob.createMany({
+	// 			data: [
+	// 				{
+	// 					toAddress: 'borayuksel1903@gmail.com',
+	// 					body: 'Email from referrals scheduled for NOW',
+	// 					toCC: [],
+	// 					emailType: 'REFERRAL_REMINDER',
+	// 					status: 'QUEUED',
+	// 					scheduledAt: new Date()
+	// 				},
+	// 				{
+	// 					toAddress: 'borayuksel1903@gmail.com',
+	// 					body: 'Email from referrals one minute later',
+	// 					toCC: [],
+	// 					emailType: 'REFERRAL_REMINDER',
+	// 					status: 'QUEUED',
+	// 					scheduledAt: new Date(new Date().getTime() + 60000)
+	// 				},
+	// 				{
+	// 					toAddress: 'borayuksel1903@gmail.com',
+	// 					body: 'Email from referrals with Attachment',
+	// 					toCC: [],
+	// 					emailType: 'REFERRAL_REMINDER',
+	// 					status: 'QUEUED'
+	// 				}
+	// 			]
+	// 		});
+	// 	}),
+	// deleteMockEmails: publicProcedure
+	// 	.mutation(async ({ ctx }) => {
+	// 		await ctx.prisma.emailJob.deleteMany({
+	// 			where: {
+	// 				OR: [
+	// 					{
+	// 						status: 'SENT'
+	// 					},
+	// 					{
+	// 						status: 'FAILED'
+	// 					}
+	// 				]
+	// 			}
+	// 		});
+	// 	}),
+	// getUsersToRefer: publicProcedure
+	// 	.query(async ({ ctx }) => {
+	// 		const users = await ctx.prisma.user.findMany();
+	// 		return users.map(user => ({value: user.id, content: user.name}));
+	// 	}),
+	// getReferralRequests: publicProcedure
+	// 	.input(
+	// 		z.object({
+	// 			userId: z.string()
+	// 		})
+	// 	)
+	// 	.query(async ({ ctx, input }) => {
+	// 		const {userId} = input;
 
-			if(!userId) {return [];};
+	// 		if(!userId) {return [];};
 
-			const referralRequests = await ctx.prisma.referralRequest.findMany({
-				where: {
-					requesterId: userId
-				},
-				include: {
-					company: true
-				}
-			});
-			return referralRequests.map(request => ({value: request.id, content: `${request.company.name} - ${request.jobTitle}`}));
-		}),
+	// 		const referralRequests = await ctx.prisma.referralRequest.findMany({
+	// 			where: {
+	// 				requesterId: userId
+	// 			},
+	// 			include: {
+	// 				company: true
+	// 			}
+	// 		});
+	// 		return referralRequests.map(request => ({value: request.id, content: `${request.company.name} - ${request.jobTitle}`}));
+	// 	}),
 });

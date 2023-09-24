@@ -1,26 +1,18 @@
-import { type EmailAttachment, EmailJobType, type EmailJob } from '@prisma/client';
+import { type EmailAttachment, type EmailJob } from '@prisma/client';
 import { type CreateEmailResponse } from 'resend/build/src/emails/interfaces';
 import { type EmailError } from '.';
 import { resend } from '..';
-
-const emailTypeToSubject = {
-	[EmailJobType.MESSAGE_FROM_REFERRER]: 'A referrer just sent you a message!',
-	[EmailJobType.REFERRAL_CONFIRMATION]: 'Thank you for your referral!',
-	[EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION]: 'You have been referred!',
-	[EmailJobType.REFERRAL_REMINDER]: 'Reminder to submit your referral!',
-	[EmailJobType.REFERRAL_REMINDER_NOTIFICATION]: 'You will be referred soon!'
-};
 
 type EmailWithAttachment = EmailJob & {
 	attachments: EmailAttachment[]
 }
 
-export default async function sendEmail({attachments, toAddress, body, emailType, toCC}: EmailWithAttachment): Promise<CreateEmailResponse | EmailError> {
+export default async function sendEmail({attachments, toAddress, body, emailType, toCC, subject}: EmailWithAttachment): Promise<CreateEmailResponse | EmailError> {
 	return resend.emails.send({
 		// TODO: we need to change this when we have a valid domain
-		from: 'Referrals App <onboarding@resend.dev>',
+		from: 'Referrals App <admin@referlink.xyz>',
 		to: toAddress,
-		subject: emailTypeToSubject[emailType],
+		subject,
 		html: body,
 		// TODO: change this after EmailAttachment schema is created
 		attachments: attachments.map(({filename, url}: EmailAttachment) => ({filename, path: url})),
