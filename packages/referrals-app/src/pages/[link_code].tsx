@@ -165,6 +165,7 @@ export default function LinkPage({
 			/>
 			<ReferModal
 				isOpen={referModalOpen}
+				setIsOpen={setReferModalOpen}
 				onOpenChange={(open) => {
 					setReferModalOpen(open);
 				}}

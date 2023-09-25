@@ -17,7 +17,7 @@ export const appRouter = createTRPCRouter({
 	company,
 	referralRequest: referralRequestRouter,
 	links: linkRouter,
-	email: emailRouter
+	email: emailRouter,
 });
 
 // export type definition of API

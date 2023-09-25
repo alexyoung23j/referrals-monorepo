@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 'use client';
 
 import * as React from 'react';
@@ -70,9 +71,14 @@ Calendar.displayName = 'Calendar';
 type RCalendarProps = {
 	date: Date;
 	onSelect: (date: Date) => void;
+	futureOnly?: boolean;
 };
 
-export const RCalendar = ({ date, onSelect }: RCalendarProps) => {
+export const RCalendar = ({
+	date,
+	onSelect,
+	futureOnly = false,
+}: RCalendarProps) => {
 	const [localDate, setDate] = useState(date);
 	return (
 		<Calendar
@@ -85,6 +91,22 @@ export const RCalendar = ({ date, onSelect }: RCalendarProps) => {
 				}
 			}}
 			className="max-w-fit rounded-md border"
+			disabled={
+				futureOnly
+					? [
+							{
+								from: new Date(
+									new Date().setFullYear(
+										new Date().getFullYear() - 20
+									)
+								),
+								to: new Date(
+									new Date().setDate(new Date().getDate() - 1)
+								),
+							},
+					  ]
+					: []
+			}
 		/>
 	);
 };
