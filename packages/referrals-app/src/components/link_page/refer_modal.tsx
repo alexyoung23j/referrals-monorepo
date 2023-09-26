@@ -845,7 +845,7 @@ const mainBody = ({
 										runConfetti();
 										closeModalCleanup();
 										toast({
-											title: 'Reminder scheduled!',
+											title: 'Link sent!',
 											duration: 4000,
 										});
 									} catch (e) {}
@@ -961,7 +961,7 @@ const mainBody = ({
 										runConfetti();
 										closeModalCleanup();
 										toast({
-											title: 'Reminder scheduled!',
+											title: 'Referral Confirmed!',
 											duration: 4000,
 										});
 									} catch (e) {}
