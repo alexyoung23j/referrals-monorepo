@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"build": "yarn workspaces run build",
+		"build:email": "yarn workspace email-service build",
 		"postinstall": "prisma generate",
 		"lint": "eslint packages",
 		"lint:fix": "eslint packages --fix",
