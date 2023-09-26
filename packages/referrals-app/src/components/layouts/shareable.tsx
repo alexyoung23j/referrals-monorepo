@@ -5,7 +5,6 @@ import Icon from '../ui/icons';
 import { RText } from '../ui/text';
 import { RTabsSection } from '../ui/tabs';
 import { RLogo } from '../ui/logo';
-import { ScrollArea } from '../ui/scroll-area';
 import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
