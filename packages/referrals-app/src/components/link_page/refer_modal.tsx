@@ -19,13 +19,15 @@ import Spinner from '../ui/spinner';
 import { RTag } from '../ui/tag';
 import Image from 'next/image';
 import { RButton } from '../ui/button';
-import { toast } from '../ui/use-toast';
+import { toast, useToast } from '../ui/use-toast';
 import { RSelector } from '../ui/select';
 import { RText } from '../ui/text';
 import { useMediaQuery } from 'react-responsive';
 import { RCalendar } from '../ui/calendar';
 import { handleDownload } from '../ui/pdf';
 import { z } from 'zod';
+import Confetti from 'react-confetti';
+import { TRPCClientError } from '@trpc/client';
 
 const buildIntroMessage = ({
 	blurb,
@@ -60,6 +62,13 @@ const RemindSection = ({
 	setPageViewerName,
 	emailAddress,
 	setEmailAddress,
+	setEmailScheduledAt,
+	validateFormAndScheduleEmail,
+	setIsOpen,
+	runConfetti,
+	closeModalCleanup,
+	isProcessing,
+	setIsProcessing,
 }: {
 	link: Link;
 	name: string;
@@ -70,6 +79,13 @@ const RemindSection = ({
 	setPageViewerName: (name: string) => void;
 	emailAddress: string;
 	setEmailAddress: (email: string) => void;
+	setEmailScheduledAt: (date: Date) => void;
+	validateFormAndScheduleEmail: (emailType: EmailType) => Promise<void>;
+	setIsOpen: (open: boolean) => void;
+	runConfetti: () => void;
+	closeModalCleanup: () => void;
+	isProcessing: boolean;
+	setIsProcessing: (processing: boolean) => void;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
@@ -105,6 +121,7 @@ const RemindSection = ({
 								onInput={(e) => {
 									setEmailAddress(e.currentTarget.value);
 								}}
+								validationSchema={z.string().email()}
 							/>
 						}
 					/>
@@ -121,9 +138,44 @@ const RemindSection = ({
 						body={
 							<div className="flex w-full justify-center">
 								<RCalendar
+									futureOnly
 									date={new Date()}
 									onSelect={(date: Date) => {
-										console.log(date);
+										const now = new Date();
+										let scheduledDate;
+										if (
+											date.getDate() === now.getDate() &&
+											date.getMonth() ===
+												now.getMonth() &&
+											date.getFullYear() ===
+												now.getFullYear()
+										) {
+											console.log('Huh');
+											// If the selected date is today, schedule the email for 3 hours from now
+											scheduledDate = new Date(
+												now.getTime() +
+													3 * 60 * 60 * 1000
+											);
+											console.log({ scheduledDate });
+										} else {
+											console.log('in here??');
+											// If the selected date is in the future, schedule the email for a random time between 10AM and 2PM
+											scheduledDate = new Date(
+												date.getTime()
+											);
+											scheduledDate.setHours(
+												Math.floor(
+													Math.random() *
+														(14 - 10 + 1)
+												) + 10
+											);
+											// Set minutes to a random value between 0 and 59
+											scheduledDate.setMinutes(
+												Math.floor(Math.random() * 60)
+											);
+											scheduledDate.setSeconds(0);
+										}
+										setEmailScheduledAt(scheduledDate);
 									}}
 								/>
 							</div>
@@ -141,8 +193,21 @@ const RemindSection = ({
 				>
 					<RButton
 						iconName="calendar-plus"
-						onClick={() => {
-							// Send email do some form validation
+						isLoading={isProcessing}
+						onClick={async () => {
+							setIsProcessing(true);
+							try {
+								await validateFormAndScheduleEmail(
+									'REFERRAL_REMINDER'
+								);
+								runConfetti();
+								closeModalCleanup();
+								toast({
+									title: 'Reminder scheduled!',
+									duration: 4000,
+								});
+							} catch (e) {}
+							setIsProcessing(false);
 						}}
 					>
 						Schedule reminder
@@ -232,22 +297,6 @@ const ChoicesSection = ({
 											</div>
 										),
 									},
-									// {
-									// 	value: ReferralTypeOptions.EMAIL_ME,
-									// 	content: (
-									// 		<div
-									// 			className={`flex ${
-									// 				isMobile
-									// 					? 'w-[224px]'
-									// 					: 'w-[284px]'
-									// 			} items-start`}
-									// 		>
-									// 			<RText>
-									// 				{`Email me ${userProfile.firstName}'s info`}
-									// 			</RText>
-									// 		</div>
-									// 	),
-									// },
 									{
 										value: ReferralTypeOptions.CONTACT,
 										content: (
@@ -282,6 +331,7 @@ const ChoicesSection = ({
 									),
 								}}
 								onSelect={(value) => {
+									// TODO: this value is not persisting when you switch tabs from Refer Now to Schedule
 									setSelectedReferralOption(value);
 								}}
 							/>
@@ -373,6 +423,11 @@ const mainBody = ({
 	meetingScheduleLink,
 	setMeetingScheduleLink,
 	isMobile,
+	validateFormAndScheduleEmail,
+	closeModalCleanup,
+	isProcessing,
+	setIsProcessing,
+	runConfetti,
 }: {
 	link: Link;
 	name: string;
@@ -399,6 +454,11 @@ const mainBody = ({
 	meetingScheduleLink: string;
 	setMeetingScheduleLink: (link: string) => void;
 	isMobile: boolean;
+	validateFormAndScheduleEmail: (emailType: EmailType) => Promise<void>;
+	closeModalCleanup: () => void;
+	isProcessing: boolean;
+	setIsProcessing: (processing: boolean) => void;
+	runConfetti: () => void;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
@@ -441,6 +501,7 @@ const mainBody = ({
 											);
 										}}
 										placeholder="enter email"
+										validationSchema={z.string().email()}
 									/>
 								}
 							/>
@@ -525,9 +586,22 @@ const mainBody = ({
 							className="mt-[8px] flex w-full justify-center"
 						>
 							<RButton
+								isLoading={isProcessing}
 								iconName="send"
-								onClick={() => {
-									// Send email do some form validation
+								onClick={async () => {
+									setIsProcessing(true);
+									try {
+										await validateFormAndScheduleEmail(
+											'MESSAGE_FROM_REFERRER'
+										);
+										runConfetti();
+										closeModalCleanup();
+										toast({
+											title: 'Email sent!',
+											duration: 4000,
+										});
+									} catch (e) {}
+									setIsProcessing(false);
 								}}
 							>
 								Send message
@@ -626,6 +700,7 @@ const mainBody = ({
 											);
 										}}
 										placeholder="enter email"
+										validationSchema={z.string().email()}
 									/>
 								}
 							/>
@@ -642,9 +717,21 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="check"
-								onClick={() => {
-									// Send email do some form validation
-									// Update referral request with info
+								isLoading={isProcessing}
+								onClick={async () => {
+									setIsProcessing(true);
+									try {
+										await validateFormAndScheduleEmail(
+											'REFERRAL_CONFIRMATION'
+										);
+										runConfetti();
+										closeModalCleanup();
+										toast({
+											title: 'Referral confirmation sent!',
+											duration: 4000,
+										});
+									} catch (e) {}
+									setIsProcessing(false);
 								}}
 							>
 								Confirm intro sent
@@ -687,6 +774,7 @@ const mainBody = ({
 											);
 										}}
 										placeholder="enter email"
+										validationSchema={z.string().email()}
 									/>
 								}
 							/>
@@ -747,8 +835,21 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="send"
-								onClick={() => {
-									// Send email do some form validation
+								isLoading={isProcessing}
+								onClick={async () => {
+									setIsProcessing(true);
+									try {
+										await validateFormAndScheduleEmail(
+											'JOB_LINK'
+										);
+										runConfetti();
+										closeModalCleanup();
+										toast({
+											title: 'Reminder scheduled!',
+											duration: 4000,
+										});
+									} catch (e) {}
+									setIsProcessing(false);
 								}}
 							>
 								Send Link
@@ -812,6 +913,7 @@ const mainBody = ({
 											);
 										}}
 										placeholder="enter email"
+										validationSchema={z.string().email()}
 									/>
 								}
 							/>
@@ -849,9 +951,21 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="check"
-								onClick={() => {
-									// Send email do some form validation
-									// Update referral request with info
+								isLoading={isProcessing}
+								onClick={async () => {
+									setIsProcessing(true);
+									try {
+										await validateFormAndScheduleEmail(
+											'REFERRAL_CONFIRMATION'
+										);
+										runConfetti();
+										closeModalCleanup();
+										toast({
+											title: 'Reminder scheduled!',
+											duration: 4000,
+										});
+									} catch (e) {}
+									setIsProcessing(false);
 								}}
 							>
 								Confirm referral submitted
@@ -875,8 +989,17 @@ const ReferralTypeOptions = {
 	EMAIL_ME: 'email_me',
 };
 
+type EmailType =
+	| 'REFERRAL_REMINDER'
+	| 'REFERRAL_REMINDER_NOTIFICATION'
+	| 'REFERRAL_CONFIRMATION'
+	| 'REFERRAL_CONFIRMATION_NOTIFICATION'
+	| 'MESSAGE_FROM_REFERRER'
+	| 'JOB_LINK';
+
 export default function ReferModal({
 	isOpen,
+	setIsOpen,
 	onOpenChange,
 	referralRequest,
 	isAllRequests,
@@ -886,6 +1009,7 @@ export default function ReferModal({
 	existingPageLink,
 }: {
 	isOpen: boolean;
+	setIsOpen: (open: boolean) => void;
 	onOpenChange: (open: boolean) => void;
 	referralRequest:
 		| null
@@ -904,6 +1028,9 @@ export default function ReferModal({
 	const isMobile = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
+	const queueEmailJob = api.email.queueEmailJob.useMutation();
+	const updateReferralRequest =
+		api.referralRequest.updateRequest.useMutation();
 
 	const [referNow, setReferNow] = useState(true);
 	const [selectedReferralOption, setSelectedReferralOption] = useState<
@@ -913,6 +1040,89 @@ export default function ReferModal({
 	const [messageToRequester, setMessageToRequester] = useState('');
 	const [specialJobPostingLink, setSpecialJobPostingLink] = useState('');
 	const [meetingScheduleLink, setMeetingScheduleLink] = useState('');
+	const [emailScheduledAt, setEmailScheduledAt] = useState<Date>(new Date()); // default set this to 3 hours from right now
+	const { toast } = useToast();
+	const [showConfetti, setShowConfetti] = useState(false);
+	const [isProcessing, setIsProcessing] = useState(false);
+
+	const runConfetti = () => {
+		setShowConfetti(true);
+		setTimeout(() => {
+			setShowConfetti(false);
+		}, 5000);
+	};
+
+	// Update email time to 3 hours from now if referNow is false (for reminders)
+	useEffect(() => {
+		if (referNow) {
+			setEmailScheduledAt(new Date());
+		} else {
+			setEmailScheduledAt(new Date(Date.now() + 1000 * 60 * 60 * 3));
+		}
+	}, [referNow]);
+
+	const validateFormAndScheduleEmail = async (emailType: EmailType) => {
+		if (
+			emailAddress.length < 1 ||
+			(pageViewerName && pageViewerName?.length < 1) ||
+			!pageViewerName
+		) {
+			toast({
+				title: 'Missing email and name fields.',
+				duration: 2000,
+			});
+			throw new Error('Missing field.');
+		}
+		try {
+			await queueEmailJob.mutateAsync({
+				message: messageToRequester,
+				referralsLink: `${process.env.NEXT_PUBLIC_SERVER_URL}/${existingPageLink.id}`,
+				meetingScheduleLink,
+				scheduledAt: emailScheduledAt,
+				referrerName: pageViewerName as string,
+				referrerEmail: emailAddress,
+				emailType,
+				seekerUserId: userProfile.id,
+				referralRequestId: referralRequest?.id,
+				jobTitle: referralRequest?.jobTitle ?? '',
+				specialJobPostingLink,
+			});
+
+			if (emailType === 'REFERRAL_REMINDER') {
+				await updateReferralRequest.mutateAsync({
+					id: referralRequest?.id as string,
+					status: 'COMMITTED',
+				});
+			} else if (emailType === 'REFERRAL_CONFIRMATION') {
+				await updateReferralRequest.mutateAsync({
+					id: referralRequest?.id as string,
+					status: 'COMPLETED',
+				});
+			} else if (emailType === 'JOB_LINK') {
+				await updateReferralRequest.mutateAsync({
+					id: referralRequest?.id as string,
+					status: 'COMMITTED',
+				});
+			}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (e: any) {
+			console.error(e);
+			toast({
+				title: e['message'],
+				duration: 2000,
+			});
+			throw e;
+		}
+	};
+
+	const closeModalCleanup = () => {
+		setIsOpen(false);
+		setReferNow(true);
+		setMessageToRequester('');
+		setSelectedReferralOption(null);
+		setIsProcessing(false);
+	};
 
 	const topSection: {
 		type: 'single-column' | 'two-column';
@@ -933,6 +1143,13 @@ export default function ReferModal({
 				setPageViewerName,
 				emailAddress,
 				setEmailAddress,
+				setEmailScheduledAt,
+				validateFormAndScheduleEmail,
+				setIsOpen,
+				runConfetti,
+				closeModalCleanup,
+				isProcessing,
+				setIsProcessing,
 		  });
 
 	const sections: {
@@ -984,54 +1201,62 @@ export default function ReferModal({
 			meetingScheduleLink,
 			setMeetingScheduleLink,
 			isMobile,
+			validateFormAndScheduleEmail,
+			closeModalCleanup,
+			isProcessing,
+			setIsProcessing,
+			runConfetti,
 		}),
 	];
 
 	return (
-		<ActivityModal
-			open={isOpen}
-			onOpenChange={(open) => {
-				onOpenChange(open);
-				if (!open) {
-					setReferNow(true);
-					setMessageToRequester('');
-					setSelectedReferralOption(null);
+		<>
+			{showConfetti && <Confetti tweenDuration={5000} />}
+			<ActivityModal
+				open={isOpen}
+				onOpenChange={(open) => {
+					onOpenChange(open);
+					if (!open) {
+						setReferNow(true);
+						setMessageToRequester('');
+						setSelectedReferralOption(null);
+					}
+				}}
+				headerText={`Refer ${userProfile.firstName} to ${referralRequest?.company.name}`}
+				subtitleText={`You're a kind soul or on the hunt for that referral bonus 💰. ${userProfile.firstName} thanks you either way!`}
+				headerRightContent={
+					<div className="flex items-center gap-2">
+						<RTag
+							className="cursor-pointer"
+							label={
+								referralRequest?.isAnyOpenRole
+									? 'any open role'
+									: 'Listing: ' +
+									  (referralRequest?.jobTitle as string)
+							}
+							leftContent={
+								<div className="mt-[3px]">
+									<Image
+										src={
+											referralRequest?.company
+												?.logoUrl as string
+										}
+										alt="Logo"
+										height={14}
+										width={14}
+									/>
+								</div>
+							}
+							onClick={() => {
+								window.open(
+									referralRequest?.jobPostingLink as string
+								);
+							}}
+						/>
+					</div>
 				}
-			}}
-			headerText={`Refer ${userProfile.firstName} to ${referralRequest?.company.name}`}
-			subtitleText={`You're a kind soul or on the hunt for that referral bonus 💰. ${userProfile.firstName} thanks you either way!`}
-			headerRightContent={
-				<div className="flex items-center gap-2">
-					<RTag
-						className="cursor-pointer"
-						label={
-							referralRequest?.isAnyOpenRole
-								? 'any open role'
-								: 'Listing: ' +
-								  (referralRequest?.jobTitle as string)
-						}
-						leftContent={
-							<div className="mt-[3px]">
-								<Image
-									src={
-										referralRequest?.company
-											?.logoUrl as string
-									}
-									alt="Logo"
-									height={14}
-									width={14}
-								/>
-							</div>
-						}
-						onClick={() => {
-							window.open(
-								referralRequest?.jobPostingLink as string
-							);
-						}}
-					/>
-				</div>
-			}
-			sections={sections}
-		/>
+				sections={sections}
+			/>
+		</>
 	);
 }

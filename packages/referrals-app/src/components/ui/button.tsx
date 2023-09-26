@@ -4,6 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '~/lib/utils';
 import Icon, { type IconName } from './icons';
+import Spinner from './spinner';
 
 const buttonVariants = cva(
 	'inline-flex items-center text-sm font-normal gap-[10px] justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -68,6 +69,7 @@ interface RButtonProps extends ButtonProps {
 	iconName?: IconName;
 	onFileChange?: React.ChangeEventHandler<HTMLInputElement>; // renamed to onFileChange
 	onClick?: React.MouseEventHandler<HTMLButtonElement>; // added
+	isLoading?: boolean;
 }
 
 export const RButton = ({
@@ -76,6 +78,7 @@ export const RButton = ({
 	children,
 	onFileChange,
 	onClick,
+	isLoading,
 	...props
 }: RButtonProps) => {
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -105,13 +108,21 @@ export const RButton = ({
 				className="max-w-fit"
 				onClick={handleClick}
 			>
-				{iconName && (
-					<Icon
-						name={iconName}
-						size={props.size === 'sm' ? '12px' : '14px'}
-					/>
+				{isLoading ? (
+					<div className="flex px-4 py-2">
+						<Spinner size="xs" />
+					</div>
+				) : (
+					<>
+						{iconName && (
+							<Icon
+								name={iconName}
+								size={props.size === 'sm' ? '12px' : '14px'}
+							/>
+						)}
+						{children}
+					</>
 				)}
-				{children}
 			</Button>
 			<input
 				type="file"

@@ -11,6 +11,7 @@ import type dynamicIconImports from 'lucide-react/dynamicIconImports';
 import { RText } from './text';
 import { useDebouncedCallback } from 'use-debounce';
 import { type ZodSchema } from 'zod';
+import { useToast } from './use-toast';
 
 export interface InputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -41,6 +42,7 @@ interface RInputProps extends InputProps {
 	onErrorFound?: () => void;
 	onErrorFixed?: () => void;
 	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	copyOnClick?: boolean;
 }
 
 export const RInput = ({
@@ -49,6 +51,7 @@ export const RInput = ({
 	isRequired,
 	validationSchema,
 	onChange,
+	copyOnClick = false,
 	...props
 }: RInputProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +62,7 @@ export const RInput = ({
 	const [currentValueLocal, setCurrentValueLocal] = useState(
 		props.value ?? ''
 	);
+	const { toast } = useToast();
 
 	const handleIconClick = () => {
 		if (inputRef.current) {
@@ -68,6 +72,10 @@ export const RInput = ({
 				clearTimeout(debounceIcon);
 			}
 			setDebounceIcon(setTimeout(() => setIcon('copy'), 1500));
+			toast({
+				title: 'Copied to clipboard',
+				duration: 1500,
+			});
 		}
 	};
 
@@ -131,7 +139,14 @@ export const RInput = ({
 	};
 
 	return (
-		<div className="relative flex flex-col">
+		<div
+			className="relative flex flex-col"
+			onClick={() => {
+				if (copyOnClick) {
+					handleIconClick();
+				}
+			}}
+		>
 			<Input
 				ref={inputRef}
 				{...props}

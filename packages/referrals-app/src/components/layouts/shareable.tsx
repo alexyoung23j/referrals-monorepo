@@ -14,6 +14,8 @@ import { supabase } from '~/server/api/routers/supabase_bucket';
 import { RPopover } from '../ui/popover';
 import ActivityModal from '../modals/activity_modal';
 import { RButton } from '../ui/button';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;
@@ -304,11 +306,29 @@ const LinkPageDesktop = ({
 	children,
 }: LinkPageLayoutProps) => {
 	const [maxExperiences, setMaxExperiences] = useState(3);
+	const { data: sessionData } = useSession();
+	const router = useRouter();
 
 	return (
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
-				<div className="flex flex-col gap-[20px] pt-[15vh]">
+				{sessionData?.user && (
+					<div
+						className="left-6 mt-6"
+						onClick={() => {
+							router.push('/dashboard');
+						}}
+					>
+						<RText
+							color="secondary"
+							className="cursor-pointer hover:underline"
+							fontWeight="medium"
+						>
+							← Dashboard
+						</RText>
+					</div>
+				)}
+				<div className="flex flex-col gap-[20px] pt-[13vh]">
 					<Avatar className="h-[76px] w-[76px]">
 						<AvatarImage
 							src={avatarUrl}
@@ -537,7 +557,7 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 					content: [
 						<div key="about" className="flex flex-col gap-4">
 							<RText fontSize={isMobile ? 'b1' : 'h3'}>
-								{`Use ReferLink to easily refer ${firstName} or circulate ${firstName}'s referral requests within your network.`}
+								{`ReferLink makes it easy to refer ${firstName} to a role or circulate ${firstName}'s referral requests within your network.`}
 							</RText>
 						</div>,
 					],

@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { type GetServerSidePropsContext } from 'next';
 import { PageLayout } from '~/components/layouts';
 import { RButton } from '~/components/ui/button';

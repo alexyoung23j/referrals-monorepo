@@ -21,6 +21,7 @@ enum EmailJobType {
     REFERRAL_CONFIRMATION // Email sent to referrer after they succesfully refer
     REFERRAL_CONFIRMATION_NOTIFICATION // Email sent to job seeker after they have been referred
     MESSAGE_FROM_REFERRER // Email sent to job seeker with a message from the referrer
+    JOB_LINK // Email sent to job seeker with a link to the job posting
 }
 
 enum EmailJobStatus {
@@ -43,6 +44,7 @@ model EmailJob {
     id                        String            @id @default(cuid())
     toAddress                 String
     body                      String
+    subject                   String
     attachments               EmailAttachment[]
     toCC                      String[]
     associatedReferralRequest ReferralRequest?  @relation(fields: [referralRequestId], references: [id])

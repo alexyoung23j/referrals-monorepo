@@ -178,7 +178,7 @@ export default function ShareModal({
 				<RLabeledSection
 					key="message"
 					label="Custom Message"
-					subtitle={`Include a message to provide some context about ${userProfile.firstName}. This will appear in the link you share.`}
+					subtitle={`Include a message to your network to provide some context about ${userProfile.firstName}. This will appear in the link.`}
 					body={
 						<RTextarea
 							placeholder="enter optional message"
@@ -239,6 +239,7 @@ export default function ShareModal({
 											value={`https://${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${shareableLink?.id}`}
 											copyEnabled
 											highlighted
+											copyOnClick
 										/>
 									) : (
 										<div className="flex w-full items-center justify-center">

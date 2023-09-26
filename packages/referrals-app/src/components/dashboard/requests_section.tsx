@@ -646,6 +646,7 @@ export default function RequestsSection({
 														}`}
 														copyEnabled
 														highlighted
+														copyOnClick
 													/>
 												</div>,
 												<RTextarea
@@ -774,7 +775,7 @@ export default function RequestsSection({
 												>
 													{`A "committed" status means a
 												referrer has set a reminder to
-												refer you.`}
+												refer you. "Completed" requests will not appear in your links.`}
 												</RText>
 											</div>
 										}
