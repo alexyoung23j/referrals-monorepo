@@ -92,16 +92,20 @@ export default function ShareModal({
 
 						setShareableLink(linkData);
 						setDefaultLink(linkData);
-						setShareableMessage(linkData?.blurb as string);
-						setName(
-							linkData.isDefaultLinkForRequest
-								? pageViewerName ?? ''
-								: linkData?.blurbAuthorName ??
-										pageViewerName ??
-										''
-						);
+
+						if (!linkData.createdByLoggedInUser) {
+							setShareableMessage(linkData?.blurb as string);
+							setName(
+								linkData.isDefaultLinkForRequest
+									? pageViewerName ?? ''
+									: linkData?.blurbAuthorName ??
+											pageViewerName ??
+											''
+							);
+						}
 
 						if (linkId !== undefined) {
+							console.log('setting');
 							setGeneratedLink(linkData);
 						}
 					} catch (e) {}
@@ -176,50 +180,6 @@ export default function ShareModal({
 			type: 'single-column',
 			content: [
 				<RLabeledSection
-					key="message"
-					label="Custom Message"
-					subtitle={`Include a message to your network to provide some context about ${userProfile.firstName}. This will appear in the link.`}
-					body={
-						<RTextarea
-							placeholder="enter optional message"
-							value={shareableMessage}
-							onChange={(e) =>
-								setShareableMessage(e.target.value)
-							}
-						/>
-					}
-				/>,
-			],
-		},
-		{
-			type: 'single-column',
-			content: [
-				<RLabeledSection
-					key="name"
-					label="Your name"
-					body={
-						<RInput
-							placeholder="enter your name"
-							value={name}
-							onChange={(e) => {
-								setName(e.target.value);
-								setPageViewerName(e.target.value);
-							}}
-						/>
-					}
-				/>,
-			],
-		},
-
-		{
-			type: 'single-column',
-			content: [<Separator key="searator" />],
-		},
-
-		{
-			type: 'single-column',
-			content: [
-				<RLabeledSection
 					key="sharing"
 					label="Sharing options"
 					subtitle="Pass on the request without any extra typing 🙏."
@@ -288,6 +248,50 @@ export default function ShareModal({
 									)}
 								</div>,
 							]}
+						/>
+					}
+				/>,
+			],
+		},
+
+		{
+			type: 'single-column',
+			content: [<Separator key="searator" />],
+		},
+
+		{
+			type: 'single-column',
+			content: [
+				<RLabeledSection
+					key="message"
+					label="Custom Message"
+					subtitle={`Include a message to your network to provide some context about ${userProfile.firstName}. This will appear in the link.`}
+					body={
+						<RTextarea
+							placeholder="enter optional message"
+							value={shareableMessage}
+							onChange={(e) =>
+								setShareableMessage(e.target.value)
+							}
+						/>
+					}
+				/>,
+			],
+		},
+		{
+			type: 'single-column',
+			content: [
+				<RLabeledSection
+					key="name"
+					label="Your name"
+					body={
+						<RInput
+							placeholder="enter your name"
+							value={name}
+							onChange={(e) => {
+								setName(e.target.value);
+								setPageViewerName(e.target.value);
+							}}
 						/>
 					}
 				/>,

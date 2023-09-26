@@ -275,20 +275,22 @@ export default function LinkPage({
 											: 'gap-[8px] p-[8px]'
 									}`}
 								>
-									<div className="flex items-center gap-3">
-										<RText
-											fontSize="h3"
-											fontWeight="medium"
-										>
-											From{' '}
-											{
-												link?.blurbAuthorName?.split(
-													' '
-												)[0]
-											}
-											:
-										</RText>
-									</div>
+									{link?.blurbAuthorName && (
+										<div className="flex items-center gap-3">
+											<RText
+												fontSize="h3"
+												fontWeight="medium"
+											>
+												From{' '}
+												{
+													link?.blurbAuthorName?.split(
+														' '
+													)[0]
+												}
+												:
+											</RText>
+										</div>
+									)}
 									<RText
 										fontSize={isMobile ? 'b2' : 'b1'}
 										color="secondary"
