@@ -27,7 +27,8 @@ function main() {
 
 	expressApp.listen(process.env.PORT || 3001);
 	console.log(
-		`----------------Referalls Bot Listening on port ${process.env.PORT ?? 3001
+		`----------------Email Service Listening on port ${
+			process.env.PORT ?? 3001
 		}----------------`
 	);
 
