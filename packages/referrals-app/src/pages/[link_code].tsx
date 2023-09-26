@@ -234,7 +234,7 @@ export default function LinkPage({
 					isMobile ? 'mt-[3vh]' : 'mt-[5vh]'
 				} flex h-full w-full flex-col gap-[28px] ${
 					isMobile ? 'px-[24px]' : 'px-[104px]'
-				} relative mb-[35vh] flex-col`}
+				} relative flex-col pb-[35vh]`}
 			>
 				<RText
 					fontSize={isMobile ? 'h3' : 'h1point5'}

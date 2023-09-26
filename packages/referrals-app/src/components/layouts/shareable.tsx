@@ -601,7 +601,11 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 								<RButton variant="disabled">Refer</RButton>
 								<RText
 									fontSize={isMobile ? 'b1' : 'h3'}
-								>{`→ I can refer ${firstName} to a job`}</RText>{' '}
+								>{`→ I can refer ${firstName} to a job${
+									!isMobile
+										? ' / Set a referral reminder'
+										: ''
+								}`}</RText>{' '}
 							</div>
 							<div className="flex items-center gap-2">
 								<RButton variant="disabled_secondary">
