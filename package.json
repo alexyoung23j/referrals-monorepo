@@ -9,7 +9,7 @@
 		"lint": "eslint packages",
 		"lint:fix": "eslint packages --fix",
 		"start:app": "prisma db push && yarn workspace referrals-app start",
-		"start:prod": "yarn --cwd packages/prisma prisma db push & && yarn workspace referrals-app start:prod",
+		"start:prod": "yarn --cwd packages/prisma prisma db push && yarn workspace referrals-app start:prod",
 		"start:app:turbo": "prisma db push && yarn workspace referrals-app start:turbo",
 		"start:email": "prisma db push && yarn workspace email-service start",
 		"start:email-prod": "prisma db push && yarn workspace email-service start",

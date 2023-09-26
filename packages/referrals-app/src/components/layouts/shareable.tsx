@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
 import { PDFRenderer, handleDownload } from '../ui/pdf';
-import { supabase } from '~/server/api/routers/supabase_bucket';
 import { RPopover } from '../ui/popover';
 import ActivityModal from '../modals/activity_modal';
 import { RButton } from '../ui/button';
