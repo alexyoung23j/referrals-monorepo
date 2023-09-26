@@ -26,6 +26,7 @@ export const emailRouter = createTRPCRouter({
 					'REFERRAL_CONFIRMATION',
 					'REFERRAL_CONFIRMATION_NOTIFICATION',
 					'MESSAGE_FROM_REFERRER',
+					'JOB_LINK',
 				]),
 				seekerUserId: z.string(),
 				referrerName: z.string(),
@@ -50,8 +51,6 @@ export const emailRouter = createTRPCRouter({
 				jobTitle = '',
 				specialJobPostingLink = '',
 			} = input;
-
-			console.log({ referrerEmail, referrerName });
 
 			if (!referrerEmail || !referrerName) {
 				throw new TRPCError({
@@ -170,6 +169,7 @@ export const emailRouter = createTRPCRouter({
 			let resumeAttachment;
 			switch (emailType) {
 				case EmailJobType.MESSAGE_FROM_REFERRER:
+				case EmailJobType.JOB_LINK:
 				case EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION:
 				case EmailJobType.REFERRAL_REMINDER_NOTIFICATION:
 					toAddress = seeker?.publicEmail ?? '';
@@ -247,95 +247,4 @@ export const emailRouter = createTRPCRouter({
 				});
 			}
 		}),
-	// // TODO: i don't even think we need this, queueEmailJob can handle cancelling when sending confirmation email
-	// cancelEmailJob: publicProcedure
-	// 	.input(
-	// 		z.object({
-	// 			emailId: z.string()
-	// 		})
-	// 	)
-	// 	.mutation(async ({ input, ctx }) => {
-	// 		const {emailId} = input;
-	// 		await ctx.prisma.emailJob.update({
-	// 			where: {
-	// 				id: emailId
-	// 			},
-	// 			data:
-	// 				{
-	// 					status: EmailJobStatus.CANCELLED,
-	// 				}
-	// 		});
-	// 	}),
-	// // TODO: everything below is for testing purposes on email page, remove later
-	// createMockEmailJobEntries: publicProcedure
-	// 	.mutation(async ({ ctx }) => {
-	// 		await ctx.prisma.emailJob.createMany({
-	// 			data: [
-	// 				{
-	// 					toAddress: 'borayuksel1903@gmail.com',
-	// 					body: 'Email from referrals scheduled for NOW',
-	// 					toCC: [],
-	// 					emailType: 'REFERRAL_REMINDER',
-	// 					status: 'QUEUED',
-	// 					scheduledAt: new Date()
-	// 				},
-	// 				{
-	// 					toAddress: 'borayuksel1903@gmail.com',
-	// 					body: 'Email from referrals one minute later',
-	// 					toCC: [],
-	// 					emailType: 'REFERRAL_REMINDER',
-	// 					status: 'QUEUED',
-	// 					scheduledAt: new Date(new Date().getTime() + 60000)
-	// 				},
-	// 				{
-	// 					toAddress: 'borayuksel1903@gmail.com',
-	// 					body: 'Email from referrals with Attachment',
-	// 					toCC: [],
-	// 					emailType: 'REFERRAL_REMINDER',
-	// 					status: 'QUEUED'
-	// 				}
-	// 			]
-	// 		});
-	// 	}),
-	// deleteMockEmails: publicProcedure
-	// 	.mutation(async ({ ctx }) => {
-	// 		await ctx.prisma.emailJob.deleteMany({
-	// 			where: {
-	// 				OR: [
-	// 					{
-	// 						status: 'SENT'
-	// 					},
-	// 					{
-	// 						status: 'FAILED'
-	// 					}
-	// 				]
-	// 			}
-	// 		});
-	// 	}),
-	// getUsersToRefer: publicProcedure
-	// 	.query(async ({ ctx }) => {
-	// 		const users = await ctx.prisma.user.findMany();
-	// 		return users.map(user => ({value: user.id, content: user.name}));
-	// 	}),
-	// getReferralRequests: publicProcedure
-	// 	.input(
-	// 		z.object({
-	// 			userId: z.string()
-	// 		})
-	// 	)
-	// 	.query(async ({ ctx, input }) => {
-	// 		const {userId} = input;
-
-	// 		if(!userId) {return [];};
-
-	// 		const referralRequests = await ctx.prisma.referralRequest.findMany({
-	// 			where: {
-	// 				requesterId: userId
-	// 			},
-	// 			include: {
-	// 				company: true
-	// 			}
-	// 		});
-	// 		return referralRequests.map(request => ({value: request.id, content: `${request.company.name} - ${request.jobTitle}`}));
-	// 	}),
 });

@@ -17,16 +17,12 @@ const referralReminder = ({
 	<br>
 	<span>This is a friendly reminder to refer ${seekerName} to ${companyName}${
 		role ? ` for the ${role} role` : ''
-	}. I've CC'd ${seekerName} and attached their resume. To easily facilitate this request and access additional information about ${seekerName}, click here: ${referralsLink}.</span>
+	} (CC'd and resume attached). To easily facilitate this request, click here: ${referralsLink}.</span>
 	<br>
 	<br>
-	${seekerName} really appreciates the help!
-	<br>
-	<br>
-	<span>Thank you for using ReferLink!</span>
+	<span>${seekerName} really appreciates the help! Thank you for using ReferLink!</span>
 	</body></html>`;
 
-// TODO: this needs to handle a special case for special job posting link. Maybe another special flag idk
 const messageFromReferrer = ({
 	referrerName,
 	seekerName,
@@ -34,7 +30,6 @@ const messageFromReferrer = ({
 	referrerEmail,
 	message,
 	meetingScheduleLink,
-	specialJobPostingLink,
 }: Record<string, string>) =>
 	`<html>
 	<body>
@@ -44,7 +39,7 @@ const messageFromReferrer = ({
 	<span>You've got a message from ${referrerName} regarding your referral request at ${companyName}. Here's what ${referrerName} said:</span>
 	<br>
 	<br>
-	<span>"${message}"</span>
+	<span>"${message}".</span>
 	${
 		meetingScheduleLink
 			? `
@@ -52,22 +47,46 @@ const messageFromReferrer = ({
 		<br>
 		<span>They've also included a link to schedule a meeting: ${meetingScheduleLink}.</span>
 		`
-			: ''
+			: `
+			<br>
+			<br>`
 	}
-	${
-		!meetingScheduleLink && specialJobPostingLink
-			? `
-		<br>
-		<br>
-		<span>They've also included a special job posting link: ${specialJobPostingLink}.</span>
-		`
-			: ''
-	}
-	<span>You can reach them at ${referrerEmail}.</span>
+	<span>Reach out at ${referrerEmail} if necessary.</span>
 	<br>
 	<br>
 	<span>Thank you for using ReferLink!</span>
 	</body></html>`;
+
+const jobPostingLink = ({
+	referrerName,
+	seekerName,
+	companyName,
+	referrerEmail,
+	message,
+	specialJobPostingLink,
+}: Record<string, string>) =>
+	`<html>
+		<body>
+		<span>Hi ${seekerName},</span>
+		<br>
+		<br>
+		<span>You've recieved a job posting link from ${referrerName} for your referral request at ${companyName}. Here's the link to apply with ${referrerName}'s referral: ${specialJobPostingLink}.</span>
+		<br>
+		<br>
+		${
+			message
+				? `
+			<span>They've also included a message: "${message}".</span>
+			<br>
+			<br>
+			`
+				: ''
+		}
+		<span>You can reach out at ${referrerEmail} if needed.</span>
+		<br>
+		<br>
+		<span>Thank you for using ReferLink!</span>
+		</body></html>`;
 
 const referralConfirmation = ({
 	referrerName,
@@ -80,7 +99,7 @@ const referralConfirmation = ({
 	<span>Hi ${referrerName},</span>
 	<br>
 	<br>
-	<span>Thank you so much for referring ${seekerName} to ${companyName}! If you need to get in touch with ${seekerName} you can reach them at ${seekerEmail}.</span>
+	<span>Thank you so much for referring ${seekerName} to ${companyName}! If you need to get in touch with ${seekerName}, reach out at ${seekerEmail}.</span>
 	<br>
 	<br>
 	<span>Thank you for using ReferLink!</span>
@@ -102,13 +121,12 @@ const referralConfirmationNotification = ({
 	<span>You've just been referred to ${
 		role ? `${role} position at` : ''
 	} ${companyName} by ${referrerName}.</span>
-	<span>You can reach them at ${referrerEmail} if you need more information, but they've confirmed your referral was submitted!</span>
+	<span>You can reach out at ${referrerEmail} if you need more information, but they have confirmed your referral was submitted!</span>
 	${
 		message
-			? `They've included this message as well:
-		<br>
-		<br>
-		${message}
+			? `
+			<br>
+			<br>They've included this message as well: "${message}".
 		`
 			: ''
 	}
@@ -119,6 +137,7 @@ const referralConfirmationNotification = ({
 
 const jobToMessageMapping: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.MESSAGE_FROM_REFERRER]: messageFromReferrer,
+	[EmailJobType.JOB_LINK]: jobPostingLink,
 	[EmailJobType.REFERRAL_CONFIRMATION]: referralConfirmation,
 	[EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION]:
 		referralConfirmationNotification,
@@ -129,7 +148,7 @@ const messageFromReferrerSubject = ({
 	referrerName,
 	companyName,
 }: Record<string, string>) =>
-	`Message from ${referrerName} | re: Referral to ${companyName}`;
+	`Message from ${referrerName} | Referral to ${companyName}`;
 const referralConfirmationSubject = ({
 	seekerName,
 	companyName,
@@ -143,6 +162,8 @@ const referralReminderSubject = ({
 	companyName,
 }: Record<string, string>) =>
 	`Your reminder to refer ${seekerName} to ${companyName}!`;
+const jobLinkSubject = ({ companyName }: Record<string, string>) =>
+	`Apply to ${companyName} with a referral now!`;
 
 const emailTypeToSubject: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.MESSAGE_FROM_REFERRER]: messageFromReferrerSubject,
@@ -150,6 +171,7 @@ const emailTypeToSubject: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION]:
 		referralConfirmationNotificationSubject,
 	[EmailJobType.REFERRAL_REMINDER]: referralReminderSubject,
+	[EmailJobType.JOB_LINK]: jobLinkSubject,
 };
 
 const getTemplate = (

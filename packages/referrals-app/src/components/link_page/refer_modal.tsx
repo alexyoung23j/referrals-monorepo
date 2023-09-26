@@ -150,12 +150,15 @@ const RemindSection = ({
 											date.getFullYear() ===
 												now.getFullYear()
 										) {
+											console.log('Huh');
 											// If the selected date is today, schedule the email for 3 hours from now
 											scheduledDate = new Date(
 												now.getTime() +
 													3 * 60 * 60 * 1000
 											);
+											console.log({ scheduledDate });
 										} else {
+											console.log('in here??');
 											// If the selected date is in the future, schedule the email for a random time between 10AM and 2PM
 											scheduledDate = new Date(
 												date.getTime()
@@ -714,6 +717,7 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="check"
+								isLoading={isProcessing}
 								onClick={async () => {
 									setIsProcessing(true);
 									try {
@@ -831,11 +835,12 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="send"
+								isLoading={isProcessing}
 								onClick={async () => {
 									setIsProcessing(true);
 									try {
 										await validateFormAndScheduleEmail(
-											'MESSAGE_FROM_REFERRER'
+											'JOB_LINK'
 										);
 										runConfetti();
 										closeModalCleanup();
@@ -946,11 +951,22 @@ const mainBody = ({
 						>
 							<RButton
 								iconName="check"
-								onClick={async () =>
-									await validateFormAndScheduleEmail(
-										'REFERRAL_CONFIRMATION'
-									)
-								}
+								isLoading={isProcessing}
+								onClick={async () => {
+									setIsProcessing(true);
+									try {
+										await validateFormAndScheduleEmail(
+											'REFERRAL_CONFIRMATION'
+										);
+										runConfetti();
+										closeModalCleanup();
+										toast({
+											title: 'Reminder scheduled!',
+											duration: 4000,
+										});
+									} catch (e) {}
+									setIsProcessing(false);
+								}}
 							>
 								Confirm referral submitted
 							</RButton>
@@ -978,7 +994,8 @@ type EmailType =
 	| 'REFERRAL_REMINDER_NOTIFICATION'
 	| 'REFERRAL_CONFIRMATION'
 	| 'REFERRAL_CONFIRMATION_NOTIFICATION'
-	| 'MESSAGE_FROM_REFERRER';
+	| 'MESSAGE_FROM_REFERRER'
+	| 'JOB_LINK';
 
 export default function ReferModal({
 	isOpen,
@@ -1012,6 +1029,8 @@ export default function ReferModal({
 		query: '(max-width: 840px)',
 	});
 	const queueEmailJob = api.email.queueEmailJob.useMutation();
+	const updateReferralRequest =
+		api.referralRequest.updateRequest.useMutation();
 
 	const [referNow, setReferNow] = useState(true);
 	const [selectedReferralOption, setSelectedReferralOption] = useState<
@@ -1021,7 +1040,7 @@ export default function ReferModal({
 	const [messageToRequester, setMessageToRequester] = useState('');
 	const [specialJobPostingLink, setSpecialJobPostingLink] = useState('');
 	const [meetingScheduleLink, setMeetingScheduleLink] = useState('');
-	const [emailScheduledAt, setEmailScheduledAt] = useState<Date>(new Date());
+	const [emailScheduledAt, setEmailScheduledAt] = useState<Date>(new Date()); // default set this to 3 hours from right now
 	const { toast } = useToast();
 	const [showConfetti, setShowConfetti] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -1033,8 +1052,16 @@ export default function ReferModal({
 		}, 5000);
 	};
 
+	// Update email time to 3 hours from now if referNow is false (for reminders)
+	useEffect(() => {
+		if (referNow) {
+			setEmailScheduledAt(new Date());
+		} else {
+			setEmailScheduledAt(new Date(Date.now() + 1000 * 60 * 60 * 3));
+		}
+	}, [referNow]);
+
 	const validateFormAndScheduleEmail = async (emailType: EmailType) => {
-		console.log({ emailAddress, pageViewerName });
 		if (
 			emailAddress.length < 1 ||
 			(pageViewerName && pageViewerName?.length < 1) ||
@@ -1060,6 +1087,24 @@ export default function ReferModal({
 				jobTitle: referralRequest?.jobTitle ?? '',
 				specialJobPostingLink,
 			});
+
+			if (emailType === 'REFERRAL_REMINDER') {
+				await updateReferralRequest.mutateAsync({
+					id: referralRequest?.id as string,
+					status: 'COMMITTED',
+				});
+			} else if (emailType === 'REFERRAL_CONFIRMATION') {
+				await updateReferralRequest.mutateAsync({
+					id: referralRequest?.id as string,
+					status: 'COMPLETED',
+				});
+			} else if (emailType === 'JOB_LINK') {
+				await updateReferralRequest.mutateAsync({
+					id: referralRequest?.id as string,
+					status: 'COMMITTED',
+				});
+			}
+
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
 			console.error(e);

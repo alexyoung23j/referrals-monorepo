@@ -292,193 +292,203 @@ export default function LinkPage({
 						</div>
 					)}
 					<div className="flex flex-col gap-[16px]">
-						<RowTable
-							cardElevation={requests.length > 1 ? 'none' : 'md'}
-							mobileWidth={1024}
-							columns={[
-								{
-									label: 'Company',
-									minWidth: isMobile ? 75 : 200,
-									hideOnMobile: false,
-								},
-								{
-									label: 'Job listing',
-									minWidth: 200,
-									hideOnMobile: true,
-								},
-								{
-									label: (
-										<RPopover
-											align="end"
-											trigger={
-												<div className="flex gap-2">
-													<RText
-														fontSize="b2"
-														color="tertiary"
-													>
-														Action
-													</RText>
-													<Icon
-														name="info"
-														size="12"
-														color="#94a3b8"
-													/>
-												</div>
-											}
-											content={
-												<div>
-													<RText
-														fontSize="b2"
-														color="secondary"
-													>
-														{`"Share request" allows you
+						{requests && requests.length > 0 ? (
+							<RowTable
+								cardElevation={
+									requests.length > 1 ? 'none' : 'md'
+								}
+								mobileWidth={1024}
+								columns={[
+									{
+										label: 'Company',
+										minWidth: isMobile ? 75 : 200,
+										hideOnMobile: false,
+									},
+									{
+										label: 'Job listing',
+										minWidth: 200,
+										hideOnMobile: true,
+									},
+									{
+										label: (
+											<RPopover
+												align="end"
+												trigger={
+													<div className="flex gap-2">
+														<RText
+															fontSize="b2"
+															color="tertiary"
+														>
+															Action
+														</RText>
+														<Icon
+															name="info"
+															size="12"
+															color="#94a3b8"
+														/>
+													</div>
+												}
+												content={
+													<div>
+														<RText
+															fontSize="b2"
+															color="secondary"
+														>
+															{`"Share request" allows you
 													to pass on this request to
 													someone else in your
 													network. "Refer" allows you
 													to refer this person to the
 													company.`}
-													</RText>
-												</div>
-											}
-										/>
-									),
-									hideOnMobile: false,
-									minWidth: 200,
-								},
-							]}
-							rows={
-								requests.map((request) => {
-									const row = {
-										label: request.id,
-										cells: [
-											{
-												content: (
-													<div className="flex items-center gap-3">
-														<Image
-															src={
-																request?.company
-																	?.logoUrl as string
-															}
-															alt="Logo"
-															height={24}
-															width={24}
-														/>
-														<RText fontWeight="medium">
-															{
-																request.company
-																	?.name
-															}
 														</RText>
 													</div>
-												),
-												label: 'Company',
-											},
-											{
-												content: (
-													<div>
-														{request.jobPostingLink ? (
-															<div
-																className="flex cursor-pointer items-center gap-3"
+												}
+											/>
+										),
+										hideOnMobile: false,
+										minWidth: 200,
+									},
+								]}
+								rows={
+									requests.map((request) => {
+										const row = {
+											label: request.id,
+											cells: [
+												{
+													content: (
+														<div className="flex items-center gap-3">
+															<Image
+																src={
+																	request
+																		?.company
+																		?.logoUrl as string
+																}
+																alt="Logo"
+																height={24}
+																width={24}
+															/>
+															<RText fontWeight="medium">
+																{
+																	request
+																		.company
+																		?.name
+																}
+															</RText>
+														</div>
+													),
+													label: 'Company',
+												},
+												{
+													content: (
+														<div>
+															{request.jobPostingLink ? (
+																<div
+																	className="flex cursor-pointer items-center gap-3"
+																	onClick={() => {
+																		if (
+																			request.jobPostingLink
+																		) {
+																			window.open(
+																				request.jobPostingLink as string,
+																				'_blank'
+																			);
+																		}
+																	}}
+																>
+																	<RText color="secondary">
+																		{request.jobTitle &&
+																			(request
+																				.jobTitle
+																				.length >
+																			20
+																				? `${request.jobTitle.slice(
+																						0,
+																						20
+																				  )}...`
+																				: request.jobTitle)}
+																		{!request.jobTitle &&
+																			request.jobPostingLink &&
+																			(request
+																				.jobPostingLink
+																				.length >
+																			15
+																				? `${request.jobPostingLink.slice(
+																						0,
+																						15
+																				  )}...`
+																				: request.jobPostingLink)}
+																	</RText>
+																	<Icon
+																		name="link"
+																		size="14"
+																		color="#64748b"
+																	/>
+																</div>
+															) : (
+																<RTag
+																	label="Any open role"
+																	color="default"
+																/>
+															)}
+														</div>
+													),
+													label: 'jobTitle',
+												},
+												{
+													content: (
+														<div className="flex gap-2">
+															<RButton
+																variant="secondary"
+																size="md"
 																onClick={() => {
-																	if (
-																		request.jobPostingLink
-																	) {
-																		window.open(
-																			request.jobPostingLink as string,
-																			'_blank'
-																		);
-																	}
+																	setShareModalIsAllRequests(
+																		false
+																	);
+																	setSelectedRequest(
+																		request
+																	);
+																	setShareModalOpen(
+																		true
+																	);
 																}}
 															>
-																<RText color="secondary">
-																	{request.jobTitle &&
-																		(request
-																			.jobTitle
-																			.length >
-																		20
-																			? `${request.jobTitle.slice(
-																					0,
-																					20
-																			  )}...`
-																			: request.jobTitle)}
-																	{!request.jobTitle &&
-																		request.jobPostingLink &&
-																		(request
-																			.jobPostingLink
-																			.length >
-																		15
-																			? `${request.jobPostingLink.slice(
-																					0,
-																					15
-																			  )}...`
-																			: request.jobPostingLink)}
-																</RText>
-																<Icon
-																	name="link"
-																	size="14"
-																	color="#64748b"
-																/>
-															</div>
-														) : (
-															<RTag
-																label="Any open role"
-																color="default"
-															/>
-														)}
-													</div>
-												),
-												label: 'jobTitle',
-											},
-											{
-												content: (
-													<div className="flex gap-2">
-														<RButton
-															variant="secondary"
-															size="md"
-															onClick={() => {
-																setShareModalIsAllRequests(
-																	false
-																);
-																setSelectedRequest(
-																	request
-																);
-																setShareModalOpen(
-																	true
-																);
-															}}
-														>
-															Share{' '}
-															{isMobile
-																? ''
-																: 'request'}
-														</RButton>
-														<RButton
-															size="md"
-															onClick={() => {
-																setShareModalIsAllRequests(
-																	false
-																);
-																setSelectedRequest(
-																	request
-																);
-																setReferModalOpen(
-																	true
-																);
-															}}
-														>
-															Refer
-														</RButton>
-													</div>
-												),
-												label: 'action',
-											},
-										],
-									};
+																Share{' '}
+																{isMobile
+																	? ''
+																	: 'request'}
+															</RButton>
+															<RButton
+																size="md"
+																onClick={() => {
+																	setShareModalIsAllRequests(
+																		false
+																	);
+																	setSelectedRequest(
+																		request
+																	);
+																	setReferModalOpen(
+																		true
+																	);
+																}}
+															>
+																Refer
+															</RButton>
+														</div>
+													),
+													label: 'action',
+												},
+											],
+										};
 
-									return row;
-								}) ?? []
-							}
-						/>
+										return row;
+									}) ?? []
+								}
+							/>
+						) : (
+							<RText color="secondary">
+								No open referral requests.
+							</RText>
+						)}
 					</div>
 				</div>
 			</div>
@@ -543,6 +553,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 		requests = await prisma.referralRequest.findMany({
 			where: {
 				requesterId: link?.user.id,
+				status: {
+					not: 'COMPLETED',
+				},
 			},
 			include: {
 				company: true,
