@@ -17,7 +17,7 @@ export default async function sendEmail({
 }: EmailWithAttachment): Promise<CreateEmailResponse | EmailError> {
 	return resend.emails.send({
 		// TODO: we need to change this when we have a valid domain
-		from: 'ReferLink <noreply@referlink.xyz>',
+		from: 'ReferLink <no-reply@referlink.xyz>',
 		to: toAddress,
 		subject,
 		html: body,
