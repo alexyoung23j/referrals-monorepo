@@ -1,12 +1,5 @@
 import { useMediaQuery } from 'react-responsive';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '../ui/dialog';
+import { Dialog, DialogContent } from '../ui/dialog';
 import { Separator } from '../ui/separator';
 import { RText } from '../ui/text';
 
