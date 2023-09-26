@@ -646,6 +646,7 @@ export default function RequestsSection({
 														}`}
 														copyEnabled
 														highlighted
+														copyOnClick
 													/>
 												</div>,
 												<RTextarea

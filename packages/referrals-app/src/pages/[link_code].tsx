@@ -257,7 +257,11 @@ export default function LinkPage({
 					{linkMessage && (
 						<div className="w-full">
 							<RCard
-								elevation={requests.length > 1 ? 'md' : 'none'}
+								elevation={
+									requests.length > 1 && !isMobile
+										? 'md'
+										: 'none'
+								}
 							>
 								<div
 									className={`flex flex-col  ${

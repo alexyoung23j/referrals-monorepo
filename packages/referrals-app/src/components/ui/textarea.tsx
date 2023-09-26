@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import * as React from 'react';
 import { Label } from './label';
 
