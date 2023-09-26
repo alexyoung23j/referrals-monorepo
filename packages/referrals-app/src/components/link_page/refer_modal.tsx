@@ -1092,16 +1092,22 @@ export default function ReferModal({
 				await updateReferralRequest.mutateAsync({
 					id: referralRequest?.id as string,
 					status: 'COMMITTED',
+					referrerName: pageViewerName as string,
+					referrerEmail: emailAddress,
 				});
 			} else if (emailType === 'REFERRAL_CONFIRMATION') {
 				await updateReferralRequest.mutateAsync({
 					id: referralRequest?.id as string,
 					status: 'COMPLETED',
+					referrerName: pageViewerName as string,
+					referrerEmail: emailAddress,
 				});
 			} else if (emailType === 'JOB_LINK') {
 				await updateReferralRequest.mutateAsync({
 					id: referralRequest?.id as string,
 					status: 'COMMITTED',
+					referrerName: pageViewerName as string,
+					referrerEmail: emailAddress,
 				});
 			}
 
