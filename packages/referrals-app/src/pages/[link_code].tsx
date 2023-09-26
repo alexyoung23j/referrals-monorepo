@@ -413,10 +413,10 @@ export default function LinkPage({
 																			(request
 																				.jobTitle
 																				.length >
-																			20
+																			15
 																				? `${request.jobTitle.slice(
 																						0,
-																						20
+																						15
 																				  )}...`
 																				: request.jobTitle)}
 																		{!request.jobTitle &&
