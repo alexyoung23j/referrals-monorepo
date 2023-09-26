@@ -72,6 +72,10 @@ export default function LinkPage({
 		query: '(max-width: 840px)',
 	});
 
+	const isMedium = useMediaQuery({
+		query: '(max-width: 1280px)',
+	});
+
 	const linkMessage = link?.blurb ?? userProfile?.defaultMessage ?? null;
 
 	const { query } = useRouter();
@@ -121,6 +125,7 @@ export default function LinkPage({
 			education={userProfile.education as string}
 			linkedInUrl={userProfile.linkedInUrl as string}
 			twitterUrl={userProfile.twitterUrl as string}
+			githubUrl={userProfile.githubUrl as string}
 			personalSiteUrl={userProfile.personalSiteUrl as string}
 			resumeUrl={userProfile.resumeUrl as string}
 			jobExperience={
@@ -305,12 +310,16 @@ export default function LinkPage({
 								columns={[
 									{
 										label: 'Company',
-										minWidth: isMobile ? 75 : 200,
+										minWidth: isMobile
+											? 75
+											: isMedium
+											? 125
+											: 200,
 										hideOnMobile: false,
 									},
 									{
 										label: 'Job listing',
-										minWidth: 200,
+										minWidth: isMedium ? 75 : 200,
 										hideOnMobile: true,
 									},
 									{

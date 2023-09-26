@@ -23,6 +23,7 @@ type LinkPageLayoutProps = {
 	education?: string;
 	linkedInUrl?: string;
 	twitterUrl?: string;
+	githubUrl?: string;
 	personalSiteUrl?: string;
 	resumeUrl?: string;
 	jobExperience?: Array<{
@@ -45,6 +46,7 @@ const LinkPageMobile = ({
 	education,
 	linkedInUrl,
 	twitterUrl,
+	githubUrl,
 	resumeUrl,
 	personalSiteUrl,
 	jobExperience,
@@ -259,6 +261,18 @@ const LinkPageMobile = ({
 									}}
 								/>
 							)}
+							{githubUrl && (
+								<Icon
+									name="github"
+									size="24px"
+									color="#64748b"
+									fill="#64748b"
+									className="cursor-pointer"
+									onClick={() => {
+										window.open(githubUrl, '_blank');
+									}}
+								/>
+							)}
 							{linkedInUrl && (
 								<Icon
 									name="linkedin"
@@ -298,6 +312,7 @@ const LinkPageDesktop = ({
 	education,
 	linkedInUrl,
 	twitterUrl,
+	githubUrl,
 	personalSiteUrl,
 	resumeUrl,
 	jobExperience,
@@ -327,7 +342,7 @@ const LinkPageDesktop = ({
 					</div>
 				)}
 				<div className="flex flex-col gap-[20px] pt-[13vh]">
-					<Avatar className="h-[76px] w-[76px]">
+					<Avatar className="h-[88px] w-[88px]">
 						<AvatarImage
 							src={avatarUrl}
 							style={{
@@ -374,7 +389,7 @@ const LinkPageDesktop = ({
 							</div>
 						)}
 					</div>
-					<div className="flex gap-4">
+					<div className="mt-[20px] flex gap-4">
 						{twitterUrl && (
 							<Icon
 								name="twitter"
@@ -384,6 +399,18 @@ const LinkPageDesktop = ({
 								className="cursor-pointer"
 								onClick={() => {
 									window.open(twitterUrl, '_blank');
+								}}
+							/>
+						)}
+						{githubUrl && (
+							<Icon
+								name="github"
+								size="24px"
+								color="#64748b"
+								fill="#64748b"
+								className="cursor-pointer"
+								onClick={() => {
+									window.open(githubUrl, '_blank');
 								}}
 							/>
 						)}
