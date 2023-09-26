@@ -80,7 +80,7 @@ export default function RequestsSection({
 		jobPostingLink: string | null;
 		isAnyOpenRole: boolean;
 	}>(null);
-	const [showShareBlurbInModal, setShowShareBlurbInModal] = useState(false);
+	const [showShareBlurbInModal, setShowShareBlurbInModal] = useState(true);
 	const [shareableMessage, setShareableMessage] = useState('');
 	const [selectedRequestReferrerName, setSelectedRequestReferrerName] =
 		useState('');
@@ -238,6 +238,8 @@ export default function RequestsSection({
 			});
 		}
 	};
+
+	console.log({ showShareBlurbInModal });
 
 	return (
 		<div className="mb-[36px] flex flex-col justify-between gap-[32px]">

@@ -34,6 +34,7 @@ export default function PersonalInfoSection() {
 	const [currentRoleTitle, setCurrentRoleTitle] = useState('');
 	const [linkedInUrl, setLinkedInUrl] = useState('');
 	const [twitterUrl, setTwitterUrl] = useState('');
+	const [githubUrl, setGithubUrl] = useState('');
 	const [personalSiteUrl, setPersonalSiteUrl] = useState('');
 	const [currentLocation, setCurrentLocation] = useState('');
 	const [education, setEducation] = useState('');
@@ -108,6 +109,9 @@ export default function PersonalInfoSection() {
 		if (profileData?.twitterUrl) {
 			setTwitterUrl(profileData.twitterUrl as string);
 		}
+		if (profileData?.githubUrl) {
+			setGithubUrl(profileData.githubUrl as string);
+		}
 		if (profileData?.personalSiteUrl) {
 			setPersonalSiteUrl(profileData.personalSiteUrl as string);
 		}
@@ -149,6 +153,7 @@ export default function PersonalInfoSection() {
 				currentRoleTitle,
 				linkedInUrl,
 				twitterUrl,
+				githubUrl,
 				personalSiteUrl,
 				currentLocation,
 				education,
@@ -364,6 +369,51 @@ export default function PersonalInfoSection() {
 							}
 						/>
 						<RLabeledSection
+							label="Github URL"
+							body={
+								<RInput
+									value={githubUrl as string}
+									onInput={(e) => {
+										setGithubUrl(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter Github profile url"
+									validationSchema={z
+										.string()
+										.url()
+										.refine(
+											(value) => {
+												try {
+													const url = new URL(value);
+													return (
+														url.hostname ===
+															'github.com' ||
+														url.hostname ===
+															'www.github.com'
+													);
+												} catch {
+													return false;
+												}
+											},
+											{
+												message:
+													'Must be a valid Github URL.',
+											}
+										)}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
 							label="Personal Site URL"
 							body={
 								<RInput
@@ -450,6 +500,15 @@ export default function PersonalInfoSection() {
 						</div>
 						<RLabeledSection
 							label="Experience Blurb"
+							showInfo
+							infoContent={
+								<div>
+									<RText fontSize="b2" color="secondary">
+										{`Referrers often need a quick blurb to help them communicate your background and experience.
+										 This blurb will be available to referrers by default on your shareable link pages.`}
+									</RText>
+								</div>
+							}
 							subtitle="Available to referrers to help communicate your background and experience."
 							body={
 								<RTextarea
@@ -467,6 +526,16 @@ export default function PersonalInfoSection() {
 						/>
 						<RLabeledSection
 							label="Default Link Message"
+							showInfo
+							infoContent={
+								<div>
+									<RText fontSize="b2" color="secondary">
+										{`This message will appear on link pages you share. Use it to thank your referrers, provide additional context
+											about your job search, or even offer a reward for successful referrals. You can customize this
+											message for specific requests in the dasbboard, but this will be the default.`}
+									</RText>
+								</div>
+							}
 							subtitle="This message will appear on link pages you share."
 							body={
 								<RTextarea

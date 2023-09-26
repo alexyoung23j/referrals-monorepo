@@ -130,6 +130,7 @@ model UserProfile {
     publicEmail      String?
     currentRoleTitle String?
     twitterUrl       String?
+    githubUrl        String?
     personalSiteUrl  String?
     currentLocation  String?
     education        String?

@@ -141,6 +141,19 @@ export const referralRequestRouter = createTRPCRouter({
 				});
 			}
 
+			const userProfile = await ctx.prisma.userProfile.findFirst({
+				where: {
+					userId: ctx.session.user.id,
+				},
+			});
+
+			if (!userProfile) {
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'User profile not found!',
+				});
+			}
+
 			// check if request already exists
 			const existingRequest = await ctx.prisma.referralRequest.findFirst({
 				where: {
@@ -191,6 +204,9 @@ export const referralRequestRouter = createTRPCRouter({
 					createdById: ctx.session.user.id,
 					isDefaultLinkForRequest: true,
 					blurbAuthorName: ctx.session.user.name,
+					blurb: userProfile.defaultMessage
+						? userProfile.defaultMessage
+						: undefined,
 				});
 				return request;
 			} catch (e) {

@@ -1,3 +1,5 @@
+import Icon from './icons';
+import { RPopover } from './popover';
 import { RText } from './text';
 
 interface LabeledSectionProps {
@@ -6,6 +8,8 @@ interface LabeledSectionProps {
 	subtitle?: string;
 	rightContent?: React.ReactNode;
 	body: React.ReactNode;
+	showInfo?: boolean;
+	infoContent?: React.ReactNode;
 }
 
 export const RLabeledSection = ({
@@ -14,14 +18,37 @@ export const RLabeledSection = ({
 	subtitle,
 	rightContent,
 	body,
+	showInfo = false,
+	infoContent,
 }: LabeledSectionProps) => {
 	return (
 		<div className="labeled-section w-full">
 			<div className="flex flex-col gap-[8px] text-lg font-bold">
 				<div className="flex w-full flex-row items-center justify-between gap-2">
-					<RText fontSize={labelSize} fontWeight="medium">
-						{label}
-					</RText>
+					{!showInfo ? (
+						<RText fontSize={labelSize} fontWeight="medium">
+							{label}
+						</RText>
+					) : (
+						<RPopover
+							trigger={
+								<div className="flex items-center gap-2">
+									<RText
+										fontSize={labelSize}
+										fontWeight="medium"
+									>
+										{label}
+									</RText>
+									<Icon
+										name="info"
+										size="14px"
+										color="#0f172a"
+									/>
+								</div>
+							}
+							content={infoContent}
+						/>
+					)}
 					{rightContent && rightContent}
 				</div>
 				{subtitle && (
