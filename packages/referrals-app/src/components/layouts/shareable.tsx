@@ -8,7 +8,7 @@ import { RLogo } from '../ui/logo';
 import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
-import { PDFRenderer, handleDownload } from '../ui/pdf';
+import PDFRenderer, { handleDownload } from '../ui/pdf';
 import { RPopover } from '../ui/popover';
 import ActivityModal from '../modals/activity_modal';
 import { RButton } from '../ui/button';
