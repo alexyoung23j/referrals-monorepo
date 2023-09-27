@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
-import { PDFRenderer } from '../ui/pdf';
+import PDFRenderer from '../ui/pdf';
 import { v4 as uuidv4 } from 'uuid';
 import { RowTable } from '../ui/card';
 import Image from 'next/image';

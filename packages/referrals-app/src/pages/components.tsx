@@ -21,7 +21,6 @@ import { Switch } from '~/components/ui/switch';
 import { RTextarea } from '~/components/ui/textarea';
 import { RLabeledSection } from '~/components/ui/labeled_section';
 import { useEffect, useState } from 'react';
-import { PDFRenderer } from '~/components/ui/pdf';
 import { createClient } from '@supabase/supabase-js';
 import { api } from '~/utils/api';
 import { RSelector } from '~/components/ui/select';
@@ -174,10 +173,6 @@ const ComponentsPage: NextPage = () => {
 				<div className="flex max-w-[500px] flex-col gap-3">
 					<Label className="text-2xl">PDF Dialog</Label>
 					<input type="file" onChange={onFileSubmit} />
-					<PDFRenderer
-						fileName={fileToUpload?.name ?? ''}
-						size="sm"
-					/>
 				</div>
 
 				<div className="m-top-5 mt-10 flex flex-col gap-3">
