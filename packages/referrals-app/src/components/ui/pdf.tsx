@@ -16,6 +16,12 @@ import RSpinner from './spinner';
 import { useMediaQuery } from 'react-responsive';
 import { api } from '~/utils/api';
 import { RText } from './text';
+import { pdfjs } from 'react-pdf';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+	'pdfjs-dist/build/pdf.worker.min.js',
+	import.meta.url
+).toString();
 
 const options = {
 	cMapUrl: '/cmaps/',
