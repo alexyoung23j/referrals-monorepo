@@ -346,6 +346,7 @@ const ChoicesSection = ({
 interface InfoSectionProps {
 	firstName: string;
 	publicEmail: string;
+	phoneNumber?: string;
 	experienceBlurb: string;
 	onClickDownload?: () => void;
 	includeBlurb?: boolean;
@@ -354,6 +355,7 @@ interface InfoSectionProps {
 const InfoSection: React.FC<InfoSectionProps> = ({
 	firstName,
 	publicEmail,
+	phoneNumber,
 	experienceBlurb,
 	onClickDownload,
 	includeBlurb = true,
@@ -369,16 +371,28 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 							readOnly
 							copyEnabled
 							value={publicEmail}
-							className="min-w-[240px]"
+							className="min-w-[240px] cursor-pointer"
 							highlighted
+							copyOnClick
 						/>
-						<RButton
-							variant="secondary"
-							iconName="download"
-							onClick={onClickDownload}
-						>
-							Download Resume
-						</RButton>
+						{phoneNumber && phoneNumber.length > 0 ? (
+							<RInput
+								readOnly
+								copyEnabled
+								value={phoneNumber}
+								className="min-w-[240px] cursor-pointer"
+								highlighted
+								copyOnClick
+							/>
+						) : (
+							<RButton
+								variant="secondary"
+								iconName="download"
+								onClick={onClickDownload}
+							>
+								Download Resume
+							</RButton>
+						)}
 					</div>
 					{includeBlurb && (
 						<div className="flex flex-col gap-1">
@@ -397,6 +411,15 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 								className="text-textSecondary h-[140px]"
 							/>
 						</div>
+					)}
+					{phoneNumber && phoneNumber.length > 0 && (
+						<RButton
+							variant="secondary"
+							iconName="download"
+							onClick={onClickDownload}
+						>
+							Download Resume
+						</RButton>
 					)}
 				</div>
 			}
@@ -630,6 +653,7 @@ const mainBody = ({
 										);
 									}
 								}}
+								phoneNumber={userProfile.phoneNumber as string}
 								includeBlurb={false}
 							/>
 						</div>,
@@ -641,7 +665,7 @@ const mainBody = ({
 						<div key="1">
 							<RLabeledSection
 								label="Intro message template"
-								subtitle="An example intro message to send to your recruiter/HR contact. Edit as needed!"
+								subtitle="An example intro message to send to your HR contact. Edit as needed!"
 								body={
 									<RTextarea
 										defaultValue={buildIntroMessage({
@@ -878,6 +902,7 @@ const mainBody = ({
 										);
 									}
 								}}
+								phoneNumber={userProfile.phoneNumber as string}
 							/>
 						</div>,
 					],

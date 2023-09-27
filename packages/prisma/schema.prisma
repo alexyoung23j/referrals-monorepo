@@ -128,6 +128,7 @@ model UserProfile {
     firstName        String?
     lastName         String?
     publicEmail      String?
+    phoneNumber      String?
     currentRoleTitle String?
     twitterUrl       String?
     githubUrl        String?

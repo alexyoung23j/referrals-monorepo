@@ -40,6 +40,7 @@ export default function PersonalInfoSection() {
 	const [education, setEducation] = useState('');
 	const [defaultMessage, setDefaultMessage] = useState('');
 	const [experienceBlurb, setExperienceBlurb] = useState('');
+	const [phoneNumber, setPhoneNumber] = useState('');
 
 	const [hasFormErrors, setHasFormErrors] = useState(false);
 	const [savedStatus, setSavedStatus] = useState('Saved');
@@ -130,6 +131,9 @@ export default function PersonalInfoSection() {
 		if (profileData?.experienceBlurb) {
 			setExperienceBlurb(profileData.experienceBlurb as string);
 		}
+		if (profileData?.phoneNumber) {
+			setPhoneNumber(profileData.phoneNumber as string);
+		}
 		setAvatarLoading(false);
 	}, [profileData]);
 
@@ -159,6 +163,7 @@ export default function PersonalInfoSection() {
 				education,
 				defaultMessage,
 				experienceBlurb,
+				phoneNumber,
 			});
 
 			setSavedStatus('Saved');
@@ -185,34 +190,6 @@ export default function PersonalInfoSection() {
 			{status === 'success' ? (
 				<div className="flex w-full flex-col lg:flex-row">
 					<div className="flex w-full flex-col gap-[24px] lg:w-[55%] lg:pr-[10%]">
-						<RLabeledSection
-							label="Public Email*"
-							subtitle="This address will be used for all your referrals and will be shared via your referral links."
-							body={
-								<RInput
-									value={publicEmail as string}
-									onInput={(e) => {
-										setPublicEmail(
-											(e.target as HTMLInputElement).value
-										);
-									}}
-									placeholder="enter email address"
-									isRequired
-									validationSchema={z.string().email({
-										message: 'Must be valid email address.',
-									})}
-									onErrorFound={() => {
-										setHasFormErrors(true);
-									}}
-									onErrorFixed={() => {
-										setHasFormErrors(false);
-									}}
-									onChange={() => {
-										setSavedStatus('Unsaved');
-									}}
-								/>
-							}
-						/>
 						<RLabeledSection
 							label="First Name*"
 							body={
@@ -262,20 +239,6 @@ export default function PersonalInfoSection() {
 							}
 						/>
 
-						<RLabeledSection
-							label="Current Role Title"
-							body={
-								<RInput
-									value={currentRoleTitle as string}
-									onInput={(e) => {
-										setCurrentRoleTitle(
-											(e.target as HTMLInputElement).value
-										);
-									}}
-									placeholder="enter current role"
-								/>
-							}
-						/>
 						<RLabeledSection
 							label="LinkedIn URL"
 							body={
@@ -438,6 +401,35 @@ export default function PersonalInfoSection() {
 							}
 						/>
 						<RLabeledSection
+							label="Phone number"
+							body={
+								<RInput
+									value={phoneNumber as string}
+									onInput={(e) => {
+										setPhoneNumber(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter phone number"
+									validationSchema={z
+										.string()
+										.regex(
+											/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/,
+											'Must be a valid phone number'
+										)}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+						<RLabeledSection
 							label="Current Location"
 							body={
 								<RInput
@@ -498,6 +490,49 @@ export default function PersonalInfoSection() {
 								Upload new
 							</RButton>
 						</div>
+						<RLabeledSection
+							label="Current Role Title"
+							body={
+								<RInput
+									value={currentRoleTitle as string}
+									onInput={(e) => {
+										setCurrentRoleTitle(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter current role"
+								/>
+							}
+						/>
+						<RLabeledSection
+							label="Public Email*"
+							subtitle="This address will be shared via your referral links."
+							body={
+								<RInput
+									value={publicEmail as string}
+									onInput={(e) => {
+										setPublicEmail(
+											(e.target as HTMLInputElement).value
+										);
+									}}
+									placeholder="enter email address"
+									isRequired
+									validationSchema={z.string().email({
+										message: 'Must be valid email address.',
+									})}
+									onErrorFound={() => {
+										setHasFormErrors(true);
+									}}
+									onErrorFixed={() => {
+										setHasFormErrors(false);
+									}}
+									onChange={() => {
+										setSavedStatus('Unsaved');
+									}}
+								/>
+							}
+						/>
+
 						<RLabeledSection
 							label="Experience Blurb"
 							showInfo

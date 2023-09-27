@@ -45,6 +45,7 @@ export const profileRouter = createTRPCRouter({
 				githubUrl: z.string().optional(),
 				personalSiteUrl: z.string().optional(),
 				currentLocation: z.string().optional(),
+				phoneNumber: z.string().optional(),
 				education: z.string().optional(),
 				defaultMessage: z.string().optional(),
 				experienceBlurb: z.string().optional(),
