@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { Document, Page, Thumbnail } from 'react-pdf';
-import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { RButton } from '~/components/ui/button';
 import {
 	Dialog,
@@ -72,7 +72,7 @@ const PDFRenderer = ({
 		setScale(calculatedScale);
 	};
 
-	function onDocumentLoadSuccess(pdf: PDFDocumentProxy): void {
+	function onDocumentLoadSuccess(pdf: any): void {
 		const { numPages: nextNumPages } = pdf;
 		setNumPages(nextNumPages);
 		updateScale();

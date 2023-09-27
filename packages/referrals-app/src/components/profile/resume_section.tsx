@@ -9,11 +9,8 @@ import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
 import dynamic from 'next/dynamic';
-const PDFRenderer = dynamic(
-	() => import('../ui/pdf').then((mod) => mod.default),
-	{ ssr: false }
-);
 import { v4 as uuidv4 } from 'uuid';
+import PDFRenderer from '../ui/pdf';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
