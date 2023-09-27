@@ -49,7 +49,7 @@ export const handleDownload = (pdfUrl: string) => {
 	anchor.click();
 };
 
-export const PDFRenderer = ({
+const PDFRenderer = ({
 	fileName,
 	preUploadedResumeUrl,
 	size,
@@ -200,3 +200,5 @@ export const PDFRenderer = ({
 		</div>
 	);
 };
+
+export default PDFRenderer;
