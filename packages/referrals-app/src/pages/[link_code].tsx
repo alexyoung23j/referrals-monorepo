@@ -156,9 +156,7 @@ export default function LinkPage({
 				<title>{`${userProfile.firstName}'s Referral Requests`}</title>
 				<meta
 					property="og:title"
-					content={`${userProfile.firstName}'s Referral Request${
-						requests.length > 1 ? 's' : ''
-					}`}
+					content="ReferLink - Painless job referrals"
 				/>
 				<meta
 					property="og:description"
