@@ -1272,7 +1272,11 @@ export default function ReferModal({
 				headerRightContent={
 					<div className="flex items-center gap-2">
 						<RTag
-							className="cursor-pointer"
+							className={
+								referralRequest?.isAnyOpenRole
+									? 'cursor-auto'
+									: 'cursor-pointer'
+							}
 							label={
 								referralRequest?.isAnyOpenRole
 									? 'any open role'
@@ -1293,9 +1297,11 @@ export default function ReferModal({
 								</div>
 							}
 							onClick={() => {
-								window.open(
-									referralRequest?.jobPostingLink as string
-								);
+								if (!referralRequest?.isAnyOpenRole) {
+									window.open(
+										referralRequest?.jobPostingLink as string
+									);
+								}
 							}}
 						/>
 					</div>

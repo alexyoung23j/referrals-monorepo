@@ -465,6 +465,7 @@ export default function LinkPage({
 																	<RTag
 																		label="Any open role"
 																		color="default"
+																		className="cursor-auto"
 																	/>
 																)}
 															</div>

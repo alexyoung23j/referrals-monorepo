@@ -346,6 +346,11 @@ export default function ShareModal({
 								/>
 							</div>
 						}
+						className={
+							referralRequest?.isAnyOpenRole
+								? 'cursor-auto'
+								: 'cursor-pointer'
+						}
 					/>
 				)
 			}

@@ -619,6 +619,9 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 									isMobile ? '' : ' ' + firstName
 								}`}</RText>{' '}
 							</div>
+							<RText fontSize="b2" color="tertiary">
+								*Example buttons above are disabled
+							</RText>
 						</div>,
 					],
 				},
