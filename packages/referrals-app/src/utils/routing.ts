@@ -23,8 +23,6 @@ export async function redirectIfAuthed({
 		res: ctx.res,
 	});
 
-	console.log({ session });
-
 	if (session) {
 		if (exceptionCatch && exceptionCatch(session)) {
 			return { props: {} };

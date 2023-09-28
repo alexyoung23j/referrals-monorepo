@@ -4,8 +4,11 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { GetServerSidePropsContext } from 'next';
 import { redirectIfAuthed } from '~/utils/routing';
 import { googleLogo } from './signup';
+import { ReferLinkLogo } from '~/components/ui/icons';
+import { useRouter } from 'next/router';
 
-export default function SignInPage() {
+export default function LoginPage() {
+	const router = useRouter();
 	return (
 		<div
 			className="flex h-[100vh] w-full flex-col items-center justify-center"
@@ -13,6 +16,14 @@ export default function SignInPage() {
 				background: 'linear-gradient(to bottom, #ffffff 25%, #E2F1FF)',
 			}}
 		>
+			<div
+				className="absolute left-6 top-6 cursor-pointer"
+				onClick={() => {
+					router.push('/');
+				}}
+			>
+				<ReferLinkLogo size={24} />
+			</div>
 			<div className="flex flex-col items-center justify-center gap-[24px]">
 				<RText fontSize="h1" fontWeight="medium">
 					Sign in to{' '}
