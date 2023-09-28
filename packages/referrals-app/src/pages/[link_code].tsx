@@ -155,6 +155,25 @@ export default function LinkPage({
 		>
 			<Head>
 				<title>{`${userProfile.firstName}'s Referral Requests`}</title>
+				<meta
+					property="og:title"
+					content={`${userProfile.firstName}'s Referral Request${
+						requests.length > 1 ? 's' : ''
+					}`}
+				/>
+				<meta
+					property="og:description"
+					content="ReferLink - Job referrals faster than ever"
+				/>
+				{/* <meta
+					property="og:image"
+					content="https://example.com/path/to/image.jpg"
+				/>
+				<meta
+					property="og:url"
+					content="https://example.com/path/to/article"
+				/>
+				<meta property="og:type" content="article" /> */}
 			</Head>
 			<ShareModal
 				isOpen={shareModalOpen}
