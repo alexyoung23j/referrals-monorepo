@@ -13,6 +13,10 @@ export default function Home() {
 					name="description"
 					content="Find job referrals faster than ever"
 				/>
+				<meta
+					property="og:image"
+					content="https://referlink.xyz/image_preview.png"
+				/>
 				<link rel="icon" href="/favicon.ico" />
 				<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 			</Head>

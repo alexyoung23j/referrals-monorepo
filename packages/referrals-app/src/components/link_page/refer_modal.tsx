@@ -682,7 +682,7 @@ const mainBody = ({
 										highlighted
 										copyEnabled
 										className={
-											isMobile ? 'h-[500px]' : 'h-[300px]'
+											isMobile ? 'h-[500px]' : 'h-[340px]'
 										}
 									/>
 								}
