@@ -105,6 +105,11 @@ export default function LinkPage({
 					property="og:title"
 					content="ReferLink - Job referrals simplified." // TODO: marketing copy here
 				/>
+				<link
+					rel="apple-touch-icon"
+					sizes="180x180"
+					href="/apple-touch-icon.png"
+				/>
 				<meta
 					property="og:description"
 					content="ReferLink - Job referrals faster than ever"
