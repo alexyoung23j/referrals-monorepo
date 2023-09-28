@@ -10,7 +10,7 @@ const defaultEmailText = (link: string, name: string) => {
 };
 
 const defaultDMText = (link: string, name: string) => {
-	return `Hey [[Contact name]], I'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: https://${link}. I would really appreciate it, thanks!`;
+	return `Hey [[Contact name]], I'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: https://${link}`;
 };
 
 export default function ShareSection({

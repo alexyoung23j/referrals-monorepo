@@ -32,8 +32,15 @@ const defaultEmailText = (
 	} listed here: https://${link}. I would really appreciate it! \n\nThanks,\n${name}`;
 };
 
-const defaultDMText = (link: string, name: string) => {
-	return `Hey [[Contact name]], I'm currently on a job search and I was wondering if you or someone in your network would be able to refer me to any of the jobs listed here: https://${link}. I would really appreciate it, thanks!`;
+const defaultDMText = (
+	link: string,
+	name: string,
+	requesterName: string,
+	isAllRequests: boolean
+) => {
+	return `Hey [[Contact name]], just passing on a referral request from my friend ${requesterName} for the job${
+		isAllRequests ? 's' : ''
+	} listed here: https://${link}`;
 };
 
 export default function ShareModal({
@@ -231,7 +238,7 @@ export default function ShareModal({
 									{shareableLink ? (
 										<RTextarea
 											readOnly
-											value={defaultEmailText(
+											value={defaultDMText(
 												`${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${shareableLink?.id}`,
 												name,
 												userProfile.firstName as string,
