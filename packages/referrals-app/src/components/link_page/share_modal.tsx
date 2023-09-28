@@ -20,6 +20,7 @@ import { RTag } from '../ui/tag';
 import Image from 'next/image';
 import { RButton } from '../ui/button';
 import { toast } from '../ui/use-toast';
+import Icon from '../ui/icons';
 
 const defaultEmailText = (
 	link: string,
@@ -331,7 +332,14 @@ export default function ShareModal({
 						label={
 							referralRequest?.isAnyOpenRole
 								? 'any open role'
-								: (referralRequest?.jobTitle as string)
+								: 'Listing: ' +
+								  (referralRequest?.jobTitle &&
+								  referralRequest?.jobTitle?.length > 10
+										? referralRequest?.jobTitle?.substring(
+												0,
+												10
+										  ) + '...'
+										: (referralRequest?.jobTitle as string))
 						}
 						leftContent={
 							<div className="mt-[3px]">
@@ -346,11 +354,29 @@ export default function ShareModal({
 								/>
 							</div>
 						}
+						rightContent={
+							!referralRequest?.isAnyOpenRole ? (
+								<div className="mt-[1px]">
+									<Icon
+										name="link"
+										size="14"
+										color="#64748b"
+									/>
+								</div>
+							) : undefined
+						}
 						className={
 							referralRequest?.isAnyOpenRole
 								? 'cursor-auto'
 								: 'cursor-pointer'
 						}
+						onClick={() => {
+							if (!referralRequest?.isAnyOpenRole) {
+								window.open(
+									referralRequest?.jobPostingLink as string
+								);
+							}
+						}}
 					/>
 				)
 			}

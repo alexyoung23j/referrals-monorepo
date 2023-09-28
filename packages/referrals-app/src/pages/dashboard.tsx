@@ -39,6 +39,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const [hasFormErrors, setHasFormErrors] = useState(false);
 	const [companyIsCreatedByUser, setCompanyIsCreatedByUser] = useState(false);
 	const [shouldRefetch, setShouldRefetch] = useState(false);
+	const [isCreatingRequest, setIsCreatingRequest] = useState(false);
 
 	const createReferralRequest =
 		api.referralRequest.createRequest.useMutation();
@@ -52,8 +53,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 			return;
 		}
 		try {
-			setNewRequestModalOpen(false);
-
+			setIsCreatingRequest(true);
 			await createReferralRequest.mutateAsync({
 				companyName: company.name,
 				companyLogo: company.logo,
@@ -63,6 +63,9 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				isCreatedByUser: companyIsCreatedByUser,
 			});
 			setShouldRefetch((prev) => !prev);
+
+			setIsCreatingRequest(false);
+			setNewRequestModalOpen(false);
 
 			toast({
 				title: 'Created request.',
@@ -202,7 +205,11 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 					},
 				]}
 				bottomRowContent={
-					<RButton iconName="check" onClick={createRequest}>
+					<RButton
+						iconName="check"
+						onClick={createRequest}
+						isLoading={isCreatingRequest}
+					>
 						Create request
 					</RButton>
 				}

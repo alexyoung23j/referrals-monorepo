@@ -28,6 +28,7 @@ import { handleDownload } from '../ui/pdf';
 import { z } from 'zod';
 import Confetti from 'react-confetti';
 import { TRPCClientError } from '@trpc/client';
+import Icon from '../ui/icons';
 
 const buildIntroMessage = ({
 	blurb,
@@ -1281,7 +1282,13 @@ export default function ReferModal({
 								referralRequest?.isAnyOpenRole
 									? 'any open role'
 									: 'Listing: ' +
-									  (referralRequest?.jobTitle as string)
+									  (referralRequest?.jobTitle &&
+									  referralRequest?.jobTitle?.length > 10
+											? referralRequest?.jobTitle?.substring(
+													0,
+													10
+											  ) + '...'
+											: (referralRequest?.jobTitle as string))
 							}
 							leftContent={
 								<div className="mt-[3px]">
@@ -1295,6 +1302,17 @@ export default function ReferModal({
 										width={14}
 									/>
 								</div>
+							}
+							rightContent={
+								!referralRequest?.isAnyOpenRole ? (
+									<div className="mt-[1px]">
+										<Icon
+											name="link"
+											size="14"
+											color="#64748b"
+										/>
+									</div>
+								) : undefined
 							}
 							onClick={() => {
 								if (!referralRequest?.isAnyOpenRole) {

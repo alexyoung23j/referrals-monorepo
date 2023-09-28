@@ -27,7 +27,7 @@ export const RTag = ({
 	return (
 		<div
 			onClick={onClick}
-			className={`${className} ${colorMap[color]} m-top-[5px] m-bottom-[5px] flex h-[24px] max-w-fit cursor-pointer flex-row items-center justify-center gap-[5px] rounded-[6px] border-[1px] px-2 `}
+			className={`${className} ${colorMap[color]} m-top-[5px] m-bottom-[5px] flex h-[24px] max-w-fit flex-row items-center justify-center gap-[5px] rounded-[6px] border-[1px] px-2 `}
 		>
 			{leftContent && leftContent}
 
