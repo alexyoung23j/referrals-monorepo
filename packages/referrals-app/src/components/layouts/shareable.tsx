@@ -605,7 +605,7 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 									fontSize={isMobile ? 'b1' : 'h3'}
 								>{`→ I can refer ${firstName} to a job${
 									!isMobile
-										? ' / Set a referral reminder'
+										? ` / Set a reminder to refer ${firstName}`
 										: ''
 								}`}</RText>{' '}
 							</div>
