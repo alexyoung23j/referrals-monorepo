@@ -103,7 +103,7 @@ export default function LinkPage({
 				<title>{`${userProfile.firstName}'s Referral Requests`}</title>
 				<meta
 					property="og:title"
-					content="ReferLink - Job referrals simplified." // TODO: marketing copy here
+					content="ReferLink - Job referrals, simplified." // TODO: marketing copy here
 				/>
 				<link
 					rel="apple-touch-icon"
@@ -116,6 +116,10 @@ export default function LinkPage({
 				/>
 
 				<meta property="og:url" content="referlink.xyz" />
+				<meta
+					property="og:image"
+					content="https://referlink.xyz/image_preview.png"
+				/>
 			</Head>
 			<LinkPageLayout
 				avatarUrl={userProfile.avatarUrl as string}

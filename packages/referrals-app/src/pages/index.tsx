@@ -8,10 +8,10 @@ export default function Home() {
 	return (
 		<>
 			<Head>
-				<title>ReferLink - Job referrals faster than ever</title>
+				<title>ReferLink - Job referrals, simplified.</title>
 				<meta
 					name="description"
-					content="Find job referrals faster than ever"
+					content="Find job referrals faster than ever."
 				/>
 				<meta
 					property="og:image"
