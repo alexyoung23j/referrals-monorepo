@@ -150,15 +150,12 @@ const RemindSection = ({
 											date.getFullYear() ===
 												now.getFullYear()
 										) {
-											console.log('Huh');
 											// If the selected date is today, schedule the email for 3 hours from now
 											scheduledDate = new Date(
 												now.getTime() +
 													3 * 60 * 60 * 1000
 											);
-											console.log({ scheduledDate });
 										} else {
-											console.log('in here??');
 											// If the selected date is in the future, schedule the email for a random time between 10AM and 2PM
 											scheduledDate = new Date(
 												date.getTime()
@@ -694,6 +691,14 @@ const mainBody = ({
 					],
 				},
 				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<Separator />
+						</div>,
+					],
+				},
+				{
 					type: 'two-column',
 					content: [
 						<div key="name" className="w-full">
@@ -768,6 +773,29 @@ const mainBody = ({
 		case ReferralTypeOptions.LINK: {
 			return [
 				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<RLabeledSection
+								label="Special job posting link*"
+								subtitle={`This link will be sent to ${userProfile.firstName}. `}
+								body={
+									<RInput
+										placeholder="enter link"
+										value={specialJobPostingLink}
+										onInput={(e) => {
+											setSpecialJobPostingLink(
+												e.currentTarget.value
+											);
+										}}
+										validationSchema={z.string().url()}
+									/>
+								}
+							/>
+						</div>,
+					],
+				},
+				{
 					type: 'two-column',
 					content: [
 						<div key="name" className="w-full">
@@ -805,29 +833,7 @@ const mainBody = ({
 						</div>,
 					],
 				},
-				{
-					type: 'single-column',
-					content: [
-						<div key="1">
-							<RLabeledSection
-								label="Special job posting link*"
-								subtitle={`This link will be sent to ${userProfile.firstName}. `}
-								body={
-									<RInput
-										placeholder="enter link"
-										value={specialJobPostingLink}
-										onInput={(e) => {
-											setSpecialJobPostingLink(
-												e.currentTarget.value
-											);
-										}}
-										validationSchema={z.string().url()}
-									/>
-								}
-							/>
-						</div>,
-					],
-				},
+
 				{
 					type: 'single-column',
 					content: [
@@ -904,6 +910,14 @@ const mainBody = ({
 								}}
 								phoneNumber={userProfile.phoneNumber as string}
 							/>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="1">
+							<Separator />
 						</div>,
 					],
 				},

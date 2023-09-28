@@ -36,16 +36,12 @@ export default function ResumeSection() {
 			return;
 		}
 
-		console.log('got here');
-
 		try {
 			const id = uuidv4();
 
 			const { data, error } = await supabase.storage
 				.from('resumes')
 				.upload(`${id}/${file.name}`, file);
-
-			console.log('data', data);
 
 			if (error) {
 				console.error(error);
@@ -59,13 +55,10 @@ export default function ResumeSection() {
 			const path = data?.path;
 			const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/resumes/${path}`;
 
-			console.log('url', url);
-
 			setLocalResumeUrl(url);
 			await updateProfile.mutateAsync({
 				resumeUrl: url,
 			});
-			console.log('updated profile');
 		} catch (e) {
 			console.error('Error while generating presigned URL: ', e);
 		}
