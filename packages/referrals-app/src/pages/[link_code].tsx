@@ -1,5 +1,4 @@
 /* eslint-disable indent */
-import { PageLayout } from '~/components/layouts';
 import dynamic from 'next/dynamic';
 
 import { RButton } from '~/components/ui/button';
