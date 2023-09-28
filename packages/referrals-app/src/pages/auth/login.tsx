@@ -6,6 +6,7 @@ import { redirectIfAuthed } from '~/utils/routing';
 import { googleLogo } from './signup';
 import { ReferLinkLogo } from '~/components/ui/icons';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -16,6 +17,9 @@ export default function LoginPage() {
 				background: 'linear-gradient(to bottom, #ffffff 25%, #E2F1FF)',
 			}}
 		>
+			<Head>
+				<title>Sign In - ReferLink</title>
+			</Head>
 			<div
 				className="absolute left-6 top-6 cursor-pointer"
 				onClick={() => {

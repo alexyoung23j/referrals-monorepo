@@ -10,6 +10,7 @@ import ResumeSection from '~/components/profile/resume_section';
 import { generateValidLink } from '~/utils/links';
 import Spinner from '~/components/ui/spinner';
 import ExperienceSection from '~/components/profile/experience_section';
+import Head from 'next/head';
 
 interface ProfiePageProps {
 	linkCode: string; // Replace 'any' with the actual type of 'link'
@@ -40,6 +41,9 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 				</RButton>
 			}
 		>
+			<Head>
+				<title>Profile - ReferLink</title>
+			</Head>
 			<div className="flex h-[200vh] w-full">
 				{status === 'success' ? (
 					<div className="flex max-h-fit w-full flex-col gap-[36px]">

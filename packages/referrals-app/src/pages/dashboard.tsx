@@ -22,6 +22,7 @@ import {
 import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/use-toast';
 import RequestsSection from '~/components/dashboard/requests_section';
+import Head from 'next/head';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
@@ -97,6 +98,9 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				</RButton>
 			}
 		>
+			<Head>
+				<title>Dashboard - ReferLink</title>
+			</Head>
 			<ActivityModal
 				open={newRequestModalOpen}
 				onOpenChange={(open) => {

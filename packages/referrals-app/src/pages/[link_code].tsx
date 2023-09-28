@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ShareModal from '~/components/link_page/share_modal';
 import ReferModal from '~/components/link_page/refer_modal';
+import Head from 'next/head';
 
 const LinkPageLayout = dynamic(() => import('~/components/layouts/shareable'), {
 	ssr: false,
@@ -152,6 +153,9 @@ export default function LinkPage({
 			showInfoModal={showInfoModal}
 			setShowInfoModal={setShowInfoModal}
 		>
+			<Head>
+				<title>{`${userProfile.firstName}'s Referral Requests`}</title>
+			</Head>
 			<ShareModal
 				isOpen={shareModalOpen}
 				onOpenChange={(open) => {

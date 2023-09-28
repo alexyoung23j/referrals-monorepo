@@ -5,6 +5,7 @@ import { GetServerSidePropsContext } from 'next';
 import { redirectIfAuthed } from '~/utils/routing';
 import { ReferLinkLogo } from '~/components/ui/icons';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 export const googleLogo = () => {
 	return (
@@ -51,6 +52,9 @@ export default function SignInPage() {
 				background: 'linear-gradient(to bottom, #ffffff 25%, #E2F1FF)',
 			}}
 		>
+			<Head>
+				<title>Sign Up - ReferLink</title>
+			</Head>
 			<div
 				className="absolute left-6 top-6 cursor-pointer"
 				onClick={() => {
