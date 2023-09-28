@@ -103,7 +103,7 @@ export default function LinkPage({
 				<title>{`${userProfile.firstName}'s Referral Requests`}</title>
 				<meta
 					property="og:title"
-					content="ReferLink - Job referrals, simplified." // TODO: marketing copy here
+					content="Can you refer me?" // TODO: marketing copy here
 				/>
 				<link
 					rel="apple-touch-icon"
