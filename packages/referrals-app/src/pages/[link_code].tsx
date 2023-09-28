@@ -20,7 +20,6 @@ import {
 	type User,
 	type UserProfile,
 } from '@prisma/client';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';

@@ -8,12 +8,14 @@ import { RLogo } from '../ui/logo';
 import { useState } from 'react';
 import { Separator } from '~/components/ui/separator';
 import { Toaster } from '../ui/toaster';
-import PDFRenderer, { handleDownload } from '../ui/pdf';
-import { RPopover } from '../ui/popover';
+import { handleDownload } from '../ui/pdf';
+import dynamic from 'next/dynamic';
 import ActivityModal from '../modals/activity_modal';
 import { RButton } from '../ui/button';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+
+const PDFRenderer = dynamic(() => import('../ui/pdf'), { ssr: false });
 
 type LinkPageLayoutProps = {
 	avatarUrl?: string;

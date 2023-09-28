@@ -18,11 +18,6 @@ import { api } from '~/utils/api';
 import { RText } from './text';
 import { pdfjs } from 'react-pdf';
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-	'pdfjs-dist/build/pdf.worker.min.js',
-	import.meta.url
-).toString();
-
 const options = {
 	cMapUrl: '/cmaps/',
 	standardFontDataUrl: '/standard_fonts/',
@@ -60,6 +55,11 @@ const PDFRenderer = ({
 	preUploadedResumeUrl,
 	size,
 }: PDFRendererTypes) => {
+	pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+		'pdfjs-dist/build/pdf.worker.min.js',
+		import.meta.url
+	).toString();
+
 	const isBigScreen = useMediaQuery({ query: '(min-width: 800px)' });
 	const [numPages, setNumPages] = useState<number>(0);
 	const inputRef = useRef<HTMLInputElement>(null);
