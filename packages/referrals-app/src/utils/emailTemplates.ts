@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 import { EmailJobType } from '@prisma/client';
+import { defaultTemplateString } from './constants';
 
 type EmailTemplateGenerator = (values: Record<string, string>) => string;
 
@@ -94,7 +95,7 @@ const referralConfirmation = ({
 	seekerEmail,
 	companyName,
 }: Record<string, string>) =>
-	`<html>
+	defaultTemplateString(`<html>
 	<body>
 	<span>Hi ${referrerName},</span>
 	<br>
@@ -103,7 +104,7 @@ const referralConfirmation = ({
 	<br>
 	<br>
 	<span>Thank you for using ReferLink!</span>
-	</body></html>`;
+	</body></html>`);
 
 const referralConfirmationNotification = ({
 	referrerName,
@@ -113,7 +114,7 @@ const referralConfirmationNotification = ({
 	role,
 	message,
 }: Record<string, string>) =>
-	`<html>
+	defaultTemplateString(`<html>
 	<body>
 	<span>Hi ${seekerName},</span>
 	<br>
@@ -133,7 +134,7 @@ const referralConfirmationNotification = ({
 	<br>
 	<br>
 	<span>Thank you for using ReferLink!</span>
-	</body></html>`;
+	</body></html>`);
 
 const jobToMessageMapping: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.MESSAGE_FROM_REFERRER]: messageFromReferrer,
