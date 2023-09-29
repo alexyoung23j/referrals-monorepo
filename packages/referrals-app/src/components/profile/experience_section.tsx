@@ -266,7 +266,7 @@ export default function ExperienceSection() {
 										}
 									}}
 								/>
-								<RText>I current work here</RText>
+								<RText>I currently work here</RText>
 							</div>,
 						],
 					},
@@ -375,7 +375,7 @@ export default function ExperienceSection() {
 										}
 									}}
 								/>
-								<RText>I current work here</RText>
+								<RText>I currently work here</RText>
 							</div>,
 						],
 					},

@@ -842,7 +842,17 @@ export default function RequestsSection({
 														width={24}
 													/>
 													<RText fontWeight="medium">
-														{request.company.name}
+														{request.company.name &&
+															(request.company
+																.name.length >
+															16
+																? `${request.company.name.slice(
+																		0,
+																		16
+																  )}...`
+																: request
+																		.company
+																		.name)}
 													</RText>
 												</div>
 											),

@@ -405,11 +405,21 @@ export default function LinkPage({
 																	width={24}
 																/>
 																<RText fontWeight="medium">
-																	{
-																		request
+																	{request
+																		.company
+																		.name &&
+																		(request
 																			.company
-																			?.name
-																	}
+																			.name
+																			.length >
+																		16
+																			? `${request.company.name.slice(
+																					0,
+																					16
+																			  )}...`
+																			: request
+																					.company
+																					.name)}
 																</RText>
 															</div>
 														),
