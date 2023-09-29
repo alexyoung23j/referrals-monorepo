@@ -81,7 +81,7 @@ export const defaultTemplateString = (content: string) => {
     <td align="center" bgcolor="#F8FAFC" style="padding:0;Margin:0;background-color:#f8fafc">
     <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#ffffff;width:600px">
     <tr>
-    <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px"><!--[if mso]><table style="width:560px" cellpadding="0" cellspacing="0"><tr><td width="193.33333333333334" valign="top"><![endif]-->
+    <td align="left" bgcolor="#ffffff" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px;background-color:#ffffff"><!--[if mso]><table style="width:560px" cellpadding="0" cellspacing="0"><tr><td width="193.33333333333334" valign="top"><![endif]-->
     <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
     <tr>
     <td width="173.33333333333334" class="es-m-p0r es-m-p20b" align="center" style="padding:0;Margin:0">
@@ -132,7 +132,7 @@ export const defaultTemplateString = (content: string) => {
     <td align="center" bgcolor="#F8FAFC" style="padding:0;Margin:0;background-color:#f8fafc">
     <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
     <tr>
-    <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px">
+    <td align="left" bgcolor="#ffffff" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px;background-color:#ffffff">
     <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
     <tr>
     <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
@@ -152,7 +152,7 @@ export const defaultTemplateString = (content: string) => {
     <td align="center" bgcolor="#F8FAFC" style="padding:0;Margin:0;background-color:#f8fafc">
     <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
     <tr>
-    <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px">
+    <td align="left" bgcolor="#ffffff" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px;background-color:#ffffff">
     <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
     <tr>
     <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
