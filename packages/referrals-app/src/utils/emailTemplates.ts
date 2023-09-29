@@ -11,7 +11,7 @@ const referralReminder = ({
 	referralsLink,
 	role,
 }: Record<string, string>) =>
-	`<html>
+	defaultTemplateString(`<html>
 	<body>
 	<span>Hi ${referrerName},</span>
 	<br>
@@ -22,7 +22,7 @@ const referralReminder = ({
 	<br>
 	<br>
 	<span>${seekerName} really appreciates the help! Thank you for using ReferLink!</span>
-	</body></html>`;
+	</body></html>`);
 
 const messageFromReferrer = ({
 	referrerName,
@@ -32,7 +32,7 @@ const messageFromReferrer = ({
 	message,
 	meetingScheduleLink,
 }: Record<string, string>) =>
-	`<html>
+	defaultTemplateString(`<html>
 	<body>
 	<span>Hi ${seekerName},</span>
 	<br>
@@ -56,7 +56,7 @@ const messageFromReferrer = ({
 	<br>
 	<br>
 	<span>Thank you for using ReferLink!</span>
-	</body></html>`;
+	</body></html>`);
 
 const jobPostingLink = ({
 	referrerName,
@@ -66,7 +66,7 @@ const jobPostingLink = ({
 	message,
 	specialJobPostingLink,
 }: Record<string, string>) =>
-	`<html>
+	defaultTemplateString(`<html>
 		<body>
 		<span>Hi ${seekerName},</span>
 		<br>
@@ -87,7 +87,7 @@ const jobPostingLink = ({
 		<br>
 		<br>
 		<span>Thank you for using ReferLink!</span>
-		</body></html>`;
+		</body></html>`);
 
 const referralConfirmation = ({
 	referrerName,

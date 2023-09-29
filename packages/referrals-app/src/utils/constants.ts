@@ -103,7 +103,8 @@ export const defaultTemplateString = (content: string) => {
     <td width="173.33333333333334" class="es-m-p20b" align="center" style="padding:0;Margin:0">
     <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
     <tr>
-    <td align="center" style="padding:0;Margin:0;position:relative"><a target="_blank" href="https://referlink.xyz" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://qqrzfo.stripocdn.email/content/guids/bannerImgGuid/images/image16960091734337801.png" alt title width="173" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></a></td>
+    <td align="center" style="padding:0;Margin:0;position:relative"><a target="_blank" href="https://referlink.xyz" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px">
+    <img class="adapt-img" src="https://wtshcihzoimxpnrbnnau.supabase.co/storage/v1/object/public/avatar_images/logo_official.png?t=2023-09-29T18%3A16%3A33.171Z" alt title width="173" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></a></td>
     </tr>
     </table></td>
     </tr>
