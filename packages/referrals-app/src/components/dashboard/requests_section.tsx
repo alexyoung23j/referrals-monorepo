@@ -25,7 +25,7 @@ import { ConfirmationModal } from '../modals/confirmation_modal';
 import RSpinner from '../ui/spinner';
 
 const defaultDMText = (link: string, jobTitle: string, companyName: string) => {
-	return `Hey! I was wondering if you'd be able to refer me to ${jobTitle} at ${companyName}. Here's a link to make it easier for you if you can: https://${link}. Thanks!`;
+	return `Hey! I was wondering if you'd be able to refer me to ${jobTitle} at ${companyName}. Here's a link to make it easier for you if you can: https://${link}`;
 };
 
 export default function RequestsSection({
