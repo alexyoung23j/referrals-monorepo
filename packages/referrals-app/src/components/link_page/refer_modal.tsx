@@ -1102,6 +1102,13 @@ export default function ReferModal({
 	}, [referNow]);
 
 	const validateFormAndScheduleEmail = async (emailType: EmailType) => {
+		if (userProfile.publicEmail === 'referlinkexample@gmail.com') {
+			toast({
+				title: 'Cannot submit for Demo!',
+				duration: 2000,
+			});
+			throw new Error('Cannot submit for Demo!');
+		}
 		if (
 			emailAddress.length < 1 ||
 			(pageViewerName && pageViewerName?.length < 1) ||
