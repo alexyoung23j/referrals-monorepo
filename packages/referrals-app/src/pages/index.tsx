@@ -27,7 +27,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 			return {
 				redirect: {
 					permanent: false,
-					destination: 'home',
+					destination: '/home',
 				},
 				props: {},
 			};
