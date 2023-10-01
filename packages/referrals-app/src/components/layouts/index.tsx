@@ -74,11 +74,7 @@ const Sidebar = () => {
 						void signOut();
 					}}
 				>
-					<Icon
-						name="log-out"
-						color={profileSelected ? '#64748B' : '#94A3B8'}
-						size="24px"
-					/>
+					<Icon name="log-out" color={'#94A3B8'} size="24px" />
 				</div>
 			</div>
 		</div>
@@ -148,6 +144,15 @@ export const MobileNotAllowed = () => {
 			>
 				<ReferLinkLogo size={24} />
 			</div>
+			<div
+				className="absolute right-7 top-7 cursor-pointer"
+				onClick={() => {
+					void signOut();
+				}}
+			>
+				<Icon name="log-out" color={'#94A3B8'} size="18px" />
+			</div>
+
 			<div className="flex flex-col items-center justify-center gap-[24px] px-8">
 				<RText
 					fontSize="h2"
