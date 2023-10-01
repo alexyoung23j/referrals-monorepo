@@ -239,8 +239,6 @@ export default function RequestsSection({
 		}
 	};
 
-	console.log({ showShareBlurbInModal });
-
 	return (
 		<div className="mb-[36px] flex flex-col justify-between gap-[32px]">
 			<ConfirmationModal

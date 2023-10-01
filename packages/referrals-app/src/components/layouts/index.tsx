@@ -1,10 +1,12 @@
-import Icon from '../ui/icons';
+import Icon, { ReferLinkLogo } from '../ui/icons';
 import { useRouter } from 'next/router';
 import { RTooltip } from '../ui/tooltip';
 import { RText } from '../ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Separator } from '../ui/separator';
 import { Toaster } from '../ui/toaster';
+import { isMobile } from 'react-device-detect';
+import Head from 'next/head';
 
 const Sidebar = () => {
 	const router = useRouter();
@@ -45,7 +47,9 @@ const Sidebar = () => {
 				<RTooltip
 					trigger={
 						<div
-							className={'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-not-allowed cursor-pointer flex-col rounded-[6px] p-[8px]'}
+							className={
+								'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-not-allowed cursor-pointer flex-col rounded-[6px] p-[8px]'
+							}
 						>
 							<Icon name="bell" color={'#94A3B8'} size="24px" />
 						</div>
@@ -63,7 +67,9 @@ const Sidebar = () => {
 			</div>
 			<div>
 				<div
-					className={'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-pointer flex-col rounded-[6px] p-[8px]'}
+					className={
+						'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-pointer flex-col rounded-[6px] p-[8px]'
+					}
 					onClick={() => {
 						void signOut();
 					}}
@@ -116,6 +122,40 @@ export const PageLayout = ({
 					{children}
 					<Toaster />
 				</div>
+			</div>
+		</div>
+	);
+};
+
+export const MobileNotAllowed = () => {
+	const router = useRouter();
+
+	return (
+		<div
+			className="flex h-[100vh] w-full flex-col items-center justify-center"
+			style={{
+				background: 'linear-gradient(to bottom, #ffffff 25%, #E2F1FF)',
+			}}
+		>
+			<Head>
+				<title>ReferLink</title>
+			</Head>
+			<div
+				className="absolute left-6 top-6 cursor-pointer"
+				onClick={() => {
+					router.push('/');
+				}}
+			>
+				<ReferLinkLogo size={24} />
+			</div>
+			<div className="flex flex-col items-center justify-center gap-[24px] px-8">
+				<RText
+					fontSize="h2"
+					fontWeight="medium"
+					className="text-center"
+				>
+					Visit this page on desktop for the best user experience.
+				</RText>
 			</div>
 		</div>
 	);

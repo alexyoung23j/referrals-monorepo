@@ -1,5 +1,5 @@
 import { type GetServerSidePropsContext } from 'next';
-import { PageLayout } from '~/components/layouts';
+import { MobileNotAllowed, PageLayout } from '~/components/layouts';
 import { RButton } from '~/components/ui/button';
 import { prisma } from '~/server/db';
 import { redirectIfNotAuthed } from '~/utils/routing';
@@ -11,17 +11,23 @@ import { generateValidLink } from '~/utils/links';
 import Spinner from '~/components/ui/spinner';
 import ExperienceSection from '~/components/profile/experience_section';
 import Head from 'next/head';
+import { isMobile } from 'react-device-detect';
 
 interface ProfiePageProps {
 	linkCode: string; // Replace 'any' with the actual type of 'link'
 }
 export default function ProfilePage({ linkCode }: ProfiePageProps) {
+	if (isMobile) {
+		return <MobileNotAllowed />;
+	}
+
 	const { data: profileData, status } = api.profiles.getProfile.useQuery(
 		undefined,
 		{
 			refetchOnWindowFocus: false,
 		}
 	);
+
 	return (
 		<PageLayout
 			showSidebar

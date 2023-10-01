@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { type GetServerSidePropsContext } from 'next';
-import { PageLayout } from '~/components/layouts';
+import { MobileNotAllowed, PageLayout } from '~/components/layouts';
 import { RButton } from '~/components/ui/button';
 import { redirectIfNotAuthed } from '~/utils/routing';
 import { prisma } from '~/server/db';
@@ -23,6 +23,7 @@ import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/use-toast';
 import RequestsSection from '~/components/dashboard/requests_section';
 import Head from 'next/head';
+import { isMobile } from 'react-device-detect';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
@@ -84,6 +85,10 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 		setJobPostingLink('');
 		setAnyOpenRole(false);
 	};
+
+	if (isMobile) {
+		return <MobileNotAllowed />;
+	}
 
 	return (
 		<PageLayout

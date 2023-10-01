@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { useMediaQuery } from 'react-responsive';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import Icon from '../ui/icons';
+import Icon, { ReferLinkLogo } from '../ui/icons';
 import { RText } from '../ui/text';
 import { RTabsSection } from '../ui/tabs';
 import { RLogo } from '../ui/logo';
@@ -58,10 +58,23 @@ const LinkPageMobile = ({
 	const [showRequests, setShowRequests] = useState(true);
 	const [maxExperiences, setMaxExperiences] = useState(3);
 
+	const router = useRouter();
+
 	return (
 		<div className="bg-background flex h-screen flex-col">
 			<div className="bg-profileBackgroundGrey flex flex-col items-center gap-[12px] p-[24px]">
-				<div className="absolute right-5 top-5 flex w-full justify-end">
+				<div className="absolute left-[-1.25rem] top-5 flex w-fit justify-start">
+					<div
+						className={'flex cursor-pointer items-center gap-2'}
+						onClick={() => {
+							console.log('what');
+							router.push('/');
+						}}
+					>
+						<ReferLinkLogo size={14} />
+					</div>
+				</div>
+				<div className="absolute right-5 top-5 flex w-fit justify-end">
 					<div
 						className={' flex cursor-pointer items-center gap-2'}
 						onClick={() => {
