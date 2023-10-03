@@ -13,7 +13,7 @@ const fontSizeMap = {
 	h2: 'text-[18px]',
 	h3: 'text-[16px]',
 	b1: 'text-[14px] leading-[18px]',
-	b2: 'text-[12px] leading-[12px]',
+	b2: 'text-[12px] leading-[16px]',
 };
 
 const fontColorMap = {
