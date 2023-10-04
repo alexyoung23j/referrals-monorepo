@@ -25,6 +25,7 @@ import { useRouter } from 'next/router';
 import ShareModal from '~/components/link_page/share_modal';
 import ReferModal from '~/components/link_page/refer_modal';
 import Head from 'next/head';
+import { toast } from '~/components/ui/use-toast';
 
 const LinkPageLayout = dynamic(() => import('~/components/layouts/shareable'), {
 	ssr: false,
@@ -244,6 +245,13 @@ export default function LinkPage({
 									setSelectedRequest(requests[0]);
 									setShareModalOpen(true);
 								}
+							} else {
+								toast({
+									title: 'No open referral requests',
+									description:
+										'Create some requests to share!.',
+									duration: 3000,
+								});
 							}
 						}}
 					>
