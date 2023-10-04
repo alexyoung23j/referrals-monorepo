@@ -127,13 +127,13 @@ export default function LinkPage({
 					userProfile?.currentRoleTitle &&
 					userProfile.currentRoleTitle.length > 0
 						? (userProfile.currentRoleTitle as string)
-						: 'unkown role'
+						: 'no role added'
 				}
 				location={
 					userProfile.currentLocation &&
 					userProfile.currentLocation.length > 0
 						? (userProfile.currentLocation as string)
-						: 'unkown location'
+						: 'no location added'
 				}
 				profileName={`${
 					userProfile.firstName && userProfile.firstName.length > 0
