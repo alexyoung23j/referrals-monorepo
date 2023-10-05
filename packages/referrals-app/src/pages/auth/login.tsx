@@ -45,6 +45,20 @@ export default function LoginPage() {
 				>
 					{googleLogo()}Sign in with Google
 				</RButton>
+				<RText fontSize="b1" color="secondary" className="mt-[8px]">
+					{"Don't have an account? "}
+					<RText
+						fontSize="b1"
+						fontWeight="medium"
+						color="secondary"
+						className="mt-[8px] cursor-pointer underline"
+						onClick={() => {
+							router.push('/auth/signup');
+						}}
+					>
+						Sign up
+					</RText>
+				</RText>
 			</div>
 		</div>
 	);

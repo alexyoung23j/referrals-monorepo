@@ -67,7 +67,6 @@ const LinkPageMobile = ({
 					<div
 						className={'flex cursor-pointer items-center gap-2'}
 						onClick={() => {
-							console.log('what');
 							router.push('/');
 						}}
 					>
@@ -340,7 +339,7 @@ const LinkPageDesktop = ({
 	return (
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
-				{sessionData?.user && (
+				{sessionData?.user ? (
 					<div
 						className="left-6 mt-6"
 						onClick={() => {
@@ -354,6 +353,15 @@ const LinkPageDesktop = ({
 						>
 							← Dashboard
 						</RText>
+					</div>
+				) : (
+					<div
+						className="ml-[-8px] mt-6 h-fit cursor-pointer"
+						onClick={() => {
+							router.push('/');
+						}}
+					>
+						<ReferLinkLogo size={18} />
 					</div>
 				)}
 				<div className="flex flex-col gap-[20px] pt-[13vh]">
