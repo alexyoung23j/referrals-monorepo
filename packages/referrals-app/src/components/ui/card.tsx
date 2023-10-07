@@ -188,8 +188,11 @@ export const SelectCard: React.FC<SelectCardProps> = ({
 			} hover:bg-backgroundGrey w-full cursor-pointer items-center hover:shadow-md`}
 			onClick={onSelect}
 		>
-			<Icon name={iconName} color="#64748b" />
-			<RText color="secondary" fontSize={isMobile ? 'b2' : 'b1'}>
+			<Icon name={iconName} color={isSelected ? '#334155' : '#64748b'} />
+			<RText
+				color={isSelected ? 'midprimary' : 'secondary'}
+				fontSize={isMobile ? 'b2' : 'b1'}
+			>
 				{title}
 			</RText>
 		</div>
