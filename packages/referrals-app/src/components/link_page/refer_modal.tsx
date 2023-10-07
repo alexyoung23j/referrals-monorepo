@@ -29,6 +29,7 @@ import { z } from 'zod';
 import Confetti from 'react-confetti';
 import { TRPCClientError } from '@trpc/client';
 import Icon from '../ui/icons';
+import { SelectCard } from '../ui/card';
 
 const buildIntroMessage = ({
 	blurb,
@@ -220,6 +221,7 @@ const ChoicesSection = ({
 	referralRequest,
 	userProfile,
 	setSelectedReferralOption,
+	selectedReferralOption,
 }: {
 	referralRequest:
 		| null
@@ -231,6 +233,7 @@ const ChoicesSection = ({
 		user: User;
 	};
 	setSelectedReferralOption: (value: string | null) => void;
+	selectedReferralOption: string | null;
 }): {
 	type: 'single-column' | 'two-column';
 	content: JSX.Element[] | null;
@@ -247,92 +250,64 @@ const ChoicesSection = ({
 					<RLabeledSection
 						label={`How does ${referralRequest?.company.name} handle referrals?`}
 						body={
-							<RSelector
-								items={[
-									{
-										value: ReferralTypeOptions.INTERNAL,
-										content: (
-											<div
-												className={`flex ${
-													isMobile
-														? 'w-[224px]'
-														: 'w-[284px]'
-												} items-start`}
-											>
-												<RText>{`I submit ${userProfile.firstName}'s info internally`}</RText>
-											</div>
-										),
-									},
-									{
-										value: ReferralTypeOptions.LINK,
-										content: (
-											<div
-												className={`flex ${
-													isMobile
-														? 'w-[224px]'
-														: 'w-[284px]'
-												} items-start`}
-											>
-												<RText>
-													{`${userProfile.firstName} fills out a job posting link`}
-												</RText>
-											</div>
-										),
-									},
-									{
-										value: ReferralTypeOptions.INTRO,
-										content: (
-											<div
-												className={`flex ${
-													isMobile
-														? 'w-[224px]'
-														: 'w-[284px]'
-												} items-start`}
-											>
-												<RText>
-													{`Connect ${userProfile.firstName} with recruiter/HR`}
-												</RText>
-											</div>
-										),
-									},
-									{
-										value: ReferralTypeOptions.CONTACT,
-										content: (
-											<div
-												className={`flex ${
-													isMobile
-														? 'w-[224px]'
-														: 'w-[284px]'
-												} items-start`}
-											>
-												<RText>
-													{`I want to connect with ${userProfile.firstName} first`}
-												</RText>
-											</div>
-										),
-									},
-								]}
-								defaultValue={{
-									value: ReferralTypeOptions.INTERNAL,
-									content: (
-										<div
-											className={`flex ${
-												isMobile
-													? 'w-[224px]'
-													: 'w-[284px]'
-											} items-start`}
-										>
-											<RText color="secondary">
-												Select option
-											</RText>
-										</div>
-									),
-								}}
-								onSelect={(value) => {
-									// TODO: this value is not persisting when you switch tabs from Refer Now to Schedule
-									setSelectedReferralOption(value);
-								}}
-							/>
+							<div className="flex w-full flex-col gap-3">
+								<div className="flex w-full gap-4">
+									<SelectCard
+										title={`Submit ${userProfile.firstName}'s info internally`}
+										isSelected={
+											selectedReferralOption ===
+											ReferralTypeOptions.INTERNAL
+										}
+										iconName="file-check"
+										onSelect={() => {
+											setSelectedReferralOption(
+												ReferralTypeOptions.INTERNAL
+											);
+										}}
+									/>
+									<SelectCard
+										title={`Send ${userProfile.firstName} job posting link`}
+										isSelected={
+											selectedReferralOption ===
+											ReferralTypeOptions.LINK
+										}
+										iconName="link-2"
+										onSelect={() => {
+											setSelectedReferralOption(
+												ReferralTypeOptions.LINK
+											);
+										}}
+									/>
+								</div>
+								<div className="flex w-full gap-4">
+									<SelectCard
+										title={`Connect ${userProfile.firstName} with HR`}
+										isSelected={
+											selectedReferralOption ===
+											ReferralTypeOptions.INTRO
+										}
+										iconName="users"
+										onSelect={() => {
+											setSelectedReferralOption(
+												ReferralTypeOptions.INTRO
+											);
+										}}
+									/>
+									<SelectCard
+										title={`Contact ${userProfile.firstName} first`}
+										isSelected={
+											selectedReferralOption ===
+											ReferralTypeOptions.CONTACT
+										}
+										iconName="send"
+										onSelect={() => {
+											setSelectedReferralOption(
+												ReferralTypeOptions.CONTACT
+											);
+										}}
+									/>
+								</div>
+							</div>
 						}
 					/>
 				</div>,
@@ -491,6 +466,7 @@ const mainBody = ({
 	switch (selectedReferralOption) {
 		case ReferralTypeOptions.CONTACT: {
 			return [
+				{ type: 'single-column', content: [<Separator key="1" />] },
 				{
 					type: 'two-column',
 					content: [
@@ -634,6 +610,8 @@ const mainBody = ({
 		}
 		case ReferralTypeOptions.INTRO: {
 			return [
+				{ type: 'single-column', content: [<Separator key="1" />] },
+
 				{
 					type: 'single-column',
 					content: [
@@ -773,6 +751,8 @@ const mainBody = ({
 		}
 		case ReferralTypeOptions.LINK: {
 			return [
+				{ type: 'single-column', content: [<Separator key="1" />] },
+
 				{
 					type: 'single-column',
 					content: [
@@ -892,6 +872,8 @@ const mainBody = ({
 		}
 		case ReferralTypeOptions.INTERNAL: {
 			return [
+				{ type: 'single-column', content: [<Separator key="1" />] },
+
 				{
 					type: 'single-column',
 					content: [
@@ -1185,6 +1167,7 @@ export default function ReferModal({
 				referralRequest,
 				userProfile,
 				setSelectedReferralOption,
+				selectedReferralOption,
 		  })
 		: RemindSection({
 				link: existingPageLink,

@@ -72,7 +72,9 @@ export const RowTable = ({
 								<div
 									style={{ minWidth: column.minWidth }}
 									key={column.label?.toString()}
-									className={'flex cursor-pointer flex-row items-center gap-[4px]'}
+									className={
+										'flex cursor-pointer flex-row items-center gap-[4px]'
+									}
 									onClick={column?.onClick}
 								>
 									{typeof column.label === 'string' ? (
@@ -156,6 +158,40 @@ export const RowTable = ({
 					);
 				})}
 			</div>
+		</div>
+	);
+};
+
+type SelectCardProps = {
+	iconName: IconName;
+	title: string;
+	isSelected: boolean;
+	onSelect: () => void;
+};
+
+export const SelectCard: React.FC<SelectCardProps> = ({
+	iconName,
+	title,
+	isSelected,
+	onSelect,
+}) => {
+	const isMobile = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
+
+	return (
+		<div
+			className={`border-border flex gap-2 rounded-[6px] border ${
+				isMobile ? 'px-[12px] py-[8px]' : 'px-[16px] py-[12px]'
+			}  shadow-${isSelected ? 'md' : 'none'} ${
+				isSelected && 'bg-backgroundGrey'
+			} hover:bg-backgroundGrey w-full cursor-pointer items-center hover:shadow-md`}
+			onClick={onSelect}
+		>
+			<Icon name={iconName} color="#64748b" />
+			<RText color="secondary" fontSize={isMobile ? 'b2' : 'b1'}>
+				{title}
+			</RText>
 		</div>
 	);
 };
