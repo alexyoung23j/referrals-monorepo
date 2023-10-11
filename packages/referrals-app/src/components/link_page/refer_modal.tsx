@@ -250,7 +250,7 @@ const ChoicesSection = ({
 					<RLabeledSection
 						label={`How does ${referralRequest?.company.name} handle referrals?`}
 						body={
-							<div className="flex w-full flex-col gap-3">
+							<div className="mt-3 flex w-full flex-col gap-3">
 								<div className="flex w-full gap-4">
 									<SelectCard
 										title={`Submit ${userProfile.firstName}'s info internally`}
