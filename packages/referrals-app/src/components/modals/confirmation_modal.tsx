@@ -8,7 +8,9 @@ interface ConfirmationModalProps {
 	headerText: string;
 	content: React.ReactNode | string;
 	onCancel: () => void;
-	onConfirm: () => Promise<void>;
+	onConfirm: () => Promise<void> | void;
+	destructive?: boolean;
+	confirmButtonText?: string;
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -18,6 +20,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 	content,
 	onCancel,
 	onConfirm,
+	destructive = true,
+	confirmButtonText = 'Confirm',
 }) => {
 	return (
 		<ActivityModal
@@ -48,9 +52,9 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 					<RButton
 						iconName="check"
 						onClick={onConfirm}
-						variant="destructive"
+						variant={destructive ? 'destructive' : 'default'}
 					>
-						Confirm
+						{confirmButtonText}
 					</RButton>
 				</div>
 			}

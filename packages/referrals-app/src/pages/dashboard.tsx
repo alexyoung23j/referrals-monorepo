@@ -24,12 +24,15 @@ import { useToast } from '~/components/ui/use-toast';
 import RequestsSection from '~/components/dashboard/requests_section';
 import Head from 'next/head';
 import { isMobile } from 'react-device-detect';
+import { ConfirmationModal } from '~/components/modals/confirmation_modal';
+import { useRouter } from 'next/router';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
 }
 
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
+	const router = useRouter();
 	const { toast } = useToast();
 	const { data: sessionData } = useSession();
 	const [newRequestModalOpen, setNewRequestModalOpen] = useState(false);
@@ -41,9 +44,19 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const [companyIsCreatedByUser, setCompanyIsCreatedByUser] = useState(false);
 	const [shouldRefetch, setShouldRefetch] = useState(false);
 	const [isCreatingRequest, setIsCreatingRequest] = useState(false);
+	const [updateSubscriptionModalOpen, setUpdateSubscriptionModalOpen] =
+		useState(false);
 
 	const createReferralRequest =
 		api.referralRequest.createRequest.useMutation();
+
+	const createStripeCustomerAndPortal =
+		api.stripe.createBillingPortal.useMutation();
+
+	const onSubscribeClick = async () => {
+		const res = await createStripeCustomerAndPortal.mutateAsync();
+		void router.push(res.billingUrl as string);
+	};
 
 	const createRequest = async () => {
 		if (hasFormErrors || !company) {
@@ -63,9 +76,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 				isAnyOpenRole,
 				isCreatedByUser: companyIsCreatedByUser,
 			});
-			setShouldRefetch((prev) => !prev);
 
-			setIsCreatingRequest(false);
 			setNewRequestModalOpen(false);
 
 			toast({
@@ -75,11 +86,22 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
-			toast({
-				title: e.message,
-				duration: 2000,
-			});
+			console.log(e);
+			if (
+				e.message ===
+				'You must have a Pro subscription to create more referral requests.'
+			) {
+				setNewRequestModalOpen(false);
+				setUpdateSubscriptionModalOpen(true);
+			} else {
+				toast({
+					title: e.message,
+					duration: 2000,
+				});
+			}
 		}
+		setShouldRefetch((prev) => !prev);
+		setIsCreatingRequest(false);
 		setCompany(null);
 		setJobTitle('');
 		setJobPostingLink('');
@@ -218,6 +240,29 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 						Create request
 					</RButton>
 				}
+			/>
+			<ConfirmationModal
+				headerText="Subscribe to Pro?"
+				content={
+					<div>
+						<RText>
+							You must be a Pro subscriber to create and share
+							more than 5 referral requests. Subscribe now for{' '}
+							<RText fontWeight="medium">$9.99/month</RText> and
+							access unlimited requests!
+						</RText>
+					</div>
+				}
+				onCancel={() => {
+					setUpdateSubscriptionModalOpen(false);
+				}}
+				onOpenChange={(open) => {
+					setUpdateSubscriptionModalOpen(open);
+				}}
+				onConfirm={onSubscribeClick}
+				open={updateSubscriptionModalOpen}
+				destructive={false}
+				confirmButtonText="Subscribe Now"
 			/>
 			<div className="my-[16px] flex h-[200vh] w-full flex-col gap-[36px]">
 				<ShareSection

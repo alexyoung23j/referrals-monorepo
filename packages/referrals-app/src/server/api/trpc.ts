@@ -14,6 +14,7 @@ import superjson from 'superjson';
 import { ZodError } from 'zod';
 import { getServerAuthSession } from '~/server/auth';
 import { prisma } from '~/server/db';
+import { stripe } from '../stripe/client';
 
 /**
  * 1. CONTEXT
@@ -24,7 +25,7 @@ import { prisma } from '~/server/db';
  */
 
 interface CreateContextOptions {
-  session: Session | null;
+	session: Session | null;
 }
 
 /**
@@ -41,6 +42,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
 	return {
 		session: opts.session,
 		prisma,
+		stripe,
 	};
 };
 
@@ -77,7 +79,9 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 			data: {
 				...shape.data,
 				zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+					error.cause instanceof ZodError
+						? error.cause.flatten()
+						: null,
 			},
 		};
 	},
@@ -119,6 +123,51 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 	});
 });
 
+const enforceUserCreationLimit = t.middleware(async ({ ctx, next }) => {
+	const user = await ctx.prisma.user.findUnique({
+		where: { id: ctx?.session?.user.id },
+	});
+
+	if (!ctx.session || !ctx.session.user || !user) {
+		throw new TRPCError({ code: 'UNAUTHORIZED' });
+	}
+
+	const stripeCustomer = await ctx.prisma.stripeCustomer.findFirst({
+		where: { userId: ctx?.session?.user.id },
+	});
+
+	const stripeSubscriptions = await ctx.prisma.stripeSubscription.findMany({
+		where: { stripeCustomerId: stripeCustomer?.id },
+	});
+
+	const hasActiveSubscription = stripeSubscriptions.some(
+		(subscription) => subscription.status === 'active'
+	);
+
+	const numRequestsCreated = user?.requestsCreated;
+	const maxAllowedFreeRequests =
+		process.env.NODE_ENV === 'development' ? 1 : 5;
+
+	if (
+		(!stripeCustomer || !hasActiveSubscription) &&
+		numRequestsCreated >= maxAllowedFreeRequests
+	) {
+		throw new TRPCError({
+			code: 'UNAUTHORIZED',
+			message:
+				'You must have a Pro subscription to create more referral requests.',
+			cause: 'subscription-limit',
+		});
+	}
+
+	return next({
+		ctx: {
+			// infers the `session` as non-nullable
+			session: { ...ctx.session, user: ctx.session.user },
+		},
+	});
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -128,3 +177,6 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const subscriptionProcedure = t.procedure
+	.use(enforceUserIsAuthed)
+	.use(enforceUserCreationLimit);

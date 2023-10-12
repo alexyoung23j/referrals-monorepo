@@ -174,7 +174,7 @@ export default function ExperienceSection() {
 	}, [selectedExperience]);
 
 	return (
-		<div className="my-[24px] flex w-full flex-col gap-[36px] pb-[140px]">
+		<div className="my-[24px] flex w-full flex-col gap-[36px]">
 			<ActivityModal
 				headerText="Add experience"
 				subtitleText="Add a previous work experience to your profile."
