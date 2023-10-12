@@ -248,7 +248,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 						<RText>
 							You must be a Pro subscriber to create and share
 							more than 5 referral requests. Subscribe now for{' '}
-							<RText fontWeight="medium">$9.99/month</RText> and
+							<RText fontWeight="bold">$9.99/month</RText> and
 							access unlimited requests!
 						</RText>
 					</div>
