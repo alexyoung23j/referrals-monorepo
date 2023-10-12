@@ -5,6 +5,7 @@ import {
 	createTRPCRouter,
 	publicProcedure,
 	protectedProcedure,
+	subscriptionProcedure,
 } from '~/server/api/trpc';
 import { generateValidLink } from '~/utils/links';
 
@@ -110,7 +111,7 @@ export const referralRequestRouter = createTRPCRouter({
 			return updatedRequest;
 		}),
 
-	createRequest: protectedProcedure
+	createRequest: subscriptionProcedure
 		.input(
 			z.object({
 				companyName: z.string(),
@@ -208,6 +209,18 @@ export const referralRequestRouter = createTRPCRouter({
 						? userProfile.defaultMessage
 						: undefined,
 				});
+
+				await ctx.prisma.user.update({
+					where: {
+						id: ctx.session.user.id,
+					},
+					data: {
+						requestsCreated: {
+							increment: 1,
+						},
+					},
+				});
+
 				return request;
 			} catch (e) {
 				console.error(e);

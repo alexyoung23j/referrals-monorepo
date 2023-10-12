@@ -14,6 +14,77 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// Stripe
+enum StripeSubscriptionStatus {
+    incomplete
+    incomplete_expired
+    trialing
+    active
+    past_due
+    canceled
+    unpaid
+    paused
+}
+
+enum StripeSubscriptionLevel {
+    pro
+}
+
+enum StripeInvoiceStatus {
+    draft
+    open
+    paid
+    uncollectible
+    void
+}
+
+model StripeEvent {
+    id               String   @id @unique
+    api_version      String?
+    data             Json
+    request          Json?
+    type             String
+    object           String
+    account          String?
+    created          DateTime
+    livemode         Boolean
+    pending_webhooks Int
+}
+
+model StripeSubscription {
+    id                 String                   @id @unique
+    stripeCustomerId   String
+    stripeCustomer     StripeCustomer           @relation(fields: [stripeCustomerId], references: [id])
+    status             StripeSubscriptionStatus
+    subscriptionLevel  StripeSubscriptionLevel // This might be useful if there are multiple level
+    subscriptionItemId String
+    createdAt          DateTime                 @default(now())
+    updatedAt          DateTime                 @updatedAt
+    StripeInvoice      StripeInvoice[]
+}
+
+model StripeCustomer {
+    id                  String               @id @unique
+    created             DateTime
+    email               String?
+    user                User?                @relation(fields: [userId], references: [id])
+    userId              String?
+    createdAt           DateTime             @default(now())
+    updatedAt           DateTime             @updatedAt
+    StripeSubscriptions StripeSubscription[]
+    StripeInvoice       StripeInvoice[]
+}
+
+model StripeInvoice {
+    id                   String              @id @unique
+    amountPaid           Int
+    customer             StripeCustomer      @relation(fields: [stripeCustomerId], references: [id])
+    stripeCustomerId     String
+    subscription         StripeSubscription? @relation(fields: [stripeSubscriptionId], references: [id])
+    stripeSubscriptionId String
+    status               StripeInvoiceStatus
+}
+
 // The email service will handle each of these cases differently
 enum EmailJobType {
     REFERRAL_REMINDER // Email sent to the referrer to remind them to make the referral
@@ -192,11 +263,13 @@ model User {
     email           String?           @unique
     emailVerified   DateTime?
     image           String?
+    requestsCreated Int               @default(0)
     accounts        Account[]
     sessions        Session[]
     UserProfile     UserProfile[]
     Link            Link[]
     ReferralRequest ReferralRequest[]
+    StripeCustomer  StripeCustomer[]
 }
 
 model VerificationToken {

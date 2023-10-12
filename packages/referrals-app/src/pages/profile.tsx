@@ -12,21 +12,38 @@ import Spinner from '~/components/ui/spinner';
 import ExperienceSection from '~/components/profile/experience_section';
 import Head from 'next/head';
 import { isMobile } from 'react-device-detect';
+import BillingSection from '~/components/profile/billing_section';
+import { useEffect } from 'react';
 
 interface ProfiePageProps {
 	linkCode: string; // Replace 'any' with the actual type of 'link'
 }
 export default function ProfilePage({ linkCode }: ProfiePageProps) {
-	if (isMobile) {
-		return <MobileNotAllowed />;
-	}
-
 	const { data: profileData, status } = api.profiles.getProfile.useQuery(
 		undefined,
 		{
 			refetchOnWindowFocus: false,
 		}
 	);
+
+	useEffect(() => {
+		if (status !== 'success') {
+			return;
+		}
+
+		const urlParams = new URLSearchParams(window.location.search);
+		const account = urlParams.get('account');
+		if (account === 'true') {
+			const billingSection = document.getElementById('billingSection');
+			if (billingSection) {
+				billingSection.scrollIntoView({ behavior: 'auto' });
+			}
+		}
+	}, [status]);
+
+	if (isMobile) {
+		return <MobileNotAllowed />;
+	}
 
 	return (
 		<PageLayout
@@ -58,6 +75,8 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 						<ResumeSection />
 						<Separator />
 						<ExperienceSection />
+						<Separator />
+						<BillingSection id="billingSection" />
 					</div>
 				) : (
 					<div className="flex max-h-fit w-full flex-col items-center justify-center gap-[36px]">

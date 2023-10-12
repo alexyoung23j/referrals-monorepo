@@ -14,7 +14,8 @@
 		"start:email": "prisma db push && yarn workspace email-service start",
 		"start:email-prod": "yarn --cwd packages/prisma prisma db push && yarn workspace email-service start",
 		"reset-db": "yarn --cwd packages/prisma prisma migrate reset --force && prisma migrate deploy",
-		"migrate-db": "prisma migrate dev --schema=packages/prisma/schema.prisma --name"
+		"migrate-db": "prisma migrate dev --schema=packages/prisma/schema.prisma --name",
+		"stripe:listen": "yarn workspace referrals-app stripe:listen"
 	},
 	"dependencies": {
 		"@prisma/client": "^5.1.1",
