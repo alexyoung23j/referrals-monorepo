@@ -336,6 +336,103 @@ const LinkPageDesktop = ({
 	const { data: sessionData } = useSession();
 	const router = useRouter();
 
+	const tabs = [];
+	const tabContents = [];
+
+	if (jobExperience && jobExperience.length > 0) {
+		tabs.push({ label: 'Experience' });
+		tabContents.push(
+			<div
+				key="Experience"
+				className="mb-10 mt-5 flex min-w-[23vw] max-w-[23vw] flex-col justify-between gap-6 pl-1"
+			>
+				{jobExperience
+					.slice(0, maxExperiences)
+					.map((experience, idx) => {
+						return (
+							<div
+								key={`${experience.company}${experience.startDate}`}
+								className="flex h-full flex-row items-center gap-4"
+							>
+								<RLogo
+									logoUrl={experience.companyLogoUrl}
+									size={28}
+								/>
+								<div className="flex flex-col gap-2">
+									<div className="flex items-center gap-3">
+										<RText
+											fontSize="b1"
+											fontWeight="medium"
+											color="secondary"
+										>
+											{experience.company.length > 20
+												? `${experience.company.substring(
+														0,
+														20
+												  )}...`
+												: experience.company}
+										</RText>
+										<RText
+											fontWeight="light"
+											color="tertiary"
+											fontSize="b2"
+										>{`${experience.startDate} - ${
+											experience.endDate ?? 'Present'
+										}`}</RText>
+									</div>
+									<RText
+										color="primary"
+										fontSize="b1"
+										fontWeight="medium"
+									>
+										{experience.jobTitle}
+									</RText>
+								</div>
+							</div>
+						);
+					})}
+				{jobExperience.length > maxExperiences && (
+					<div
+						className="cursor-pointer"
+						onClick={() => {
+							setMaxExperiences(maxExperiences + 3);
+						}}
+					>
+						<RText color="tertiary" fontSize="b2">
+							see more
+						</RText>
+					</div>
+				)}
+			</div>
+		);
+	}
+
+	if (resumeUrl) {
+		tabs.push({ label: 'Resume' });
+		tabContents.push(
+			<div
+				key="resume"
+				className="mb-10 mt-5 flex min-w-[23vw] max-w-[23vw] flex-col justify-between gap-6 pl-1"
+			>
+				<div className="flex items-center gap-3">
+					<PDFRenderer
+						fileName={resumeUrl}
+						preUploadedResumeUrl={resumeUrl}
+						size="md"
+					/>
+					<Icon
+						name="download"
+						color="#64748b"
+						className="cursor-pointer"
+						onClick={() => {
+							handleDownload(resumeUrl);
+						}}
+					/>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="bg-background flex h-screen">
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
@@ -466,118 +563,8 @@ const LinkPageDesktop = ({
 						{(resumeUrl ||
 							(jobExperience && jobExperience.length > 0)) && (
 							<RTabsSection
-								tabs={[
-									{ label: 'Experience' },
-									{ label: 'Resume' },
-								]}
-								tabContents={[
-									<div
-										key="Experience"
-										className="mb-10 mt-5 flex min-w-[23vw] max-w-[23vw] flex-col justify-between gap-6 pl-1"
-									>
-										{jobExperience &&
-											jobExperience
-												.slice(0, maxExperiences)
-												.map((experience, idx) => {
-													return (
-														<div
-															key={`${experience.company}${experience.startDate}`}
-															className="flex h-full flex-row items-center gap-4"
-														>
-															<RLogo
-																logoUrl={
-																	experience.companyLogoUrl
-																}
-																size={28}
-															/>
-															<div className="flex flex-col gap-2">
-																<div className="flex items-center gap-3">
-																	<RText
-																		fontSize="b1"
-																		fontWeight="medium"
-																		color="secondary"
-																	>
-																		{experience
-																			.company
-																			.length >
-																		20
-																			? `${experience.company.substring(
-																					0,
-																					20
-																			  )}...`
-																			: experience.company}
-																	</RText>
-																	<RText
-																		fontWeight="light"
-																		color="tertiary"
-																		fontSize="b2"
-																	>{`${
-																		experience.startDate
-																	} - ${
-																		experience.endDate ??
-																		'Present'
-																	}`}</RText>
-																</div>
-																<RText
-																	color="primary"
-																	fontSize="b1"
-																	fontWeight="medium"
-																>
-																	{
-																		experience.jobTitle
-																	}
-																</RText>
-															</div>
-														</div>
-													);
-												})}
-										{jobExperience &&
-											jobExperience.length >
-												maxExperiences && (
-												<div
-													className="cursor-pointer"
-													onClick={() => {
-														setMaxExperiences(
-															maxExperiences + 3
-														);
-													}}
-												>
-													<RText
-														color="tertiary"
-														fontSize="b2"
-													>
-														see more
-													</RText>
-												</div>
-											)}
-									</div>,
-									<div
-										key="resume"
-										className="mb-10 mt-5 flex min-w-[23vw] max-w-[23vw] flex-col justify-between gap-6 pl-1"
-									>
-										{resumeUrl && (
-											<div className="flex items-center gap-3">
-												<PDFRenderer
-													fileName={resumeUrl}
-													preUploadedResumeUrl={
-														resumeUrl
-													}
-													size="md"
-												/>
-												<Icon
-													name="download"
-													color="#64748b"
-													className="cursor-pointer"
-													onClick={() => {
-														handleDownload(
-															resumeUrl
-														);
-													}}
-												/>
-											</div>
-										)}
-									</div>,
-								]}
+								tabs={tabs}
+								tabContents={tabContents}
 							/>
 						)}
 					</div>
