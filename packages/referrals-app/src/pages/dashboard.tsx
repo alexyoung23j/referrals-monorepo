@@ -9,7 +9,7 @@ import ShareSection from '~/components/dashboard/share_section';
 import { Separator } from '~/components/ui/separator';
 import { useSession } from 'next-auth/react';
 import ActivityModal from '~/components/modals/activity_modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch } from '~/components/ui/switch';
 import { RText } from '~/components/ui/text';
 import { RLabeledSection } from '~/components/ui/labeled_section';
@@ -26,13 +26,166 @@ import Head from 'next/head';
 import { isMobile } from 'react-device-detect';
 import { ConfirmationModal } from '~/components/modals/confirmation_modal';
 import { useRouter } from 'next/router';
+import { useMediaQuery } from 'react-responsive';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
 }
 
+const InfoModal = ({
+	showInfoModal,
+	setShowInfoModal,
+	defaultLink,
+	isMobileScreen,
+}: {
+	showInfoModal: boolean;
+	setShowInfoModal: (open: boolean) => void;
+	defaultLink: string;
+	isMobileScreen: boolean;
+}) => {
+	const router = useRouter();
+
+	return (
+		<ActivityModal
+			headerText="Welcome to ReferLink!"
+			sections={[
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText fontSize={isMobileScreen ? 'b1' : 'h3'}>
+								{`This is the Dashboard page, where you will manage
+							your job search by creating referral requests for
+							any job you're interested in!`}
+							</RText>
+						</div>,
+					],
+				},
+
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText fontSize={isMobileScreen ? 'b1' : 'h3'}>
+								You now have access to a special profile link
+								you can use to easily share ALL your referral
+								requests with anyone in your network. Here it
+								is:
+							</RText>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div className="flex items-center gap-3" key="what">
+							<RInput
+								value={`${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${defaultLink}`}
+								copyEnabled
+								readOnly
+								highlighted
+								className="cursor-pointer underline"
+								copyOnClick
+							/>
+							<RText color="tertiary" fontSize="b2">
+								Shareable link
+							</RText>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText fontSize={isMobileScreen ? 'b1' : 'h3'}>
+								You can also share requests individually by
+								clicking{' '}
+								<RText
+									fontSize={isMobileScreen ? 'b1' : 'h3'}
+									fontWeight="bold"
+								>
+									{'"Share request"'}
+								</RText>{' '}
+								and copying the link that appears.
+							</RText>
+						</div>,
+					],
+				},
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText fontSize={isMobileScreen ? 'b1' : 'h3'}>
+								{`Edit your profile to give
+								your referrer's more context in the `}
+								<RText
+									fontSize={isMobileScreen ? 'b1' : 'h3'}
+									className="cursor-pointer underline"
+									fontWeight="bold"
+									onClick={() => {
+										router.push('/profile');
+									}}
+								>
+									Profile Page
+								</RText>
+								. The more you include, the easier it is for
+								them to complete your request.
+							</RText>
+						</div>,
+					],
+				},
+
+				{
+					type: 'single-column',
+					content: [
+						<div key="about" className="flex flex-col gap-4">
+							<RText fontSize={isMobileScreen ? 'b1' : 'h3'}>
+								Create your first request by clicking{' '}
+								<RText
+									fontSize={isMobileScreen ? 'b1' : 'h3'}
+									fontWeight="bold"
+								>
+									{'"New referral request"'}
+								</RText>{' '}
+								at the top of the page!
+							</RText>
+						</div>,
+					],
+				},
+
+				{
+					type: 'single-column',
+					content: [
+						<div
+							key="about"
+							className="flex w-full flex-col items-end gap-[16px]"
+						>
+							<div className="w-full" key="separator">
+								<Separator />
+							</div>
+							<div
+								className="flex max-w-fit cursor-pointer rounded-[6px] bg-[#D0E6FF] px-[10px] py-[8px] hover:bg-[#F1F5F9]"
+								onClick={() => {
+									setShowInfoModal(false);
+								}}
+							>
+								<RText fontWeight="medium">Get started →</RText>
+							</div>
+						</div>,
+					],
+				},
+			]}
+			open={showInfoModal}
+			onOpenChange={(open: boolean) => {
+				setShowInfoModal(open);
+			}}
+		/>
+	);
+};
+
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const router = useRouter();
+	const { info } = router.query;
 	const { toast } = useToast();
 	const { data: sessionData } = useSession();
 	const [newRequestModalOpen, setNewRequestModalOpen] = useState(false);
@@ -46,6 +199,18 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const [isCreatingRequest, setIsCreatingRequest] = useState(false);
 	const [updateSubscriptionModalOpen, setUpdateSubscriptionModalOpen] =
 		useState(false);
+
+	const [showInfoModal, setShowInfoModal] = useState(false);
+
+	useEffect(() => {
+		if (info === 'true') {
+			setShowInfoModal(true);
+		}
+	}, []);
+
+	const isMobileScreen = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
 
 	const createReferralRequest =
 		api.referralRequest.createRequest.useMutation();
@@ -113,169 +278,185 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	}
 
 	return (
-		<PageLayout
-			showSidebar
-			pageTitle="Dashboard"
-			topRightContent={
-				<RButton
-					size="lg"
-					iconName="plus"
-					onClick={() => {
-						setNewRequestModalOpen(true);
-					}}
-				>
-					New referral request
-				</RButton>
-			}
-		>
-			<Head>
-				<title>Dashboard - ReferLink</title>
-			</Head>
-			<ActivityModal
-				open={newRequestModalOpen}
-				onOpenChange={(open) => {
-					setNewRequestModalOpen(open);
-					if (!open) {
-						setCompany(null);
-						setJobTitle('');
-						setJobPostingLink('');
-						setAnyOpenRole(false);
-					}
-				}}
-				headerText="Create referral request"
-				subtitleText="Link to a job listing or choose “Any open role” for a general referral."
-				sections={[
-					{
-						type: 'single-column',
-						content: [
-							<div key="1" className="flex items-center gap-3 ">
-								<Switch
-									checked={isAnyOpenRole}
-									onCheckedChange={(checked) => {
-										setAnyOpenRole(checked);
-										if (checked) {
-											setHasFormErrors(false);
-										}
-									}}
-								/>
-								<RText fontWeight="medium">Any open role</RText>
-							</div>,
-						],
-					},
-					{
-						type: 'two-column',
-						content: [
-							<RLabeledSection
-								label="Company*"
-								body={
-									<CompanyCombobox
-										onCreateCompany={(company) => {
-											setCompany(company);
-											setCompanyIsCreatedByUser(true);
-										}}
-										onSelectCompany={(company) => {
-											setCompany(company);
-										}}
-									/>
-								}
-								key="2"
-							/>,
-							<RLabeledSection
-								label="Job title"
-								body={
-									<RInput
-										placeholder="enter title"
-										value={jobTitle}
-										onChange={(e) => {
-											setJobTitle(e.target.value);
-										}}
-									/>
-								}
-								key="3"
-							/>,
-						],
-					},
-					{
-						type: 'single-column',
-						content: [
-							<RLabeledSection
-								label={
-									isAnyOpenRole
-										? 'Job posting link'
-										: 'Job posting link*'
-								}
-								subtitle={
-									isAnyOpenRole
-										? 'Feel free to link to your top choice job at this company.'
-										: undefined
-								}
-								body={
-									<RInput
-										placeholder="enter link"
-										validationSchema={z.string().url()}
-										isRequired={!isAnyOpenRole}
-										value={jobPostingLink}
-										onChange={(e) => {
-											setJobPostingLink(e.target.value);
-										}}
-										onErrorFound={() => {
-											setHasFormErrors(true);
-										}}
-										onErrorFixed={() => {
-											setHasFormErrors(false);
-										}}
-									/>
-								}
-								key="4"
-							/>,
-						],
-					},
-				]}
-				bottomRowContent={
+		<>
+			<InfoModal
+				showInfoModal={showInfoModal}
+				setShowInfoModal={setShowInfoModal}
+				defaultLink={userMainLink}
+				isMobileScreen={isMobileScreen}
+			/>
+			<PageLayout
+				showSidebar
+				pageTitle="Dashboard"
+				topRightContent={
 					<RButton
-						iconName="check"
-						onClick={createRequest}
-						isLoading={isCreatingRequest}
+						size="lg"
+						iconName="plus"
+						onClick={() => {
+							setNewRequestModalOpen(true);
+						}}
 					>
-						Create request
+						New referral request
 					</RButton>
 				}
-			/>
-			<ConfirmationModal
-				headerText="Subscribe to Pro?"
-				content={
-					<div>
-						<RText>
-							You must be a Pro subscriber to create and share
-							more than 5 referral requests. Subscribe now for{' '}
-							<RText fontWeight="bold">$9.99/month</RText> and
-							access unlimited requests!
-						</RText>
-					</div>
-				}
-				onCancel={() => {
-					setUpdateSubscriptionModalOpen(false);
-				}}
-				onOpenChange={(open) => {
-					setUpdateSubscriptionModalOpen(open);
-				}}
-				onConfirm={onSubscribeClick}
-				open={updateSubscriptionModalOpen}
-				destructive={false}
-				confirmButtonText="Subscribe Now"
-			/>
-			<div className="my-[16px] flex h-[200vh] w-full flex-col gap-[36px]">
-				<ShareSection
-					linkCode={userMainLink}
-					userName={sessionData?.user.name as string}
+			>
+				<Head>
+					<title>Dashboard - ReferLink</title>
+				</Head>
+
+				<ActivityModal
+					open={newRequestModalOpen}
+					onOpenChange={(open) => {
+						setNewRequestModalOpen(open);
+						if (!open) {
+							setCompany(null);
+							setJobTitle('');
+							setJobPostingLink('');
+							setAnyOpenRole(false);
+						}
+					}}
+					headerText="Create referral request"
+					subtitleText="Link to a job listing or choose “Any open role” for a general referral."
+					sections={[
+						{
+							type: 'single-column',
+							content: [
+								<div
+									key="1"
+									className="flex items-center gap-3 "
+								>
+									<Switch
+										checked={isAnyOpenRole}
+										onCheckedChange={(checked) => {
+											setAnyOpenRole(checked);
+											if (checked) {
+												setHasFormErrors(false);
+											}
+										}}
+									/>
+									<RText fontWeight="medium">
+										Any open role
+									</RText>
+								</div>,
+							],
+						},
+						{
+							type: 'two-column',
+							content: [
+								<RLabeledSection
+									label="Company*"
+									body={
+										<CompanyCombobox
+											onCreateCompany={(company) => {
+												setCompany(company);
+												setCompanyIsCreatedByUser(true);
+											}}
+											onSelectCompany={(company) => {
+												setCompany(company);
+											}}
+										/>
+									}
+									key="2"
+								/>,
+								<RLabeledSection
+									label="Job title"
+									body={
+										<RInput
+											placeholder="enter title"
+											value={jobTitle}
+											onChange={(e) => {
+												setJobTitle(e.target.value);
+											}}
+										/>
+									}
+									key="3"
+								/>,
+							],
+						},
+						{
+							type: 'single-column',
+							content: [
+								<RLabeledSection
+									label={
+										isAnyOpenRole
+											? 'Job posting link'
+											: 'Job posting link*'
+									}
+									subtitle={
+										isAnyOpenRole
+											? 'Feel free to link to your top choice job at this company.'
+											: undefined
+									}
+									body={
+										<RInput
+											placeholder="enter link"
+											validationSchema={z.string().url()}
+											isRequired={!isAnyOpenRole}
+											value={jobPostingLink}
+											onChange={(e) => {
+												setJobPostingLink(
+													e.target.value
+												);
+											}}
+											onErrorFound={() => {
+												setHasFormErrors(true);
+											}}
+											onErrorFixed={() => {
+												setHasFormErrors(false);
+											}}
+										/>
+									}
+									key="4"
+								/>,
+							],
+						},
+					]}
+					bottomRowContent={
+						<RButton
+							iconName="check"
+							onClick={createRequest}
+							isLoading={isCreatingRequest}
+						>
+							Create request
+						</RButton>
+					}
 				/>
-				<Separator />
-				<RequestsSection
-					shouldUpdate={shouldRefetch}
-					setNewRequestModalOpen={setNewRequestModalOpen}
+				<ConfirmationModal
+					headerText="Subscribe to Pro?"
+					content={
+						<div>
+							<RText>
+								You must be a Pro subscriber to create and share
+								more than 5 referral requests. Subscribe now for{' '}
+								<RText fontWeight="bold">$9.99/month</RText> and
+								access unlimited requests!
+							</RText>
+						</div>
+					}
+					onCancel={() => {
+						setUpdateSubscriptionModalOpen(false);
+					}}
+					onOpenChange={(open) => {
+						setUpdateSubscriptionModalOpen(open);
+					}}
+					onConfirm={onSubscribeClick}
+					open={updateSubscriptionModalOpen}
+					destructive={false}
+					confirmButtonText="Subscribe Now"
 				/>
-			</div>
-		</PageLayout>
+				<div className="my-[16px] flex h-[200vh] w-full flex-col gap-[36px]">
+					<ShareSection
+						linkCode={userMainLink}
+						userName={sessionData?.user.name as string}
+					/>
+					<Separator />
+					<RequestsSection
+						shouldUpdate={shouldRefetch}
+						setNewRequestModalOpen={setNewRequestModalOpen}
+					/>
+				</div>
+			</PageLayout>
+		</>
 	);
 }
 

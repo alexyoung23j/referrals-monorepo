@@ -75,7 +75,7 @@ export default function SignInPage() {
 					className="w-full"
 					onClick={() => {
 						void signIn('google', {
-							callbackUrl: '/profile',
+							callbackUrl: '/dashboard?info=true',
 						});
 					}}
 				>
