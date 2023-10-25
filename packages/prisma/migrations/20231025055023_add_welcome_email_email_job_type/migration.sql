@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "EmailJobType" ADD VALUE 'WELCOME_EMAIL';

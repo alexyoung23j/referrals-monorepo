@@ -136,6 +136,29 @@ const referralConfirmationNotification = ({
 	<span>Thank you for using ReferLink!</span>
 	</body></html>`);
 
+const welcomeEmail = ({
+		firstName,
+		linkId
+	}: Record<string, string>) =>
+		defaultTemplateString(`<html>
+		<body>
+		<span>Welcome to ReferLink, ${firstName}!</span>
+		<br>
+		<br>
+		<span>You now have access to a special profile link you can use to easily share ALL your referral requests with anyone in your network. Here it is:</span>
+		<br>
+		<span><a href="${process.env.NEXT_PUBLIC_SERVER_URL}/${linkId}">${process.env.NEXT_PUBLIC_SERVER_URL_SHORT}/${linkId}</a></span>
+		<br>
+		<br>
+		<span>Edit your profile to give your referrer's more context in your <a href="${process.env.NEXT_PUBLIC_SERVER_URL}/profile">Profile Page</a>. The more you include, the easier it is for them to complete your request.</span>
+		<br>
+		<br>
+		<span>That should be everything you need to know to get started! Navigate to your <a href="${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard">Dashboard</a> to create your first referral request!
+		<br>
+		<br>
+		<span>Thank you for using ReferLink!</span>
+		</body></html>`);
+
 const jobToMessageMapping: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.MESSAGE_FROM_REFERRER]: messageFromReferrer,
 	[EmailJobType.JOB_LINK]: jobPostingLink,
@@ -143,6 +166,7 @@ const jobToMessageMapping: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION]:
 		referralConfirmationNotification,
 	[EmailJobType.REFERRAL_REMINDER]: referralReminder,
+	[EmailJobType.WELCOME_EMAIL]: welcomeEmail
 };
 
 const messageFromReferrerSubject = ({

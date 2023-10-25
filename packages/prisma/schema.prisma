@@ -93,6 +93,7 @@ enum EmailJobType {
     REFERRAL_CONFIRMATION_NOTIFICATION // Email sent to job seeker after they have been referred
     MESSAGE_FROM_REFERRER // Email sent to job seeker with a message from the referrer
     JOB_LINK // Email sent to job seeker with a link to the job posting
+    WELCOME_EMAIL
 }
 
 enum EmailJobStatus {
@@ -258,18 +259,19 @@ model Session {
 }
 
 model User {
-    id              String            @id @default(cuid())
-    name            String?
-    email           String?           @unique
-    emailVerified   DateTime?
-    image           String?
-    requestsCreated Int               @default(0)
-    accounts        Account[]
-    sessions        Session[]
-    UserProfile     UserProfile[]
-    Link            Link[]
-    ReferralRequest ReferralRequest[]
-    StripeCustomer  StripeCustomer[]
+    id               String            @id @default(cuid())
+    name             String?
+    email            String?           @unique
+    emailVerified    DateTime?
+    image            String?
+    requestsCreated  Int               @default(0)
+    accounts         Account[]
+    sessions         Session[]
+    UserProfile      UserProfile[]
+    Link             Link[]
+    ReferralRequest  ReferralRequest[]
+    StripeCustomer   StripeCustomer[]
+    welcomeEmailSent Boolean           @default(false)
 }
 
 model VerificationToken {
