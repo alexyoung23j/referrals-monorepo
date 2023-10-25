@@ -187,7 +187,7 @@ const InfoModal = ({
 
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const router = useRouter();
-	const { info } = router.query;
+	const { info, create } = router.query;
 	const { toast } = useToast();
 	const { data: sessionData } = useSession();
 	const [newRequestModalOpen, setNewRequestModalOpen] = useState(false);
@@ -203,13 +203,16 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 		useState(false);
 
 	const [showInfoModal, setShowInfoModal] = useState(false);
-	
+
 	useEffect(() => {
 		if (info === 'true') {
 			setShowInfoModal(true);
 		}
+		if (create === 'true') {
+			setNewRequestModalOpen(true);
+		}
 	}, []);
-	
+
 	const isMobileScreen = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
@@ -491,53 +494,53 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 				},
 			});
 
-			if (existingProfile) {
-				return {
-					props: { session, linkCode: link.id },
-				};
-			}
-
-			// Create a new profile if one doesn't exist
-			await prisma.userProfile.create({
-				data: {
-					user: {
-						connect: {
-							id: session?.user.id,
+			if (!existingProfile) {
+				// Create a new profile if one doesn't exist
+				await prisma.userProfile.create({
+					data: {
+						user: {
+							connect: {
+								id: session?.user.id,
+							},
 						},
+						publicEmail: session?.user.email,
+						firstName: session?.user.name?.split(' ')[0],
+						lastName: session?.user.name?.split(' ')[1],
 					},
-					publicEmail: session?.user.email,
-					firstName: session?.user.name?.split(' ')[0],
-					lastName: session?.user.name?.split(' ')[1],
-				},
-			});
+				});
+			}
 
 			const user = await prisma.user.findUnique({
 				where: {
-					id: session?.user.id
-				}
+					id: session?.user.id,
+				},
 			});
 
 			if (user && !user.welcomeEmailSent && user.name && user.email) {
 				await prisma.emailJob.create({
 					data: {
 						toAddress: user?.email,
-						body: constructEmailMessage(EmailJobType.WELCOME_EMAIL, {
-							firstName: user.name?.split(' ')[0] ?? user.name,
-							linkId: link.id
-						}),
+						body: constructEmailMessage(
+							EmailJobType.WELCOME_EMAIL,
+							{
+								firstName:
+									user.name?.split(' ')[0] ?? user.name,
+								linkId: link.id,
+							}
+						),
 						emailType: EmailJobType.WELCOME_EMAIL,
 						status: EmailJobStatus.QUEUED,
-						subject: 'Welcome to ReferLink!',
+						subject: 'Get Started with ReferLink!',
 					},
 				});
 
 				await prisma.user.update({
 					where: {
-						id: user.id
+						id: user.id,
 					},
 					data: {
-						welcomeEmailSent: true
-					}
+						welcomeEmailSent: true,
+					},
 				});
 			}
 
