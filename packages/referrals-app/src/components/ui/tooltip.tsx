@@ -33,6 +33,7 @@ type RTooltipProps = {
 	align?: 'start' | 'center' | 'end';
 	side?: 'top' | 'bottom' | 'left' | 'right';
 	className?: string;
+	delayDuration?: number;
 };
 
 export const RTooltip = ({
@@ -41,9 +42,10 @@ export const RTooltip = ({
 	align,
 	className,
 	side = 'top',
+	delayDuration = 200,
 }: RTooltipProps) => {
 	return (
-		<TooltipProvider delayDuration={200}>
+		<TooltipProvider delayDuration={delayDuration}>
 			<Tooltip>
 				<TooltipTrigger>{trigger}</TooltipTrigger>
 				<TooltipContent side={side} align={align} className={className}>

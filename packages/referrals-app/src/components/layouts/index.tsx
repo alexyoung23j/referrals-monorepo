@@ -15,35 +15,66 @@ const Sidebar = () => {
 	const profileSelected = router.pathname === '/profile';
 	return (
 		<div className="border-border flex h-full min-w-[72px] max-w-[72px] flex-col items-center justify-between border-r-[1px] pb-[24px] pt-[32px]">
-			<div>
-				<div
-					className={`flex flex-col ${
-						dashboardSelected ? 'bg-grey' : 'hover:bg-lightGrey'
-					}  max-h-fit max-w-fit cursor-pointer rounded-[6px] p-[8px]`}
-					onClick={() => {
-						router.push('/dashboard');
-					}}
-				>
-					<Icon
-						name="layers"
-						color={dashboardSelected ? '#64748B' : '#94A3B8'}
-						size="24px"
-					/>
-				</div>
-				<div
-					className={`flex flex-col ${
-						profileSelected ? 'bg-grey' : 'hover:bg-lightGrey'
-					} max-h-fit max-w-fit cursor-pointer rounded-[6px] p-[8px]`}
-					onClick={() => {
-						router.push('/profile');
-					}}
-				>
-					<Icon
-						name="user"
-						color={profileSelected ? '#64748B' : '#94A3B8'}
-						size="24px"
-					/>
-				</div>
+			<div className="flex flex-col items-center">
+				<RTooltip
+					delayDuration={400}
+					trigger={
+						<div
+							className={`flex flex-col ${
+								dashboardSelected
+									? 'bg-grey'
+									: 'hover:bg-lightGrey'
+							}  max-h-fit max-w-fit cursor-pointer rounded-[6px] p-[8px]`}
+							onClick={() => {
+								router.push('/dashboard');
+							}}
+						>
+							<Icon
+								name="layers"
+								color={
+									dashboardSelected ? '#64748B' : '#94A3B8'
+								}
+								size="24px"
+							/>
+						</div>
+					}
+					content={
+						<div>
+							<RText fontSize="b2">Dashboard</RText>
+						</div>
+					}
+					align="start"
+					side="right"
+				/>
+
+				<RTooltip
+					delayDuration={400}
+					trigger={
+						<div
+							className={`flex flex-col ${
+								profileSelected
+									? 'bg-grey'
+									: 'hover:bg-lightGrey'
+							} max-h-fit max-w-fit cursor-pointer rounded-[6px] p-[8px]`}
+							onClick={() => {
+								router.push('/profile');
+							}}
+						>
+							<Icon
+								name="user"
+								color={profileSelected ? '#64748B' : '#94A3B8'}
+								size="24px"
+							/>
+						</div>
+					}
+					content={
+						<div>
+							<RText fontSize="b2">Profile</RText>
+						</div>
+					}
+					align="start"
+					side="right"
+				/>
 				<RTooltip
 					trigger={
 						<div
