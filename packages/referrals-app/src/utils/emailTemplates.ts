@@ -136,6 +136,22 @@ const referralConfirmationNotification = ({
 	<span>Thank you for using ReferLink!</span>
 	</body></html>`);
 
+const welcomeEmail = ({ firstName, linkId }: Record<string, string>) =>
+	defaultTemplateString(`<html>
+		<body>
+		<span>Welcome to ReferLink, ${firstName}!!</span>
+		<br>
+		<br>
+		<span>Get started by <a href="${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard?create=true">creating a referral request</a>. Once you're ready to 
+		share your requests, make your ReferLink beautiful by <a href="${process.env.NEXT_PUBLIC_SERVER_URL}/profile">editing your profile</a>!</span>
+		<br>
+		<br>
+		<span>🚀 We're looking forward to helping you land your dream job!</span>
+		<br>
+		<br>
+		<span>Thank you for using ReferLink.</span>
+		</body></html>`);
+
 const jobToMessageMapping: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.MESSAGE_FROM_REFERRER]: messageFromReferrer,
 	[EmailJobType.JOB_LINK]: jobPostingLink,
@@ -143,6 +159,7 @@ const jobToMessageMapping: Record<string, EmailTemplateGenerator> = {
 	[EmailJobType.REFERRAL_CONFIRMATION_NOTIFICATION]:
 		referralConfirmationNotification,
 	[EmailJobType.REFERRAL_REMINDER]: referralReminder,
+	[EmailJobType.WELCOME_EMAIL]: welcomeEmail,
 };
 
 const messageFromReferrerSubject = ({

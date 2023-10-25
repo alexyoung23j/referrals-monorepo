@@ -27,6 +27,8 @@ import { isMobile } from 'react-device-detect';
 import { ConfirmationModal } from '~/components/modals/confirmation_modal';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from 'react-responsive';
+import { constructEmailMessage } from '~/utils/emailTemplates';
+import { EmailJobType, EmailJobStatus } from '@prisma/client';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
@@ -185,7 +187,7 @@ const InfoModal = ({
 
 export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const router = useRouter();
-	const { info } = router.query;
+	const { info, create } = router.query;
 	const { toast } = useToast();
 	const { data: sessionData } = useSession();
 	const [newRequestModalOpen, setNewRequestModalOpen] = useState(false);
@@ -205,6 +207,9 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	useEffect(() => {
 		if (info === 'true') {
 			setShowInfoModal(true);
+		}
+		if (create === 'true') {
+			setNewRequestModalOpen(true);
 		}
 	}, []);
 
@@ -467,7 +472,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 		redirectUrl: '/',
 		callback: async (session) => {
 			// Create a new main link if none yet exists
-
 			let link = await prisma.link.findFirst({
 				where: {
 					userId: session?.user.id,
@@ -480,6 +484,63 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 					userId: session?.user.id as string,
 					createdByLoggedInUser: true,
 					blurbAuthorName: session?.user.name as string,
+				});
+			}
+
+			// Create a new user profile if none yet exists
+			const existingProfile = await prisma.userProfile.findFirst({
+				where: {
+					userId: session?.user.id,
+				},
+			});
+
+			if (!existingProfile) {
+				// Create a new profile if one doesn't exist
+				await prisma.userProfile.create({
+					data: {
+						user: {
+							connect: {
+								id: session?.user.id,
+							},
+						},
+						publicEmail: session?.user.email,
+						firstName: session?.user.name?.split(' ')[0],
+						lastName: session?.user.name?.split(' ')[1],
+					},
+				});
+			}
+
+			const user = await prisma.user.findUnique({
+				where: {
+					id: session?.user.id,
+				},
+			});
+
+			if (user && !user.welcomeEmailSent && user.name && user.email) {
+				await prisma.emailJob.create({
+					data: {
+						toAddress: user?.email,
+						body: constructEmailMessage(
+							EmailJobType.WELCOME_EMAIL,
+							{
+								firstName:
+									user.name?.split(' ')[0] ?? user.name,
+								linkId: link.id,
+							}
+						),
+						emailType: EmailJobType.WELCOME_EMAIL,
+						status: EmailJobStatus.QUEUED,
+						subject: 'Get Started with ReferLink!',
+					},
+				});
+
+				await prisma.user.update({
+					where: {
+						id: user.id,
+					},
+					data: {
+						welcomeEmailSent: true,
+					},
 				});
 			}
 
