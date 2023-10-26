@@ -12,6 +12,7 @@ import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import Spinner from '../ui/spinner';
 import RSpinner from '../ui/spinner';
+import { useMediaQuery } from 'react-responsive';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -26,6 +27,10 @@ export default function PersonalInfoSection() {
 			refetchOnWindowFocus: false,
 		}
 	);
+
+	const isMobileScreen = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
 
 	const updateProfile = api.profiles.updateProfile.useMutation();
 	const [firstName, setFirstName] = useState('');
@@ -178,7 +183,7 @@ export default function PersonalInfoSection() {
 
 	return (
 		<div className="my-[24px] flex w-full flex-col gap-[36px]">
-			<div className="flex w-full justify-between">
+			<div className="flex w-full items-center justify-between">
 				<RText fontSize="h2" fontWeight="medium">
 					Personal Information
 				</RText>
@@ -465,8 +470,18 @@ export default function PersonalInfoSection() {
 						/>
 					</div>
 					<div className="mt-[24px] flex h-full w-full flex-col gap-[24px] pr-[5%] lg:mt-[0px] lg:w-[45%]">
-						<div className="flex items-center gap-6">
-							<Avatar className="h-[15vw] max-h-[220px] w-[15vw] max-w-[220px]">
+						<div
+							className={`${
+								isMobileScreen && 'flex-col'
+							} flex items-center gap-6`}
+						>
+							<Avatar
+								className={`${
+									isMobileScreen
+										? 'h-[15vh] w-[15vh]'
+										: 'h-[15vw] max-h-[220px] w-[15vw] max-w-[220px]'
+								}`}
+							>
 								<AvatarImage
 									src={localAvatarUrl}
 									style={{

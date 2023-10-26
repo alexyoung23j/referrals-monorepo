@@ -10,6 +10,7 @@ import { useToast } from '~/components/ui/use-toast';
 import { createClient } from '@supabase/supabase-js';
 import dynamic from 'next/dynamic';
 import { v4 as uuidv4 } from 'uuid';
+import { useMediaQuery } from 'react-responsive';
 const PDFRenderer = dynamic(() => import('../ui/pdf'), { ssr: false });
 
 const supabase = createClient(
@@ -64,6 +65,10 @@ export default function ResumeSection() {
 		}
 	};
 
+	const isMobileScreenQuery = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
+
 	useEffect(() => {
 		if (profileData?.resumeUrl) {
 			setLocalResumeUrl(profileData.resumeUrl);
@@ -81,11 +86,19 @@ export default function ResumeSection() {
 					Resume
 				</RText>
 			</div>
-			<div className="flex flex-col gap-4">
+			<div
+				className={`flex flex-col gap-4 ${
+					isMobileScreenQuery && 'items-center'
+				}`}
+			>
 				<RText color="tertiary">
 					{localResumeUrl?.split('/').pop()?.replace(/%20/g, ' ')}
 				</RText>
-				<div className="flex max-w-fit items-center gap-3">
+				<div
+					className={`flex max-w-fit ${
+						isMobileScreenQuery && 'flex-col'
+					} items-center gap-3`}
+				>
 					<PDFRenderer
 						fileName={localResumeUrl ?? null}
 						preUploadedResumeUrl={localResumeUrl ?? null}

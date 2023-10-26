@@ -278,10 +278,6 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 		setAnyOpenRole(false);
 	};
 
-	if (isMobile) {
-		return <MobileNotAllowed />;
-	}
-
 	return (
 		<>
 			<InfoModal

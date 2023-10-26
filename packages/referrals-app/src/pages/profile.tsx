@@ -41,10 +41,6 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 		}
 	}, [status]);
 
-	if (isMobile) {
-		return <MobileNotAllowed />;
-	}
-
 	return (
 		<PageLayout
 			showSidebar
@@ -74,7 +70,7 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 						<Separator />
 						<ResumeSection />
 						<Separator />
-						<ExperienceSection />
+						{/* <ExperienceSection /> */}
 						<Separator />
 						<BillingSection id="billingSection" />
 					</div>
