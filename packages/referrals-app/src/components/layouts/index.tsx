@@ -30,7 +30,7 @@ const Sidebar = () => {
 		<div
 			className={`border-border flex ${
 				isMobileScreen
-					? 'bg-background shadow-[0px 10px 20px rgba(0,0,0,0.25)] fixed bottom-0 z-[1000] h-fit w-full flex-row justify-center gap-6 border-t-[1px] py-[8px]'
+					? 'bg-background shadow-[0px 10px 20px rgba(0,0,0,0.25)] fixed bottom-0 z-[49] h-fit w-full flex-row justify-center gap-6 border-t-[1px] py-[8px]'
 					: 'h-full min-w-[72px] max-w-[72px] flex-col items-center justify-between border-r-[1px] pb-[24px] pt-[32px]'
 			} `}
 		>
