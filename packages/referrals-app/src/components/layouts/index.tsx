@@ -26,9 +26,6 @@ const Sidebar = () => {
 		setHideOnMobile(isMobileScreenQuery);
 	}, [isMobileScreenQuery]);
 
-	console.log('running');
-	console.log({ isMobile, isMobileScreen });
-
 	return (
 		<div
 			className={`border-border flex ${
@@ -166,10 +163,16 @@ export const PageLayout = ({
 			{showSidebar && <Sidebar />}
 			<div className="flex h-screen w-full flex-col items-center overflow-y-auto px-[36px] lg:px-[0px]">
 				<div className="mt-[48px] flex max-h-fit max-w-fit flex-col justify-center">
-					<div className="flex flex-col gap-[16px]">
+					<div
+						className={`flex flex-col ${
+							isMobileScreen ? 'gap-[24px]' : 'gap-[16px]'
+						}`}
+					>
 						<div
 							className={`flex ${
-								isMobile ? '' : 'w-[75vw] max-w-[1092px]'
+								isMobileScreen
+									? 'w-full'
+									: 'w-[75vw] max-w-[1092px]'
 							} items-center justify-between`}
 						>
 							<RText fontSize="h1" fontWeight="medium">

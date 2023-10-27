@@ -469,7 +469,11 @@ export default function PersonalInfoSection() {
 							}
 						/>
 					</div>
-					<div className="mt-[24px] flex h-full w-full flex-col gap-[24px] pr-[5%] lg:mt-[0px] lg:w-[45%]">
+					<div
+						className={`mt-[24px] flex h-full w-full flex-col gap-[24px] lg:mt-[0px] lg:w-[45%] ${
+							isMobileScreen ? '' : 'pr-[5%]'
+						}`}
+					>
 						<div
 							className={`${
 								isMobileScreen && 'flex-col'

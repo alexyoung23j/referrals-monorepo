@@ -23,12 +23,12 @@ import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/use-toast';
 import RequestsSection from '~/components/dashboard/requests_section';
 import Head from 'next/head';
-import { isMobile } from 'react-device-detect';
 import { ConfirmationModal } from '~/components/modals/confirmation_modal';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from 'react-responsive';
 import { constructEmailMessage } from '~/utils/emailTemplates';
 import { EmailJobType, EmailJobStatus } from '@prisma/client';
+import Spinner from '~/components/ui/spinner';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
@@ -202,6 +202,14 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const [updateSubscriptionModalOpen, setUpdateSubscriptionModalOpen] =
 		useState(false);
 
+	const [pageLoaded, setPageLoaded] = useState(false);
+
+	useEffect(() => {
+		if (!pageLoaded) {
+			setPageLoaded(true);
+		}
+	}, [pageLoaded]);
+
 	const [showInfoModal, setShowInfoModal] = useState(false);
 
 	useEffect(() => {
@@ -278,6 +286,14 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 		setAnyOpenRole(false);
 	};
 
+	if (!pageLoaded) {
+		return (
+			<div className="flex h-[100vh] w-full items-center justify-center">
+				<Spinner size="medium" />
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<InfoModal
@@ -289,6 +305,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 			<PageLayout
 				showSidebar
 				pageTitle="Dashboard"
+				pageSubtitle="Manage your job hunt and create referral requests."
 				topRightContent={
 					<RButton
 						size="lg"
@@ -297,7 +314,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 							setNewRequestModalOpen(true);
 						}}
 					>
-						New referral request
+						{isMobileScreen ? 'Request' : 'New referral request'}
 					</RButton>
 				}
 			>

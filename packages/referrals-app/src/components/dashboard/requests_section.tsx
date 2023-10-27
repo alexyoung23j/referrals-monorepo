@@ -127,7 +127,7 @@ export default function RequestsSection({
 		refetch();
 	}, [shouldUpdate, refetch]);
 
-	const isMobile = useMediaQuery({
+	const isMobileScreen = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
 
@@ -711,21 +711,25 @@ export default function RequestsSection({
 			<div className="flex w-full items-center justify-between gap-4">
 				<div className="w-full">
 					<RInput
-						placeholder="type to search requests.."
+						placeholder={
+							requestsData && requestsData.length > 0
+								? 'type to search requests..'
+								: 'create a request to get started'
+						}
 						value={searchString}
 						onChange={(e) => {
 							setSearchString(e.target.value);
 						}}
+						disabled={requestsData && requestsData.length < 1}
 					/>
 				</div>
 				<RButton
-					variant="secondary"
 					iconName="plus"
 					onClick={() => {
 						setNewRequestModalOpen(true);
 					}}
 				>
-					New referral request
+					Create request
 				</RButton>
 			</div>
 			<div className="flex">
@@ -741,12 +745,12 @@ export default function RequestsSection({
 							{
 								label: 'Job Listing',
 								hideOnMobile: true,
-								minWidth: isMobile ? 100 : 200,
+								minWidth: isMobileScreen ? 100 : 200,
 							},
 							{
 								label: 'Referrer',
 								hideOnMobile: true,
-								minWidth: isMobile ? 100 : 200,
+								minWidth: isMobileScreen ? 100 : 200,
 							},
 							{
 								label: (
@@ -781,8 +785,8 @@ export default function RequestsSection({
 										}
 									/>
 								),
-								hideOnMobile: false,
-								minWidth: isMobile ? 50 : 150,
+								hideOnMobile: true,
+								minWidth: isMobileScreen ? 50 : 150,
 							},
 							{
 								label: (
@@ -980,7 +984,10 @@ export default function RequestsSection({
 															);
 														}}
 													>
-														Share request
+														Share
+														{isMobileScreen
+															? ''
+															: ' request'}
 													</RButton>
 													<Icon
 														name="pencil"

@@ -32,6 +32,7 @@ const buttonVariants = cva(
 				md: 'h-[30px] max-sm:h-[30px] px-4 py-2 font-normal',
 				lg: 'h-[40px] max-sm:h-[30px] px-4 py-2',
 				icon: 'h-10 w-10',
+				defaultNoShrink: 'h-[34px] px-4 py-2',
 			},
 		},
 		defaultVariants: {

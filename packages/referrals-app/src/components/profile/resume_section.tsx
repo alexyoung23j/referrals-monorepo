@@ -96,7 +96,7 @@ export default function ResumeSection() {
 				</RText>
 				<div
 					className={`flex max-w-fit ${
-						isMobileScreenQuery && 'flex-col'
+						isMobileScreenQuery && 'flex-col gap-6'
 					} items-center gap-3`}
 				>
 					<PDFRenderer

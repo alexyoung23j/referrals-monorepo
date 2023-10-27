@@ -13,7 +13,7 @@ import ExperienceSection from '~/components/profile/experience_section';
 import Head from 'next/head';
 import { isMobile } from 'react-device-detect';
 import BillingSection from '~/components/profile/billing_section';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ProfiePageProps {
 	linkCode: string; // Replace 'any' with the actual type of 'link'
@@ -41,11 +41,27 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 		}
 	}, [status]);
 
+	const [pageLoaded, setPageLoaded] = useState(false);
+
+	useEffect(() => {
+		if (!pageLoaded) {
+			setPageLoaded(true);
+		}
+	}, [pageLoaded]);
+
+	if (!pageLoaded) {
+		return (
+			<div className="flex h-[100vh] w-full items-center justify-center">
+				<Spinner size="medium" />
+			</div>
+		);
+	}
+
 	return (
 		<PageLayout
 			showSidebar
 			pageTitle="Profile"
-			pageSubtitle="Your profile is used to provide context for your referrals and help your referrers get applications submitted."
+			pageSubtitle="Provide context for your requests and help your referrers get applications submitted quickly."
 			topRightContent={
 				<RButton
 					size="lg"
@@ -56,7 +72,7 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 						);
 					}}
 				>
-					View profile link
+					View profile
 				</RButton>
 			}
 		>
@@ -70,7 +86,7 @@ export default function ProfilePage({ linkCode }: ProfiePageProps) {
 						<Separator />
 						<ResumeSection />
 						<Separator />
-						{/* <ExperienceSection /> */}
+						<ExperienceSection />
 						<Separator />
 						<BillingSection id="billingSection" />
 					</div>
