@@ -30,7 +30,7 @@ const Sidebar = () => {
 		<div
 			className={`border-border flex ${
 				isMobileScreen
-					? 'bg-background shadow-[0px 10px 20px rgba(0,0,0,0.25)] absolute bottom-0 z-[1000] h-fit w-full flex-row justify-center gap-6 border-t-[1px] py-[8px]'
+					? 'bg-background shadow-[0px 10px 20px rgba(0,0,0,0.25)] fixed bottom-0 z-[1000] h-fit w-full flex-row justify-center gap-6 border-t-[1px] py-[8px]'
 					: 'h-full min-w-[72px] max-w-[72px] flex-col items-center justify-between border-r-[1px] pb-[24px] pt-[32px]'
 			} `}
 		>
@@ -97,26 +97,32 @@ const Sidebar = () => {
 					align="start"
 					side="right"
 				/>
-				<RTooltip
-					trigger={
-						<div
-							className={
-								'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-not-allowed cursor-pointer flex-col rounded-[6px] p-[8px]'
-							}
-						>
-							<Icon name="bell" color={'#94A3B8'} size="24px" />
-						</div>
-					}
-					content={
-						<div>
-							<RText fontSize="b2">
-								Notifications Coming Soon!
-							</RText>
-						</div>
-					}
-					align="start"
-					side="right"
-				/>
+				{!isMobileScreen && (
+					<RTooltip
+						trigger={
+							<div
+								className={
+									'hover:bg-lightGrey flex max-h-fit max-w-fit cursor-not-allowed cursor-pointer flex-col rounded-[6px] p-[8px]'
+								}
+							>
+								<Icon
+									name="bell"
+									color={'#94A3B8'}
+									size="24px"
+								/>
+							</div>
+						}
+						content={
+							<div>
+								<RText fontSize="b2">
+									Notifications Coming Soon!
+								</RText>
+							</div>
+						}
+						align="start"
+						side="right"
+					/>
+				)}
 			</div>
 			<div>
 				<div

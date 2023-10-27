@@ -265,17 +265,19 @@ export default function RequestsSection({
 				headerText="Edit request"
 				subtitleText="View request progress and edit details"
 				headerRightContent={
-					<div className="flex items-center justify-center gap-2">
-						<Image
-							src={selectedRequest?.company.logoUrl as string}
-							alt="Logo"
-							height={18}
-							width={18}
-						/>
-						<RText fontSize="b2" fontWeight="medium">
-							{selectedRequest?.company.name}
-						</RText>
-					</div>
+					!isMobileScreen ? (
+						<div className="flex items-center justify-center gap-2">
+							<Image
+								src={selectedRequest?.company.logoUrl as string}
+								alt="Logo"
+								height={18}
+								width={18}
+							/>
+							<RText fontSize="b2" fontWeight="medium">
+								{selectedRequest?.company.name}
+							</RText>
+						</div>
+					) : null
 				}
 				sections={[
 					{

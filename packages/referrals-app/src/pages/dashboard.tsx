@@ -317,7 +317,18 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 						>
 							Create request
 						</RButton>
-					) : null
+					) : (
+						<RButton
+							size="lg"
+							iconName="info"
+							variant="secondary"
+							onClick={() => {
+								setShowInfoModal(true);
+							}}
+						>
+							Info
+						</RButton>
+					)
 				}
 			>
 				<Head>
