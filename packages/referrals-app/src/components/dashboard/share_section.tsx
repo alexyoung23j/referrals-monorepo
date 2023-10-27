@@ -114,7 +114,7 @@ export default function ShareSection({
 							<div
 								key="1"
 								className={`mt-[16px] ${
-									isMobileScreen ? 'w-[85vw]' : 'w-[540px]'
+									isMobileScreen ? 'w-[80vw]' : 'w-[540px]'
 								} `}
 							>
 								<RTextarea
@@ -135,7 +135,7 @@ export default function ShareSection({
 							<div
 								key="2"
 								className={`mt-[16px] ${
-									isMobileScreen ? 'w-[85vw]' : 'w-[540px]'
+									isMobileScreen ? 'w-[80vw]' : 'w-[540px]'
 								} `}
 							>
 								<RTextarea

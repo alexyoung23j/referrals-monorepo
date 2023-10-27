@@ -147,9 +147,9 @@ const InfoModal = ({
 									fontSize={isMobileScreen ? 'b1' : 'h3'}
 									fontWeight="bold"
 								>
-									{'"New referral request"'}
+									{'"New request"'}
 								</RText>{' '}
-								at the top of the page!
+								in the Requests section!
 							</RText>
 						</div>,
 					],
@@ -305,17 +305,19 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 			<PageLayout
 				showSidebar
 				pageTitle="Dashboard"
-				pageSubtitle="Manage your job hunt and create referral requests."
+				pageSubtitle="Create, manage, and share your referral requests."
 				topRightContent={
-					<RButton
-						size="lg"
-						iconName="plus"
-						onClick={() => {
-							setNewRequestModalOpen(true);
-						}}
-					>
-						{isMobileScreen ? 'Request' : 'New referral request'}
-					</RButton>
+					!isMobileScreen ? (
+						<RButton
+							size="lg"
+							iconName="plus"
+							onClick={() => {
+								setNewRequestModalOpen(true);
+							}}
+						>
+							Create request
+						</RButton>
+					) : null
 				}
 			>
 				<Head>
