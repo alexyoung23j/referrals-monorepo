@@ -6,10 +6,12 @@ type RCardProps = {
 	elevation?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
 	children: React.ReactNode;
 	className?: string;
+	onClick?: () => void;
 };
 
 export const RCard = ({
 	elevation = 'none',
+	onClick,
 	children,
 	...props
 }: RCardProps) => {
@@ -17,6 +19,11 @@ export const RCard = ({
 		<div
 			className={`border-border rounded-[6px] border p-4 shadow-${elevation}`}
 			{...props}
+			onClick={() => {
+				if (onClick) {
+					onClick();
+				}
+			}}
 		>
 			{children}
 		</div>
@@ -32,7 +39,12 @@ type RowTableProps = {
 		hideOnMobile: boolean;
 	}>;
 	rows: Array<{
-		cells: Array<{ content: React.ReactNode; label: string }>;
+		cells: Array<{
+			content: React.ReactNode;
+			label: string;
+		}>;
+		onClick?: () => void;
+
 		label: string;
 	}>;
 	mobileWidth?: number;
@@ -119,6 +131,11 @@ export const RowTable = ({
 
 					return (
 						<RCard
+							onClick={() => {
+								if (row.onClick) {
+									row.onClick();
+								}
+							}}
 							key={row.label}
 							className={`border-border shadow-${cardElevation} flex w-full flex-row items-center justify-between rounded-[6px] border py-[12px] pl-[32px] pr-[32px] max-sm:py-[12px]  max-sm:pl-[16px] max-sm:pr-[16px]`}
 						>

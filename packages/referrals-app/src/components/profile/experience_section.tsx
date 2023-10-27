@@ -401,7 +401,7 @@ export default function ExperienceSection() {
 						{
 							label: 'Company',
 							hideOnMobile: false,
-							minWidth: isMobile ? 300 : 300,
+							minWidth: isMobile ? 200 : 300,
 						},
 						{
 							label: 'Job title',
@@ -410,7 +410,7 @@ export default function ExperienceSection() {
 						},
 						{
 							label: 'Tenure',
-							hideOnMobile: false,
+							hideOnMobile: true,
 							minWidth: isMobile ? 100 : 300,
 						},
 						{ label: '', hideOnMobile: false },

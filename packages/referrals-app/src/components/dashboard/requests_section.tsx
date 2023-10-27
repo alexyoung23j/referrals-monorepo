@@ -127,7 +127,7 @@ export default function RequestsSection({
 		refetch();
 	}, [shouldUpdate, refetch]);
 
-	const isMobile = useMediaQuery({
+	const isMobileScreen = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
 
@@ -539,18 +539,20 @@ export default function RequestsSection({
 						>
 							Copy link
 						</RButton>
-						<RButton
-							variant="secondary"
-							iconName="eye"
-							onClick={() => {
-								window.open(
-									`http://${shareableLink}`,
-									'_blank'
-								);
-							}}
-						>
-							Preview page
-						</RButton>
+						{!isMobileScreen && (
+							<RButton
+								variant="secondary"
+								iconName="eye"
+								onClick={() => {
+									window.open(
+										`http://${shareableLink}`,
+										'_blank'
+									);
+								}}
+							>
+								Preview page
+							</RButton>
+						)}
 					</div>
 				}
 				sections={[
@@ -574,6 +576,11 @@ export default function RequestsSection({
 															)?.value
 														);
 													}}
+													className={
+														isMobileScreen
+															? 'h-[160px]'
+															: ''
+													}
 												/>
 												<RText
 													fontSize="b2"
@@ -689,45 +696,86 @@ export default function RequestsSection({
 			/>
 			<RLabeledSection
 				label="Requests"
-				subtitle="You can edit request details after they are created."
+				subtitle={
+					!isMobileScreen
+						? 'You can edit request details after they are created.'
+						: ''
+				}
 				body={<></>}
 				labelSize="h3"
 				rightContent={
 					<div className="flex items-center gap-2">
-						<Checkbox
-							checked={includeCompleted}
-							onCheckedChange={(checked) => {
-								if (typeof checked === 'boolean') {
-									setIncludeCompleted(checked);
-								}
-							}}
-						/>
-						<RText color="tertiary">
-							Include completed requests
-						</RText>
+						{isMobileScreen ? (
+							<RButton
+								iconName="plus"
+								onClick={() => {
+									setNewRequestModalOpen(true);
+								}}
+							>
+								New request
+							</RButton>
+						) : (
+							<>
+								<Checkbox
+									checked={includeCompleted}
+									onCheckedChange={(checked) => {
+										if (typeof checked === 'boolean') {
+											setIncludeCompleted(checked);
+										}
+									}}
+								/>
+								<RText
+									color="tertiary"
+									fontSize={isMobileScreen ? 'b2' : 'b1'}
+								>
+									Include completed{' '}
+									{isMobileScreen ? '' : 'requests'}
+								</RText>
+							</>
+						)}
 					</div>
 				}
 			/>
-			<div className="flex w-full items-center justify-between gap-4">
+
+			<div
+				className={`flex w-full items-center justify-between gap-4 ${
+					isMobileScreen && 'mt-[-12px]'
+				}`}
+			>
 				<div className="w-full">
 					<RInput
-						placeholder="type to search requests.."
+						placeholder={
+							requestsData && requestsData.length > 0
+								? 'type to search requests..'
+								: 'create a request to get started'
+						}
 						value={searchString}
 						onChange={(e) => {
 							setSearchString(e.target.value);
 						}}
+						disabled={requestsData && requestsData.length < 1}
 					/>
 				</div>
-				<RButton
-					variant="secondary"
-					iconName="plus"
-					onClick={() => {
-						setNewRequestModalOpen(true);
-					}}
-				>
-					New referral request
-				</RButton>
+				{!isMobileScreen && (
+					<RButton
+						iconName="plus"
+						onClick={() => {
+							setNewRequestModalOpen(true);
+						}}
+					>
+						New request
+					</RButton>
+				)}
 			</div>
+			{isMobileScreen && requestsData && requestsData.length > 0 && (
+				<RText
+					fontSize="b2"
+					color="tertiary"
+					className="w-full text-center"
+				>
+					Tap requests to edit details.
+				</RText>
+			)}
 			<div className="flex">
 				{requestsStatus === 'success' ? (
 					<RowTable
@@ -736,17 +784,17 @@ export default function RequestsSection({
 							{
 								label: 'Company',
 								hideOnMobile: false,
-								minWidth: 200,
+								minWidth: isMobileScreen ? 100 : 200,
 							},
 							{
 								label: 'Job Listing',
 								hideOnMobile: true,
-								minWidth: isMobile ? 100 : 200,
+								minWidth: isMobileScreen ? 100 : 200,
 							},
 							{
 								label: 'Referrer',
 								hideOnMobile: true,
-								minWidth: isMobile ? 100 : 200,
+								minWidth: isMobileScreen ? 100 : 200,
 							},
 							{
 								label: (
@@ -781,8 +829,8 @@ export default function RequestsSection({
 										}
 									/>
 								),
-								hideOnMobile: false,
-								minWidth: isMobile ? 50 : 150,
+								hideOnMobile: true,
+								minWidth: isMobileScreen ? 50 : 150,
 							},
 							{
 								label: (
@@ -826,6 +874,12 @@ export default function RequestsSection({
 							filteredRequests?.map((request) => {
 								const row = {
 									label: request.id,
+									onClick: () => {
+										if (isMobileScreen) {
+											setSelectedRequest(request);
+											setEditModalOpen(true);
+										}
+									},
 									cells: [
 										{
 											content: (
@@ -839,14 +893,19 @@ export default function RequestsSection({
 														height={24}
 														width={24}
 													/>
+
 													<RText fontWeight="medium">
 														{request.company.name &&
 															(request.company
 																.name.length >
-															16
+															(isMobileScreen
+																? 6
+																: 16)
 																? `${request.company.name.slice(
 																		0,
-																		16
+																		isMobileScreen
+																			? 6
+																			: 16
 																  )}...`
 																: request
 																		.company
@@ -946,7 +1005,13 @@ export default function RequestsSection({
 												<div className="flex items-center gap-6">
 													<RButton
 														iconName="share"
-														onClick={() => {
+														variant={
+															isMobileScreen
+																? 'secondary'
+																: 'default'
+														}
+														onClick={(e) => {
+															e.stopPropagation();
 															setSelectedRequest(
 																request
 															);
@@ -980,21 +1045,26 @@ export default function RequestsSection({
 															);
 														}}
 													>
-														Share request
+														Share
+														{isMobileScreen
+															? ''
+															: ' request'}
 													</RButton>
-													<Icon
-														name="pencil"
-														size="22"
-														className="cursor-pointer"
-														onClick={() => {
-															setSelectedRequest(
-																request
-															);
-															setEditModalOpen(
-																true
-															);
-														}}
-													/>
+													{!isMobileScreen && (
+														<Icon
+															name="pencil"
+															size="22"
+															className="cursor-pointer"
+															onClick={() => {
+																setSelectedRequest(
+																	request
+																);
+																setEditModalOpen(
+																	true
+																);
+															}}
+														/>
+													)}
 												</div>
 											),
 											label: 'action',

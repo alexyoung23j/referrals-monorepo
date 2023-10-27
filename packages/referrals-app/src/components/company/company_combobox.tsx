@@ -89,6 +89,7 @@ export function CompanyCombobox({
 				<Button
 					variant="outline"
 					role="combobox"
+					size="defaultNoShrink"
 					aria-expanded={open}
 					className="h-10 w-full justify-between"
 				>

@@ -9,9 +9,14 @@ import { RTextarea } from '~/components/ui/textarea';
 import { useToast } from '~/components/ui/use-toast';
 import { useRouter } from 'next/router';
 import { RCard } from '../ui/card';
+import { useMediaQuery } from 'react-responsive';
 
 export default function BillingSection({ id }: { id: string }) {
 	const router = useRouter();
+
+	const isMobileScreen = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
 
 	const { data: stripeCustomerData } =
 		api.stripe.getUserSubscriptionStatus.useQuery();
@@ -41,7 +46,13 @@ export default function BillingSection({ id }: { id: string }) {
 				</RText>
 			</div>
 			<RCard>
-				<div className="flex items-center justify-between">
+				<div
+					className={`flex  justify-between ${
+						isMobileScreen
+							? 'flex-col items-start gap-5'
+							: 'items-center'
+					}`}
+				>
 					<div className="flex flex-col gap-2">
 						<RText fontSize="h3" fontWeight="bold">
 							{hasStripeSubscription

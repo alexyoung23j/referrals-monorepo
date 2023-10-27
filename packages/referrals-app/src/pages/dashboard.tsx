@@ -23,12 +23,12 @@ import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/use-toast';
 import RequestsSection from '~/components/dashboard/requests_section';
 import Head from 'next/head';
-import { isMobile } from 'react-device-detect';
 import { ConfirmationModal } from '~/components/modals/confirmation_modal';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from 'react-responsive';
 import { constructEmailMessage } from '~/utils/emailTemplates';
 import { EmailJobType, EmailJobStatus } from '@prisma/client';
+import Spinner from '~/components/ui/spinner';
 
 interface DashboardPageProps {
 	userMainLink: string; // Replace 'any' with the actual type of 'link'
@@ -147,9 +147,9 @@ const InfoModal = ({
 									fontSize={isMobileScreen ? 'b1' : 'h3'}
 									fontWeight="bold"
 								>
-									{'"New referral request"'}
+									{'"New request"'}
 								</RText>{' '}
-								at the top of the page!
+								in the Requests section!
 							</RText>
 						</div>,
 					],
@@ -201,6 +201,14 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 	const [isCreatingRequest, setIsCreatingRequest] = useState(false);
 	const [updateSubscriptionModalOpen, setUpdateSubscriptionModalOpen] =
 		useState(false);
+
+	const [pageLoaded, setPageLoaded] = useState(false);
+
+	useEffect(() => {
+		if (!pageLoaded) {
+			setPageLoaded(true);
+		}
+	}, [pageLoaded]);
 
 	const [showInfoModal, setShowInfoModal] = useState(false);
 
@@ -278,8 +286,12 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 		setAnyOpenRole(false);
 	};
 
-	if (isMobile) {
-		return <MobileNotAllowed />;
+	if (!pageLoaded) {
+		return (
+			<div className="flex h-[100vh] w-full items-center justify-center">
+				<Spinner size="medium" />
+			</div>
+		);
 	}
 
 	return (
@@ -293,16 +305,19 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 			<PageLayout
 				showSidebar
 				pageTitle="Dashboard"
+				pageSubtitle="Create, manage, and share your referral requests."
 				topRightContent={
-					<RButton
-						size="lg"
-						iconName="plus"
-						onClick={() => {
-							setNewRequestModalOpen(true);
-						}}
-					>
-						New referral request
-					</RButton>
+					!isMobileScreen ? (
+						<RButton
+							size="lg"
+							iconName="plus"
+							onClick={() => {
+								setNewRequestModalOpen(true);
+							}}
+						>
+							Create request
+						</RButton>
+					) : null
 				}
 			>
 				<Head>

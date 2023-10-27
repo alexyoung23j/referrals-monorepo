@@ -7,15 +7,37 @@ import { Separator } from '../ui/separator';
 import { Toaster } from '../ui/toaster';
 import { isMobile } from 'react-device-detect';
 import Head from 'next/head';
+import { useMediaQuery } from 'react-responsive';
+import { useEffect, useState } from 'react';
 
 const Sidebar = () => {
 	const router = useRouter();
 
 	const dashboardSelected = router.pathname === '/dashboard';
 	const profileSelected = router.pathname === '/profile';
+
+	const isMobileScreenQuery = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
+
+	const [isMobileScreen, setHideOnMobile] = useState(false);
+
+	useEffect(() => {
+		setHideOnMobile(isMobileScreenQuery);
+	}, [isMobileScreenQuery]);
+
 	return (
-		<div className="border-border flex h-full min-w-[72px] max-w-[72px] flex-col items-center justify-between border-r-[1px] pb-[24px] pt-[32px]">
-			<div className="flex flex-col items-center">
+		<div
+			className={`border-border flex ${
+				isMobileScreen
+					? 'bg-background shadow-[0px 10px 20px rgba(0,0,0,0.25)] absolute bottom-0 z-[1000] h-fit w-full flex-row justify-center gap-6 border-t-[1px] py-[8px]'
+					: 'h-full min-w-[72px] max-w-[72px] flex-col items-center justify-between border-r-[1px] pb-[24px] pt-[32px]'
+			} `}
+		>
+			<div
+				className={`${isMobileScreen ? 'flex-row gap-6' : 'flex-col'}
+			flex items-center`}
+			>
 				<RTooltip
 					delayDuration={400}
 					trigger={
@@ -127,20 +149,45 @@ export const PageLayout = ({
 	pageSubtitle,
 	topRightContent,
 }: PageLayoutProps) => {
+	const isMobileScreenQuery = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
+	const [isMobileScreen, setHideOnMobile] = useState(false);
+
+	useEffect(() => {
+		setHideOnMobile(isMobileScreenQuery);
+	}, [isMobileScreenQuery]);
+
 	return (
 		<div className="bg-background flex h-screen">
 			{showSidebar && <Sidebar />}
-			<div className="flex h-screen w-full flex-col items-center overflow-y-auto px-[20px] lg:px-[0px]">
+			<div className="flex h-screen w-full flex-col items-center overflow-y-auto px-[36px] lg:px-[0px]">
 				<div className="mt-[48px] flex max-h-fit max-w-fit flex-col justify-center">
-					<div className="flex flex-col gap-[16px]">
-						<div className="flex w-[75vw] max-w-[1092px] items-center justify-between">
+					<div
+						className={`flex flex-col ${
+							isMobileScreen ? 'gap-[24px]' : 'gap-[16px]'
+						}`}
+					>
+						<div
+							className={`flex ${
+								isMobileScreen
+									? 'w-full'
+									: 'w-[75vw] max-w-[1092px]'
+							} items-center justify-between`}
+						>
 							<RText fontSize="h1" fontWeight="medium">
 								{pageTitle}
 							</RText>
 							{topRightContent && topRightContent}
 						</div>
 						{pageSubtitle && (
-							<RText fontWeight="medium" color="secondary">
+							<RText
+								fontWeight={
+									isMobileScreen ? 'normal' : 'medium'
+								}
+								color="secondary"
+								fontSize={isMobileScreen ? 'b2' : 'b1'}
+							>
 								{pageSubtitle}
 							</RText>
 						)}
