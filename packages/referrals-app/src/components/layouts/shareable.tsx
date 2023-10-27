@@ -638,7 +638,7 @@ const LinkPageLayout = ({ ...props }: LinkPageLayoutProps) => {
 					content: [
 						<div key="about" className="flex flex-col gap-4">
 							<RText fontSize={isMobile ? 'b1' : 'h3'}>
-								You can create your own referral request link{' '}
+								You can create your own ReferLink{' '}
 								<RText
 									fontSize={isMobile ? 'b1' : 'h3'}
 									fontWeight="bold"
