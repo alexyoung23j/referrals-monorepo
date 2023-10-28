@@ -2,8 +2,8 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import {
 	createTRPCRouter,
-	publicProcedure,
 	protectedProcedure,
+	adminProcedure,
 } from '~/server/api/trpc';
 
 export const profileRouter = createTRPCRouter({
@@ -252,4 +252,12 @@ export const profileRouter = createTRPCRouter({
 				});
 			}
 		}),
+	isAdminUser: adminProcedure
+		.query(async ({ ctx, input }) => {
+			return true;
+		}),
+	getUserList: adminProcedure
+		.query(async ({ ctx, input }) => {
+			return ctx.prisma.user.findMany();
+		})
 });

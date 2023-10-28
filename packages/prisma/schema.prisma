@@ -94,6 +94,7 @@ enum EmailJobType {
     MESSAGE_FROM_REFERRER // Email sent to job seeker with a message from the referrer
     JOB_LINK // Email sent to job seeker with a link to the job posting
     WELCOME_EMAIL
+    EMAIL_FROM_ADMIN
 }
 
 enum EmailJobStatus {
@@ -297,6 +298,7 @@ model User {
     StripeCustomer      StripeCustomer[]
     welcomeEmailSent    Boolean            @default(false)
     organizationsJoined UserOrganization[]
+    admin               Boolean?
 }
 
 model VerificationToken {

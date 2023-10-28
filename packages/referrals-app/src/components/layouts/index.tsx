@@ -8,12 +8,16 @@ import { Toaster } from '../ui/toaster';
 import Head from 'next/head';
 import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState } from 'react';
+import { api } from '~/utils/api';
 
 const Sidebar = () => {
 	const router = useRouter();
 
+	const { data: isAdminUser } = api.profiles.isAdminUser.useQuery();
+
 	const dashboardSelected = router.pathname === '/dashboard';
 	const profileSelected = router.pathname === '/profile';
+	const adminDashboardSelected = router.pathname === '/admin';
 
 	const isMobileScreenQuery = useMediaQuery({
 		query: '(max-width: 840px)',
@@ -116,6 +120,36 @@ const Sidebar = () => {
 								<RText fontSize="b2">
 									Notifications Coming Soon!
 								</RText>
+							</div>
+						}
+						align="start"
+						side="right"
+					/>
+				)}
+				{isAdminUser && (
+					<RTooltip
+						delayDuration={400}
+						trigger={
+							<div
+								className={`flex flex-col ${
+									profileSelected
+										? 'bg-grey'
+										: 'hover:bg-lightGrey'
+								} max-h-fit max-w-fit cursor-pointer rounded-[6px] p-[8px]`}
+								onClick={() => {
+									router.push('/admin');
+								}}
+							>
+								<Icon
+									name="user"
+									color={profileSelected ? '#64748B' : '#94A3B8'}
+									size="24px"
+								/>
+							</div>
+						}
+						content={
+							<div>
+								<RText fontSize="b2">Admin Dashboard</RText>
 							</div>
 						}
 						align="start"
