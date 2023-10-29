@@ -475,7 +475,7 @@ export default function DashboardPage({ userMainLink }: DashboardPageProps) {
 					destructive={false}
 					confirmButtonText="Subscribe Now"
 				/>
-				<div className="my-[16px] flex h-[200vh] w-full flex-col gap-[36px]">
+				<div className="my-[16px] flex w-full flex-col gap-[36px] pb-[20vh]">
 					<ShareSection
 						linkCode={userMainLink}
 						userName={sessionData?.user.name as string}
