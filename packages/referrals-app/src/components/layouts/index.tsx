@@ -5,7 +5,6 @@ import { RText } from '../ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Separator } from '../ui/separator';
 import { Toaster } from '../ui/toaster';
-import { isMobile } from 'react-device-detect';
 import Head from 'next/head';
 import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState } from 'react';

@@ -6,6 +6,7 @@ import { Label } from './label';
 import Icon from './icons';
 import { useEffect, useRef, useState } from 'react';
 import * as z from 'zod';
+import { isMobile } from 'react-device-detect';
 
 import type dynamicIconImports from 'lucide-react/dynamicIconImports';
 import { RText } from './text';
@@ -64,18 +65,29 @@ export const RInput = ({
 	);
 	const { toast } = useToast();
 
-	const handleIconClick = () => {
+	const handleIconClick = async () => {
 		if (inputRef.current) {
-			navigator.clipboard.writeText(inputRef.current.value);
-			setIcon('check');
-			if (debounceIcon) {
-				clearTimeout(debounceIcon);
+			if (navigator.share) {
+				try {
+					await navigator.share({
+						text: inputRef.current.value,
+					});
+					console.log('Successful share');
+				} catch (error) {
+					console.log('Error sharing:', error);
+				}
+			} else {
+				navigator.clipboard.writeText(inputRef.current.value);
+				setIcon('check');
+				if (debounceIcon) {
+					clearTimeout(debounceIcon);
+				}
+				setDebounceIcon(setTimeout(() => setIcon('copy'), 1500));
+				toast({
+					title: 'Copied to clipboard',
+					duration: 1500,
+				});
 			}
-			setDebounceIcon(setTimeout(() => setIcon('copy'), 1500));
-			toast({
-				title: 'Copied to clipboard',
-				duration: 1500,
-			});
 		}
 	};
 
