@@ -54,7 +54,7 @@ const Sidebar = () => {
 							<Icon
 								name="layers"
 								color={
-									dashboardSelected ? '#64748B' : '#94A3B8'
+									dashboardSelected ? '#536379' : '#7E8EA5'
 								}
 								size="24px"
 							/>
@@ -84,7 +84,7 @@ const Sidebar = () => {
 						>
 							<Icon
 								name="user"
-								color={profileSelected ? '#64748B' : '#94A3B8'}
+								color={profileSelected ? '#536379' : '#7E8EA5'}
 								size="24px"
 							/>
 						</div>
@@ -107,7 +107,7 @@ const Sidebar = () => {
 							>
 								<Icon
 									name="bell"
-									color={'#94A3B8'}
+									color={'#7E8EA5'}
 									size="24px"
 								/>
 							</div>
@@ -133,7 +133,7 @@ const Sidebar = () => {
 						void signOut();
 					}}
 				>
-					<Icon name="log-out" color={'#94A3B8'} size="24px" />
+					<Icon name="log-out" color={'#7E8EA5'} size="24px" />
 				</div>
 			</div>
 		</div>
