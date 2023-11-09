@@ -116,7 +116,6 @@ export default function PersonalInfoSection() {
 			console.error('Error while generating presigned URL: ', e);
 		}
 		setAvatarLoading(false);
-		console.log('im here');
 	};
 
 	useEffect(() => {
@@ -220,7 +219,7 @@ export default function PersonalInfoSection() {
 								className="cursor-pointer underline"
 								onClick={() => {
 									window.open(
-										`/org/${orgToJoin?.name}`,
+										`/org/${orgToJoin?.id}`,
 										'_blank'
 									);
 								}}
@@ -583,6 +582,14 @@ export default function PersonalInfoSection() {
 															);
 															setJoinOrgModalOpen(
 																true
+															);
+														} else if (
+															isJoined &&
+															org
+														) {
+															window.open(
+																`/org/${org?.id}`,
+																'_blank'
 															);
 														}
 													}}

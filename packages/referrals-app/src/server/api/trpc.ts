@@ -146,7 +146,7 @@ const enforceUserCreationLimit = t.middleware(async ({ ctx, next }) => {
 
 	const numRequestsCreated = user?.requestsCreated;
 	const maxAllowedFreeRequests =
-		process.env.NODE_ENV === 'development' ? 1 : 5;
+		process.env.NODE_ENV === 'development' ? 10 : 5;
 
 	if (
 		(!stripeCustomer || !hasActiveSubscription) &&
