@@ -18,9 +18,30 @@ import { useMemo, useState } from 'react';
 import { RInput } from '~/components/ui/input';
 import { useMediaQuery } from 'react-responsive';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { RTooltip } from '~/components/ui/tooltip';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { ConfirmationModal } from '~/components/modals/confirmation_modal';
+import { useToast } from '~/components/ui/use-toast';
+import { api } from '~/utils/api';
 
 export default function OrgPage({ org }: { org: any }) {
+	const isMobile = useMediaQuery({
+		query: '(max-width: 840px)',
+	});
+
+	const isMedium = useMediaQuery({
+		query: '(max-width: 1280px)',
+	});
 	const [searchString, setSearchString] = useState('');
+	const router = useRouter();
+	const [joinOrgModalOpen, setJoinOrgModalOpen] = useState(false);
+	const [orgPassword, setOrgPassword] = useState('');
+
+	const { data: sessionData } = useSession();
+	const joinOrg = api.organizations.joinOrganization.useMutation();
+
+	const { toast } = useToast();
 
 	const unfilteredUsers = org?.users?.map((user: any) => {
 		return user.user;
@@ -47,14 +68,6 @@ export default function OrgPage({ org }: { org: any }) {
 		return results.map((result) => result.item);
 	}, [searchString]);
 
-	const isMobile = useMediaQuery({
-		query: '(max-width: 840px)',
-	});
-
-	const isMedium = useMediaQuery({
-		query: '(max-width: 1280px)',
-	});
-
 	return (
 		<OrgPageLayout
 			orgName={org.name}
@@ -67,9 +80,87 @@ export default function OrgPage({ org }: { org: any }) {
 				//
 			}}
 		>
+			<ConfirmationModal
+				open={joinOrgModalOpen}
+				onOpenChange={(isOpen) => {
+					setJoinOrgModalOpen(isOpen);
+				}}
+				headerText={`Join ${org?.name}`}
+				content={
+					<div className="flex flex-col gap-4">
+						<RText>
+							{`Joining will add your profile to this page.`}
+						</RText>
+						<RInput
+							onChange={(e) => {
+								setOrgPassword(e.target.value);
+							}}
+							placeholder="enter password"
+							value={orgPassword}
+						/>
+					</div>
+				}
+				onCancel={() => {
+					setJoinOrgModalOpen(false);
+					setOrgPassword('');
+				}}
+				onConfirm={async () => {
+					try {
+						await joinOrg.mutateAsync({
+							organizationId: org?.id as string,
+							password: orgPassword,
+						});
+						router.reload();
+					} catch (e) {
+						toast({
+							title: 'Error joining organization.',
+							duration: 1500,
+						});
+					}
+					setOrgPassword('');
+				}}
+				destructive={false}
+				confirmButtonText="Join"
+			/>
+			<div
+				className={`to-background fixed bottom-0 z-50 flex max-h-fit items-center justify-center ${
+					isMobile
+						? 'w-[100vw] pb-[24px] pt-[50px]'
+						: 'w-[60vw] pb-[32px] pt-[80px]'
+				}`}
+				style={{
+					background:
+						'linear-gradient(to bottom, rgba(255,255,255,0.0) 0%, rgba(255,255,255,1) 40%)',
+				}}
+			>
+				<RButton
+					size="lg"
+					iconName="key-round"
+					onClick={() => {
+						// check if current user is already in org
+						const userInOrg = org?.users?.find(
+							(user: any) =>
+								user.user.id === sessionData?.user?.id
+						);
+
+						if (sessionData?.user && !userInOrg) {
+							setJoinOrgModalOpen(true);
+						} else if (!sessionData?.user) {
+							router.push('/auth/login');
+						} else if (userInOrg) {
+							toast({
+								title: 'You are already in this organization.',
+								duration: 1500,
+							});
+						}
+					}}
+				>
+					Join {org.name}
+				</RButton>
+			</div>
 			<div
 				className={`${
-					isMobile ? 'mt-[3vh]' : 'mt-[5vh]'
+					isMobile ? 'mt-[3vh]' : 'mt-[10vh]'
 				} flex h-full w-full flex-col gap-[28px] ${
 					isMobile ? 'px-[24px]' : 'px-[104px]'
 				} relative flex-col pb-[35vh]`}
@@ -95,50 +186,22 @@ export default function OrgPage({ org }: { org: any }) {
 				{filteredUsers && filteredUsers.length > 0 ? (
 					<RowTable
 						cardElevation={filteredUsers.length > 1 ? 'none' : 'md'}
-						mobileWidth={1024}
+						pl="pl-[16px]"
+						pr="pr-[16px]"
 						columns={[
 							{
 								label: 'Member',
-								minWidth: isMobile ? 75 : isMedium ? 175 : 240,
+								minWidth: isMobile ? 150 : isMedium ? 150 : 240,
 								hideOnMobile: false,
 							},
 							{
 								label: 'Companies',
 								minWidth: isMedium ? 75 : 200,
-								hideOnMobile: true,
+								hideOnMobile: false,
 							},
 							{
-								label: (
-									<RPopover
-										align="end"
-										trigger={
-											<div className="flex gap-2">
-												<RText
-													fontSize="b2"
-													color="tertiary"
-												>
-													Action
-												</RText>
-												<Icon
-													name="info"
-													size="12"
-													color="#94a3b8"
-												/>
-											</div>
-										}
-										content={
-											<div>
-												<RText
-													fontSize="b2"
-													color="secondary"
-												>
-													{`Visit the member's profile link to refer them, or quickly copy their link with the copy button`}
-												</RText>
-											</div>
-										}
-									/>
-								),
-								hideOnMobile: false,
+								label: 'Details',
+								hideOnMobile: true,
 								minWidth: 200,
 							},
 						]}
@@ -146,6 +209,18 @@ export default function OrgPage({ org }: { org: any }) {
 							filteredUsers.map((user: any) => {
 								const row = {
 									label: user.id,
+									onClick: () => {
+										if (isMobile) {
+											const generalLink = user.Link.find(
+												(link: any) =>
+													!link.specificRequest
+											);
+											window.open(
+												`${process.env.NEXT_PUBLIC_SERVER_URL}/${generalLink.id}`,
+												'_blank'
+											);
+										}
+									},
 									cells: [
 										{
 											content: (
@@ -232,26 +307,65 @@ export default function OrgPage({ org }: { org: any }) {
 														)
 														.map((request: any) => {
 															return (
-																<Avatar
-																	className="h-[18px] w-[18px]"
+																<RTooltip
 																	key={
 																		request.id
 																	}
-																>
-																	<AvatarImage
-																		src={
-																			request
-																				.company
-																				.logoUrl as string
-																		}
-																		style={{
-																			objectFit:
-																				'cover',
-																			objectPosition:
-																				'top',
-																		}}
-																	/>
-																</Avatar>
+																	delayDuration={
+																		200
+																	}
+																	trigger={
+																		<Avatar
+																			className="h-[18px] w-[18px]"
+																			onClick={() => {
+																				const link =
+																					user.Link.find(
+																						(
+																							link: any
+																						) =>
+																							link.referralRequestId ===
+																							request.id
+																					);
+
+																				if (
+																					link
+																				) {
+																					router.push(
+																						`${process.env.NEXT_PUBLIC_SERVER_URL}/${link.id}`,
+																						'_blank'
+																					);
+																				}
+																			}}
+																		>
+																			<AvatarImage
+																				src={
+																					request
+																						.company
+																						.logoUrl as string
+																				}
+																				style={{
+																					objectFit:
+																						'cover',
+																					objectPosition:
+																						'top',
+																				}}
+																			/>
+																		</Avatar>
+																	}
+																	content={
+																		<div>
+																			<RText fontSize="b2">
+																				{
+																					request
+																						.company
+																						.name
+																				}
+																			</RText>
+																		</div>
+																	}
+																	align="start"
+																	side="bottom"
+																/>
 															);
 														})}
 													{user.ReferralRequest
@@ -272,8 +386,33 @@ export default function OrgPage({ org }: { org: any }) {
 										},
 										{
 											content: (
-												<div className="flex gap-2">
-													<RButton
+												<div className="flex items-center gap-2">
+													{!isMobile && (
+														<RButton
+															onClick={() => {
+																const generalLink =
+																	user.Link.find(
+																		(
+																			link: any
+																		) =>
+																			!link.specificRequest
+																	);
+																window.open(
+																	`${process.env.NEXT_PUBLIC_SERVER_URL}/${generalLink.id}`,
+																	'_blank'
+																);
+															}}
+															size="md"
+															iconName="external-link"
+														>
+															see requests
+														</RButton>
+													)}
+
+													<Icon
+														name="copy"
+														className="cursor-pointer"
+														size={12}
 														onClick={() => {
 															const generalLink =
 																user.Link.find(
@@ -282,15 +421,16 @@ export default function OrgPage({ org }: { org: any }) {
 																	) =>
 																		!link.specificRequest
 																);
-															window.open(
+
+															navigator.clipboard.writeText(
 																`${process.env.NEXT_PUBLIC_SERVER_URL}/${generalLink.id}`
 															);
+															toast({
+																title: 'Copied ReferLink to clipboard.',
+																duration: 1500,
+															});
 														}}
-														size="sm"
-														iconName="external-link"
-													>
-														see requests
-													</RButton>
+													/>
 												</div>
 											),
 											label: 'action',

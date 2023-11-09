@@ -438,7 +438,7 @@ const LinkPageDesktop = ({
 			<div className="bg-profileBackgroundGrey scrollbar scrollbar-thumb-transparent scrollbar-track-transparent flex min-w-[35vw] max-w-[496px] justify-center overflow-auto">
 				{sessionData?.user ? (
 					<div
-						className="left-6 mt-6"
+						className="fixed left-6 mt-6"
 						onClick={() => {
 							router.push('/dashboard');
 						}}
@@ -453,7 +453,7 @@ const LinkPageDesktop = ({
 					</div>
 				) : (
 					<div
-						className="ml-[-8px] mt-6 h-fit cursor-pointer"
+						className="fixed left-6 mt-6 h-fit cursor-pointer"
 						onClick={() => {
 							router.push('/');
 						}}
