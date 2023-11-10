@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { RButton } from '~/components/ui/button';
 import { api } from '~/utils/api';
 import { RText } from '~/components/ui/text';
@@ -13,6 +14,12 @@ import { v4 as uuidv4 } from 'uuid';
 import Spinner from '../ui/spinner';
 import RSpinner from '../ui/spinner';
 import { useMediaQuery } from 'react-responsive';
+import { RSelector } from '../ui/select';
+import { useSession } from 'next-auth/react';
+import Icon from '../ui/icons';
+import { ConfirmationModal } from '../modals/confirmation_modal';
+import { Organization } from '@prisma/client';
+import { RTooltip } from '../ui/tooltip';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
@@ -28,11 +35,23 @@ export default function PersonalInfoSection() {
 		}
 	);
 
+	const {
+		data: organizationsData,
+		status: organizationsStatus,
+		refetch: refetchOrgsData,
+	} = api.organizations.getOrganizations.useQuery(undefined, {
+		refetchOnWindowFocus: false,
+	});
+
+	const { data: sessionData } = useSession();
+
 	const isMobileScreen = useMediaQuery({
 		query: '(max-width: 840px)',
 	});
 
 	const updateProfile = api.profiles.updateProfile.useMutation();
+	const joinOrg = api.organizations.joinOrganization.useMutation();
+	const leaveOrg = api.organizations.leaveOrganization.useMutation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [publicEmail, setPublicEmail] = useState('');
@@ -52,6 +71,10 @@ export default function PersonalInfoSection() {
 
 	const [localAvatarUrl, setLocalAvatarUrl] = useState('');
 	const [avatarLoading, setAvatarLoading] = useState(true);
+
+	const [joinOrgModalOpen, setJoinOrgModalOpen] = useState(false);
+	const [orgToJoin, setOrgToJoin] = useState<Organization | null>(null);
+	const [orgPassword, setOrgPassword] = useState('');
 
 	const onFileSubmit = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		setAvatarLoading(true);
@@ -93,7 +116,6 @@ export default function PersonalInfoSection() {
 			console.error('Error while generating presigned URL: ', e);
 		}
 		setAvatarLoading(false);
-		console.log('im here');
 	};
 
 	useEffect(() => {
@@ -183,6 +205,65 @@ export default function PersonalInfoSection() {
 
 	return (
 		<div className="my-[24px] flex w-full flex-col gap-[36px]">
+			<ConfirmationModal
+				open={joinOrgModalOpen}
+				onOpenChange={(isOpen) => {
+					setJoinOrgModalOpen(isOpen);
+				}}
+				headerText={`Join ${orgToJoin?.name}`}
+				content={
+					<div className="flex flex-col gap-4">
+						<RText>
+							{`Joining will add your profile to the ${orgToJoin?.name} page `}
+							<RText
+								className="cursor-pointer underline"
+								onClick={() => {
+									window.open(
+										`/org/${orgToJoin?.id}`,
+										'_blank'
+									);
+								}}
+							>
+								here
+							</RText>
+							.
+						</RText>
+						<RInput
+							onChange={(e) => {
+								setOrgPassword(e.target.value);
+							}}
+							placeholder="enter password"
+							value={orgPassword}
+						/>
+					</div>
+				}
+				onCancel={() => {
+					setJoinOrgModalOpen(false);
+					setOrgPassword('');
+				}}
+				onConfirm={async () => {
+					try {
+						await joinOrg.mutateAsync({
+							organizationId: orgToJoin?.id as string,
+							password: orgPassword,
+						});
+						toast({
+							title: 'Joined organization!',
+							duration: 1500,
+						});
+						setJoinOrgModalOpen(false);
+						await refetchOrgsData();
+					} catch (e) {
+						toast({
+							title: 'Error joining organization.',
+							duration: 1500,
+						});
+					}
+					setOrgPassword('');
+				}}
+				destructive={false}
+				confirmButtonText="Join"
+			/>
 			<div className="flex w-full items-center justify-between">
 				<RText fontSize="h2" fontWeight="medium">
 					Personal Information
@@ -468,6 +549,115 @@ export default function PersonalInfoSection() {
 								/>
 							}
 						/>
+						{organizationsData && organizationsData.length > 0 && (
+							<RLabeledSection
+								label="Organizations"
+								showInfo
+								infoContent={
+									<div>
+										<RText fontSize="b2" color="secondary">
+											{`Joining an organization will allow your profile to appear on the Organization page, 
+										which lists the members of the org and their referral requests. You will need a password to join an org.`}
+										</RText>
+									</div>
+								}
+								subtitle="Join an organization. If you'd like to create an organization, please contact us."
+								body={
+									<div className="w-full">
+										<div className="border-input bg-background placeholder:text-muted-foreground flex max-h-[200px] w-full  flex-col overflow-auto rounded-md border px-2 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50">
+											{organizationsData?.map((org) => {
+												const isJoined = org.users.some(
+													(user) =>
+														user.userId ===
+														sessionData?.user.id
+												);
+
+												return (
+													<div
+														key={org.id}
+														className="hover:bg-accent flex w-full cursor-pointer items-center justify-between gap-2 rounded-[4px] px-2 py-2"
+														onClick={async () => {
+															if (
+																!isJoined &&
+																org
+															) {
+																setOrgToJoin(
+																	org as Organization
+																);
+																setJoinOrgModalOpen(
+																	true
+																);
+															} else if (
+																isJoined &&
+																org
+															) {
+																window.open(
+																	`/org/${org?.id}`,
+																	'_blank'
+																);
+															}
+														}}
+													>
+														{org?.name}
+														{isJoined && (
+															<RTooltip
+																trigger={
+																	<Icon
+																		name="check"
+																		size={
+																			14
+																		}
+																		onClick={async () => {
+																			try {
+																				await leaveOrg.mutateAsync(
+																					{
+																						organizationId:
+																							org.id,
+																					}
+																				);
+																				toast(
+																					{
+																						title: 'Left organization.',
+																						duration: 1500,
+																					}
+																				);
+																			} catch (e) {
+																				toast(
+																					{
+																						title: 'Error leaving organization.',
+																						duration: 1500,
+																					}
+																				);
+																			}
+																			await refetchOrgsData();
+																		}}
+																	/>
+																}
+																content={
+																	<div>
+																		<RText fontSize="b2">
+																			Click
+																			to
+																			remove
+																			yourself
+																			from
+																			this
+																			organization.
+																		</RText>
+																	</div>
+																}
+																align="start"
+																side="right"
+															/>
+														)}
+													</div>
+												);
+											})}
+										</div>
+									</div>
+								}
+							/>
+						)}
 					</div>
 					<div
 						className={`mt-[24px] flex h-full w-full flex-col gap-[24px] lg:mt-[0px] lg:w-[45%] ${

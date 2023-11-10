@@ -44,11 +44,12 @@ type RowTableProps = {
 			label: string;
 		}>;
 		onClick?: () => void;
-
 		label: string;
 	}>;
 	mobileWidth?: number;
 	cardElevation?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+	pl?: string;
+	pr?: string;
 };
 
 /**
@@ -61,6 +62,8 @@ export const RowTable = ({
 	rows,
 	mobileWidth = 640,
 	cardElevation = 'none',
+	pl = 'pl-[32px]',
+	pr = 'pr-[32px]',
 }: RowTableProps) => {
 	const finalColumn = columns[columns.length - 1];
 	const finalColumnWidth = finalColumn?.minWidth;
@@ -71,7 +74,9 @@ export const RowTable = ({
 
 	return (
 		<div className="flex w-full flex-col gap-[8px]">
-			<div className="max-sm: flex justify-between pl-[32px] pr-[32px] max-sm:pl-[16px] max-sm:pr-[16px]">
+			<div
+				className={`max-sm: flex justify-between ${pl} ${pr} max-sm:pl-[16px] max-sm:pr-[16px]`}
+			>
 				<div className="flex items-center">
 					{columns
 						.slice(0, columns.length - 1)
@@ -137,7 +142,7 @@ export const RowTable = ({
 								}
 							}}
 							key={row.label}
-							className={`border-border shadow-${cardElevation} flex w-full flex-row items-center justify-between rounded-[6px] border py-[12px] pl-[32px] pr-[32px] max-sm:py-[12px]  max-sm:pl-[16px] max-sm:pr-[16px]`}
+							className={`border-border shadow-${cardElevation} flex w-full flex-row items-center justify-between rounded-[6px] border py-[12px] ${pl} ${pr} max-sm:py-[12px]  max-sm:pl-[16px] max-sm:pr-[16px]`}
 						>
 							<div className="flex items-center">
 								{row.cells
@@ -163,14 +168,16 @@ export const RowTable = ({
 										);
 									})}
 							</div>
-							<div>
-								<div
-									key={finalCell?.label}
-									className={`${finalCellWidth}`}
-								>
-									{finalCell?.content}
+							{
+								<div>
+									<div
+										key={finalCell?.label}
+										className={`${finalCellWidth}`}
+									>
+										{finalCell?.content}
+									</div>
 								</div>
-							</div>
+							}
 						</RCard>
 					);
 				})}

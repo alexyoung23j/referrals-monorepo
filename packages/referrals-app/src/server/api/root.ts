@@ -6,6 +6,7 @@ import { referralRequestRouter } from './routers/referral_requests';
 import { linkRouter } from './routers/link';
 import { emailRouter } from './routers/email-router';
 import { stripeRouter } from './routers/stripe';
+import { organizationsRouter } from './routers/organizations';
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
 	links: linkRouter,
 	email: emailRouter,
 	stripe: stripeRouter,
+	organizations: organizationsRouter,
 });
 
 // export type definition of API

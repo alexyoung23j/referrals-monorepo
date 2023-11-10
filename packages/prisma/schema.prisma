@@ -231,6 +231,30 @@ model Link {
     updatedAt               DateTime         @updatedAt
 }
 
+model Organization {
+    id              String             @id @default(cuid())
+    name            String
+    websiteUrl      String?
+    linkedInUrl     String?
+    avatarUrl       String?
+    description     String?
+    password        String
+    users           UserOrganization[]
+    instructionText String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model UserOrganization {
+    userId         String
+    organizationId String
+    user           User         @relation(fields: [userId], references: [id])
+    organization   Organization @relation(fields: [organizationId], references: [id])
+
+    @@id([userId, organizationId])
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -259,19 +283,20 @@ model Session {
 }
 
 model User {
-    id               String            @id @default(cuid())
-    name             String?
-    email            String?           @unique
-    emailVerified    DateTime?
-    image            String?
-    requestsCreated  Int               @default(0)
-    accounts         Account[]
-    sessions         Session[]
-    UserProfile      UserProfile[]
-    Link             Link[]
-    ReferralRequest  ReferralRequest[]
-    StripeCustomer   StripeCustomer[]
-    welcomeEmailSent Boolean           @default(false)
+    id                  String             @id @default(cuid())
+    name                String?
+    email               String?            @unique
+    emailVerified       DateTime?
+    image               String?
+    requestsCreated     Int                @default(0)
+    accounts            Account[]
+    sessions            Session[]
+    UserProfile         UserProfile[]
+    Link                Link[]
+    ReferralRequest     ReferralRequest[]
+    StripeCustomer      StripeCustomer[]
+    welcomeEmailSent    Boolean            @default(false)
+    organizationsJoined UserOrganization[]
 }
 
 model VerificationToken {
