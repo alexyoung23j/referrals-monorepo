@@ -549,107 +549,115 @@ export default function PersonalInfoSection() {
 								/>
 							}
 						/>
-						<RLabeledSection
-							label="Organizations"
-							showInfo
-							infoContent={
-								<div>
-									<RText fontSize="b2" color="secondary">
-										{`Joining an organization will allow your profile to appear on the Organization page, 
+						{organizationsData && organizationsData.length > 0 && (
+							<RLabeledSection
+								label="Organizations"
+								showInfo
+								infoContent={
+									<div>
+										<RText fontSize="b2" color="secondary">
+											{`Joining an organization will allow your profile to appear on the Organization page, 
 										which lists the members of the org and their referral requests. You will need a password to join an org.`}
-									</RText>
-								</div>
-							}
-							subtitle="Join an organization. If you'd like to create an organization, please contact us."
-							body={
-								<div className="w-full">
-									<div className="border-input bg-background placeholder:text-muted-foreground flex max-h-[200px] w-full  flex-col overflow-auto rounded-md border px-2 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50">
-										{organizationsData?.map((org) => {
-											const isJoined = org.users.some(
-												(user) =>
-													user.userId ===
-													sessionData?.user.id
-											);
-
-											return (
-												<div
-													key={org.id}
-													className="hover:bg-accent flex w-full cursor-pointer items-center justify-between gap-2 rounded-[4px] px-2 py-2"
-													onClick={async () => {
-														if (!isJoined && org) {
-															setOrgToJoin(
-																org as Organization
-															);
-															setJoinOrgModalOpen(
-																true
-															);
-														} else if (
-															isJoined &&
-															org
-														) {
-															window.open(
-																`/org/${org?.id}`,
-																'_blank'
-															);
-														}
-													}}
-												>
-													{org?.name}
-													{isJoined && (
-														<RTooltip
-															trigger={
-																<Icon
-																	name="check"
-																	size={14}
-																	onClick={async () => {
-																		try {
-																			await leaveOrg.mutateAsync(
-																				{
-																					organizationId:
-																						org.id,
-																				}
-																			);
-																			toast(
-																				{
-																					title: 'Left organization.',
-																					duration: 1500,
-																				}
-																			);
-																		} catch (e) {
-																			toast(
-																				{
-																					title: 'Error leaving organization.',
-																					duration: 1500,
-																				}
-																			);
-																		}
-																		await refetchOrgsData();
-																	}}
-																/>
-															}
-															content={
-																<div>
-																	<RText fontSize="b2">
-																		Click to
-																		remove
-																		yourself
-																		from
-																		this
-																		organization.
-																	</RText>
-																</div>
-															}
-															align="start"
-															side="right"
-														/>
-													)}
-												</div>
-											);
-										})}
+										</RText>
 									</div>
-								</div>
-							}
-						/>
+								}
+								subtitle="Join an organization. If you'd like to create an organization, please contact us."
+								body={
+									<div className="w-full">
+										<div className="border-input bg-background placeholder:text-muted-foreground flex max-h-[200px] w-full  flex-col overflow-auto rounded-md border px-2 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50">
+											{organizationsData?.map((org) => {
+												const isJoined = org.users.some(
+													(user) =>
+														user.userId ===
+														sessionData?.user.id
+												);
+
+												return (
+													<div
+														key={org.id}
+														className="hover:bg-accent flex w-full cursor-pointer items-center justify-between gap-2 rounded-[4px] px-2 py-2"
+														onClick={async () => {
+															if (
+																!isJoined &&
+																org
+															) {
+																setOrgToJoin(
+																	org as Organization
+																);
+																setJoinOrgModalOpen(
+																	true
+																);
+															} else if (
+																isJoined &&
+																org
+															) {
+																window.open(
+																	`/org/${org?.id}`,
+																	'_blank'
+																);
+															}
+														}}
+													>
+														{org?.name}
+														{isJoined && (
+															<RTooltip
+																trigger={
+																	<Icon
+																		name="check"
+																		size={
+																			14
+																		}
+																		onClick={async () => {
+																			try {
+																				await leaveOrg.mutateAsync(
+																					{
+																						organizationId:
+																							org.id,
+																					}
+																				);
+																				toast(
+																					{
+																						title: 'Left organization.',
+																						duration: 1500,
+																					}
+																				);
+																			} catch (e) {
+																				toast(
+																					{
+																						title: 'Error leaving organization.',
+																						duration: 1500,
+																					}
+																				);
+																			}
+																			await refetchOrgsData();
+																		}}
+																	/>
+																}
+																content={
+																	<div>
+																		<RText fontSize="b2">
+																			Click
+																			to
+																			remove
+																			yourself
+																			from
+																			this
+																			organization.
+																		</RText>
+																	</div>
+																}
+																align="start"
+																side="right"
+															/>
+														)}
+													</div>
+												);
+											})}
+										</div>
+									</div>
+								}
+							/>
+						)}
 					</div>
 					<div
 						className={`mt-[24px] flex h-full w-full flex-col gap-[24px] lg:mt-[0px] lg:w-[45%] ${

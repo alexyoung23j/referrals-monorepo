@@ -43,6 +43,8 @@ export default function OrgPage({ org }: { org: any }) {
 
 	const { toast } = useToast();
 
+	const maxNumCompanies = isMobile ? 4 : isMedium ? 6 : 8;
+
 	const unfilteredUsers = org?.users?.map((user: any) => {
 		return user.user;
 	});
@@ -165,12 +167,14 @@ export default function OrgPage({ org }: { org: any }) {
 					isMobile ? 'px-[24px]' : 'px-[104px]'
 				} relative flex-col pb-[35vh]`}
 			>
-				<RText
-					fontSize={isMobile ? 'h3' : 'h1point5'}
-					fontWeight="medium"
-				>
-					{`${org.name} Referral Requests`}
-				</RText>
+				{!isMobile && (
+					<RText
+						fontSize={isMobile ? 'h3' : 'h1point5'}
+						fontWeight="medium"
+					>
+						{`${org.name} Referral Requests`}
+					</RText>
+				)}
 				{org.instructionText && (
 					<RText fontSize={isMobile ? 'b2' : 'b1'} color="secondary">
 						{org.instructionText}
@@ -266,7 +270,7 @@ export default function OrgPage({ org }: { org: any }) {
 												<div className="flex gap-2">
 													{user.ReferralRequest.slice(
 														0,
-														3
+														maxNumCompanies
 													)
 														.sort(
 															(
@@ -317,7 +321,9 @@ export default function OrgPage({ org }: { org: any }) {
 																	trigger={
 																		<Avatar
 																			className="h-[18px] w-[18px]"
-																			onClick={() => {
+																			onClick={(
+																				e
+																			) => {
 																				const link =
 																					user.Link.find(
 																						(
@@ -327,10 +333,15 @@ export default function OrgPage({ org }: { org: any }) {
 																							request.id
 																					);
 
+																				console.log(
+																					link
+																				);
+
 																				if (
 																					link
 																				) {
-																					router.push(
+																					e.stopPropagation();
+																					window.open(
 																						`${process.env.NEXT_PUBLIC_SERVER_URL}/${link.id}`,
 																						'_blank'
 																					);
@@ -369,7 +380,8 @@ export default function OrgPage({ org }: { org: any }) {
 															);
 														})}
 													{user.ReferralRequest
-														.length > 3 && (
+														.length >
+														maxNumCompanies && (
 														<RText
 															fontSize="b2"
 															color="tertiary"
@@ -377,7 +389,8 @@ export default function OrgPage({ org }: { org: any }) {
 															+{' '}
 															{user
 																.ReferralRequest
-																.length - 3}
+																.length -
+																maxNumCompanies}
 														</RText>
 													)}
 												</div>
@@ -409,28 +422,55 @@ export default function OrgPage({ org }: { org: any }) {
 														</RButton>
 													)}
 
-													<Icon
-														name="copy"
-														className="cursor-pointer"
-														size={12}
-														onClick={() => {
-															const generalLink =
-																user.Link.find(
-																	(
-																		link: any
-																	) =>
-																		!link.specificRequest
-																);
+													{isMobile ? (
+														<Icon
+															name="external-link"
+															className="cursor-pointer"
+															size={14}
+															onClick={(e) => {
+																const generalLink =
+																	user.Link.find(
+																		(
+																			link: any
+																		) =>
+																			!link.specificRequest
+																	);
 
-															navigator.clipboard.writeText(
-																`${process.env.NEXT_PUBLIC_SERVER_URL}/${generalLink.id}`
-															);
-															toast({
-																title: 'Copied ReferLink to clipboard.',
-																duration: 1500,
-															});
-														}}
-													/>
+																if (
+																	generalLink
+																) {
+																	e.stopPropagation();
+																	window.open(
+																		`${process.env.NEXT_PUBLIC_SERVER_URL}/${generalLink.id}`,
+																		'_blank'
+																	);
+																}
+															}}
+														/>
+													) : (
+														<Icon
+															name="copy"
+															className="cursor-pointer"
+															size={12}
+															onClick={() => {
+																const generalLink =
+																	user.Link.find(
+																		(
+																			link: any
+																		) =>
+																			!link.specificRequest
+																	);
+
+																navigator.clipboard.writeText(
+																	`${process.env.NEXT_PUBLIC_SERVER_URL}/${generalLink.id}`
+																);
+																toast({
+																	title: 'Copied ReferLink to clipboard.',
+																	duration: 1500,
+																});
+															}}
+														/>
+													)}
 												</div>
 											),
 											label: 'action',
