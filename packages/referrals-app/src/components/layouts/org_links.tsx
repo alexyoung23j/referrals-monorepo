@@ -162,7 +162,7 @@ const OrgPageDesktop = ({
 					</div>
 				) : (
 					<div
-						className="fixed ml-6 mt-6 h-fit cursor-pointer"
+						className="fixed left-6 mt-6 h-fit cursor-pointer"
 						onClick={() => {
 							router.push('/');
 						}}
