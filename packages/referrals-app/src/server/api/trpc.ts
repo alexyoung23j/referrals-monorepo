@@ -168,6 +168,25 @@ const enforceUserCreationLimit = t.middleware(async ({ ctx, next }) => {
 	});
 });
 
+const enforceUserIsAdmin = t.middleware(async ({ ctx, next }) => {
+	const user = await ctx.prisma.user.findUnique({
+		where: { id: ctx?.session?.user.id },
+	});
+
+	const isAdmin = process.env.NODE_ENV === 'development' ? true : user?.admin;
+
+	if (!ctx.session || !ctx.session.user || !user || !isAdmin) {
+		throw new TRPCError({ code: 'UNAUTHORIZED' });
+	}
+
+	return next({
+		ctx: {
+			// infers the `session` as non-nullable
+			session: { ...ctx.session, user: ctx.session.user },
+		},
+	});
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -180,3 +199,7 @@ export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 export const subscriptionProcedure = t.procedure
 	.use(enforceUserIsAuthed)
 	.use(enforceUserCreationLimit);
+
+export const adminProcedure = t.procedure
+	.use(enforceUserIsAuthed)
+	.use(enforceUserIsAdmin);

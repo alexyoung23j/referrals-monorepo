@@ -21,6 +21,7 @@ declare module 'next-auth' {
 			id: string;
 			// ...other properties
 			// role: UserRole;
+			isAdmin: boolean;
 		};
 	}
 
@@ -30,6 +31,16 @@ declare module 'next-auth' {
 	// }
 }
 
+const isUserAdmin = async (userId: string) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId
+		},
+		select: { admin: true },
+	});
+	return !!user?.admin;
+};
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -37,11 +48,12 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
 	callbacks: {
-		session: ({ session, user }) => ({
+		session: async ({ session, user }) => ({
 			...session,
 			user: {
 				...session.user,
 				id: user.id,
+				isAdmin: await isUserAdmin(user.id)
 			},
 		}),
 	},

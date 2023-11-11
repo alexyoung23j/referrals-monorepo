@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import express from 'express';
 import { startEmailInterval } from './interval/email-interval';
+import { startEmailRulesInterval } from './interval/rules-interval';
 import { Resend } from 'resend';
 
 export const prisma = new PrismaClient({
@@ -33,6 +34,7 @@ function main() {
 	);
 
 	startEmailInterval();
+	startEmailRulesInterval();
 }
 
 main();
