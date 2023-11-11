@@ -7,7 +7,7 @@ import {
 	type CreateEmailResponse,
 	type GetEmailResponse,
 } from 'resend/build/src/emails/interfaces';
-import { type EmailWithAttachment, type EmailError } from '.';
+import { type REmailJob, type EmailError } from '.';
 
 type ResendResponse = CreateEmailResponse | GetEmailResponse | EmailError;
 const responseIsEmailError = (
@@ -18,7 +18,7 @@ const responseIsEmailError = (
 // TODO: we can query all the last PROCESSING emails, and re-process if needed.
 // TODO: which means, we probably want to store emailId in the schema as well
 export default async function processEmailQueue(
-	emailQueue: Array<EmailWithAttachment>
+	emailQueue: Array<REmailJob>
 ) {
 	if (!emailQueue.length) {
 		console.log('No emails to process.', new Date());
@@ -58,9 +58,7 @@ export default async function processEmailQueue(
 				);
 			}
 
-			// const {id: emailId} = sendEmailResponse;
-			const { last_event: emailStatus, created_at: sentAt } =
-				getEmailResponse;
+			const { last_event: emailStatus, created_at: sentAt } = getEmailResponse;
 			console.log(`Status for email with id ${email.id}: `, emailStatus);
 			await prisma.emailJob.update({
 				where: {

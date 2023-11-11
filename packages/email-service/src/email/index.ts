@@ -8,7 +8,7 @@ export type EmailError = {
 	statusCode: number;
 }
 
-export type EmailWithAttachment = EmailJob & {
+export type REmailJob = EmailJob & {
 	attachments: EmailAttachment[]
 }
 

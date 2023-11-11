@@ -55,6 +55,43 @@ export async function redirectIfAuthed({
 	}
 }
 
+
+export async function redirectIfNotAdmin({
+	ctx,
+	redirectUrl,
+	callback,
+}: {
+	ctx: GetServerSidePropsContext;
+	redirectUrl: string;
+	callback?: (session?: Session) => void;
+}) {
+	const session = await getServerAuthSession({
+		req: ctx.req,
+		res: ctx.res,
+	});
+
+	if (!session || !session.user.isAdmin) {
+		// if (callback) {
+		// 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		// 	return callback();
+		// }
+		return {
+			redirect: {
+				permanent: false,
+				destination: redirectUrl,
+			},
+			props: {},
+		};
+	} else {
+		if (callback) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+			return callback(session);
+		}
+
+		return { props: { session } };
+	}
+};
+
 export async function redirectIfNotAuthed({
 	ctx,
 	redirectUrl,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '~/utils/api';
 import { RText } from '../ui/text';
 import { type User } from '@prisma/client';
@@ -23,7 +23,11 @@ import {
 	PopoverTrigger,
 } from 'src/components/ui/popover';
  
-export function UsersCombobox() {
+type UsersComboboxProps = {
+	onSelectUser: (userList: User[]) => void
+}
+
+export function UsersCombobox({onSelectUser}: UsersComboboxProps) {
 	const [open, setOpen] = React.useState(false);
 	const [value, setValue] = React.useState('');
 	const { data: users = [] } = api.profiles.getUserList.useQuery();
@@ -36,6 +40,10 @@ export function UsersCombobox() {
 		} else {setSelectedUsers([...tempArray, user]);}
 		setValue('');
 	};
+
+	useEffect(() => {
+		if (onSelectUser) {onSelectUser(selectedUsers);};
+	}, [selectedUsers]);
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -54,7 +62,7 @@ export function UsersCombobox() {
 			</PopoverTrigger>
 			<PopoverContent className="w-fit p-0">
 				<Command>
-					<CommandInput placeholder="Search framework..." className="h-9" />
+					<CommandInput placeholder="Search users..." className="h-9" />
 					<CommandEmpty>No framework found.</CommandEmpty>
 					<CommandGroup>
 						{users.map((user, index) => (

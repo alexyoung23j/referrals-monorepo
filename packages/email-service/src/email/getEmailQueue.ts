@@ -1,8 +1,8 @@
 import { type EmailJobStatus } from '@prisma/client';
-import { type EmailWithAttachment } from '.';
+import { type REmailJob } from '.';
 import {prisma} from '..';
 
-export default async function getEmailQueue(status: EmailJobStatus): Promise<EmailWithAttachment[]> {
+export default async function getEmailQueue(status: EmailJobStatus): Promise<REmailJob[]> {
 	console.log('Getting email queue with status: ', status);
 	const emailQueue = await prisma.emailJob.findMany({
 		where: {
@@ -19,7 +19,7 @@ export default async function getEmailQueue(status: EmailJobStatus): Promise<Ema
 			]
 		},
 		include: {
-			attachments: true
+			attachments: true,
 		}
 	});
 

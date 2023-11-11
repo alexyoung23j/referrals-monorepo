@@ -1,17 +1,23 @@
 import { z } from 'zod';
 import {
+	adminProcedure,
 	createTRPCRouter,
 	protectedProcedure,
 	publicProcedure,
 } from '~/server/api/trpc';
-import { EmailJobStatus, EmailJobType } from '@prisma/client';
+import { EmailJobStatus, EmailJobType, type User } from '@prisma/client';
 import {
 	constructEmailMessage,
 	constructEmailSubject,
 } from '~/utils/emailTemplates';
 import { TRPCError } from '@trpc/server';
+import { defaultTemplateString } from '~/utils/constants';
 
-// TODO: change publicProcedure to authed procedure
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getAllUsers = async (prisma: any) => {
+	return prisma.user.findMany({});
+}; 
+
 export const emailRouter = createTRPCRouter({
 	queueEmailJob: publicProcedure
 		.input(
@@ -247,4 +253,125 @@ export const emailRouter = createTRPCRouter({
 				});
 			}
 		}),
+	queueAdminEmail: adminProcedure
+		.input(
+			z.object({
+				sendToEveryone: z.boolean(),
+				sendTo: z.array(z.custom()).optional(),
+				scheduledAt: z.date().optional().default(new Date()),
+				emailBody: z.string(),
+				emailSubject: z.string()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const {
+				sendToEveryone,
+				sendTo,
+				scheduledAt,
+				emailBody,
+				emailSubject
+			} = input;
+			const emailList = sendToEveryone ? await getAllUsers(ctx.prisma) : sendTo;
+
+			if (!emailList) {return;}
+
+			const transformedEmailBody = defaultTemplateString(
+				`<html><body>
+				<span>${emailBody}</span>
+				</body></html>`
+			);
+			emailList.forEach(async (user: User) => {
+				const firstName = user.name?.split(' ')[0] ?? '';
+				await ctx.prisma.emailJob.create({
+					data: {
+						toAddress: user.email ?? '',
+						body: transformedEmailBody.replaceAll('{{name}}', firstName),
+						toCC: [],
+						emailType: EmailJobType.EMAIL_FROM_ADMIN,
+						status: EmailJobStatus.QUEUED,
+						scheduledAt,
+						subject: emailSubject.replaceAll('{{name}}', firstName),
+						attachments: {
+							create: [],
+						},
+					},
+				});
+			});
+		}),
+	createEmailRule: adminProcedure
+		.input(
+			z.object({
+				emailBody: z.string(),
+				emailSubject: z.string(),
+				modelName: z.string(),
+				condition: z.string(),
+				operation: z.string(),
+				lastCreateOrUpdate: z.date().optional().default(new Date()),
+				timePeriod: z.string().optional(),
+				sendWhen: z.number().optional(),
+				fieldValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
+				fieldName: z.string().optional(),
+				fieldType: z.string().optional(),
+				ruleName: z.string()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const {
+				modelName,
+				condition,
+				operation,
+				lastCreateOrUpdate,
+				sendWhen,
+				timePeriod,
+				emailBody,
+				emailSubject,
+				fieldName,
+				fieldValue,
+				ruleName,
+				fieldType,
+			} = input;
+
+			const transformedEmailBody = defaultTemplateString(
+				`<html><body>
+				<span>${emailBody}</span>
+				</body></html>`
+			);
+
+
+			await ctx.prisma.emailRule.create({
+				data: {
+					modelName,
+					condition,
+					operation,
+					dateComparison: lastCreateOrUpdate,
+					emailBody: transformedEmailBody,
+					emailSubject,
+					timePeriod,
+					sendWhen,
+					fieldName,
+					fieldValue: String(fieldValue),
+					fieldType,
+					ruleName
+				}
+			});
+		}),
+	getEmailRules: adminProcedure
+		.query(async ({ ctx, input }) => {
+			return ctx.prisma.emailRule.findMany();
+		}),
+	deleteEmailRule: adminProcedure
+		.input(
+			z.object({
+				ruleId: z.string()
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const {ruleId} = input;
+			
+			await ctx.prisma.emailRule.delete({
+				where: {
+					id: ruleId
+				}
+			});
+		})
 });
