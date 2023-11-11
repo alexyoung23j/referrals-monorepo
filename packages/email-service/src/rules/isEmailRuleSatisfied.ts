@@ -24,7 +24,6 @@ export default async function isEmailRuleSatisfied(emailRule: EmailRule): Promis
 			break;
 		case 'has':
 			const transformedFieldValue = fieldType === 'int' ? Number(fieldValue) : fieldType === 'boolean' ? Boolean(fieldValue) : fieldValue;
-			console.log('TRANSFORMED', typeof transformedFieldValue);
 			lastCheckedTimestamp = lastUpdatedTimestampsMap[modelName] ?? new Date();
 			dbQueryCondition = { [`${fieldName}`]: transformedFieldValue, updatedAt: { gt: lastCheckedTimestamp } };
 			lastUpdatedTimestampsMap[modelName] = new Date();

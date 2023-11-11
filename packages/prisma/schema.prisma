@@ -50,7 +50,7 @@ model StripeEvent {
     livemode         Boolean
     pending_webhooks Int
     createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
+    updatedAt        DateTime @default(now()) @updatedAt
 }
 
 model StripeSubscription {
@@ -61,7 +61,7 @@ model StripeSubscription {
     subscriptionLevel  StripeSubscriptionLevel // This might be useful if there are multiple level
     subscriptionItemId String
     createdAt          DateTime                 @default(now())
-    updatedAt          DateTime                 @updatedAt
+    updatedAt          DateTime                 @default(now()) @updatedAt
     StripeInvoice      StripeInvoice[]
 }
 
@@ -72,7 +72,7 @@ model StripeCustomer {
     user                User?                @relation(fields: [userId], references: [id])
     userId              String?
     createdAt           DateTime             @default(now())
-    updatedAt           DateTime             @updatedAt
+    updatedAt           DateTime             @default(now()) @updatedAt
     StripeSubscriptions StripeSubscription[]
     StripeInvoice       StripeInvoice[]
 }
@@ -86,7 +86,7 @@ model StripeInvoice {
     stripeSubscriptionId String
     status               StripeInvoiceStatus
     createdAt            DateTime            @default(now())
-    updatedAt            DateTime            @updatedAt
+    updatedAt            DateTime            @default(now()) @updatedAt
 }
 
 // The email service will handle each of these cases differently
@@ -116,7 +116,7 @@ model EmailAttachment {
     filename   String
     url        String
     createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model EmailRule {
@@ -126,7 +126,7 @@ model EmailRule {
     operation      String
     dateComparison DateTime?
     createdAt      DateTime  @default(now())
-    updatedAt      DateTime  @updatedAt
+    updatedAt      DateTime  @default(now()) @updatedAt
     emailBody      String
     emailSubject   String
     timePeriod     String?
@@ -152,7 +152,7 @@ model EmailJob {
     scheduledAt               DateTime?
     sentAt                    DateTime?
     createdAt                 DateTime          @default(now())
-    updatedAt                 DateTime          @updatedAt
+    updatedAt                 DateTime          @default(now()) @updatedAt
     resendEmailId             String?
     failCount                 Int               @default(0)
     emailRuleId               String?
@@ -164,7 +164,7 @@ model Company {
     logoUrl         String?
     isCreatedByUser Boolean
     createdAt       DateTime          @default(now())
-    updatedAt       DateTime          @updatedAt
+    updatedAt       DateTime          @default(now()) @updatedAt
     ReferralRequest ReferralRequest[]
     JobExperience   JobExperience[]
 }
@@ -190,7 +190,7 @@ model ReferralRequest {
     notLoggedInReferrerId String?
     referrerUserId        String? // only if the referrer happens to be a user on the platform
     createdAt             DateTime               @default(now())
-    updatedAt             DateTime               @updatedAt
+    updatedAt             DateTime               @default(now()) @updatedAt
     Link                  Link[]
     EmailJob              EmailJob[]
 }
@@ -200,7 +200,7 @@ model NonLoggedInUser {
     email           String?           @unique
     name            String?
     createdAt       DateTime          @default(now())
-    updatedAt       DateTime          @updatedAt
+    updatedAt       DateTime          @default(now()) @updatedAt
     ReferralRequest ReferralRequest[]
 }
 
@@ -216,7 +216,7 @@ model JobExperience {
     endDate           DateTime?
     currentlyWorkHere Boolean?
     createdAt         DateTime    @default(now())
-    updatedAt         DateTime    @updatedAt
+    updatedAt         DateTime    @default(now()) @updatedAt
 }
 
 model UserProfile {
@@ -239,7 +239,7 @@ model UserProfile {
     resumeUrl        String?
     linkedInUrl      String?
     createdAt        DateTime        @default(now())
-    updatedAt        DateTime        @updatedAt
+    updatedAt        DateTime        @default(now()) @updatedAt
     JobExperience    JobExperience[]
 }
 
@@ -255,7 +255,7 @@ model Link {
     isDefaultLinkForRequest Boolean          @default(false) // Was this the link the original "primary" link for this request
     createdByLoggedInUser   Boolean
     createdAt               DateTime         @default(now())
-    updatedAt               DateTime         @updatedAt
+    updatedAt               DateTime         @default(now()) @updatedAt
 }
 
 model Organization {
@@ -270,7 +270,7 @@ model Organization {
     instructionText String?
 
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model UserOrganization {
@@ -286,7 +286,7 @@ model UserOrganization {
 model Account {
     id                String   @id @default(cuid())
     createdAt         DateTime @default(now())
-    updatedAt         DateTime @updatedAt
+    updatedAt         DateTime @default(now()) @updatedAt
     userId            String
     type              String
     provider          String
@@ -309,7 +309,7 @@ model Session {
     userId       String
     expires      DateTime
     createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    updatedAt    DateTime @default(now()) @updatedAt
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -330,7 +330,7 @@ model User {
     organizationsJoined UserOrganization[]
     admin               Boolean?
     createdAt           DateTime           @default(now())
-    updatedAt           DateTime           @updatedAt
+    updatedAt           DateTime           @default(now()) @updatedAt
 }
 
 model VerificationToken {
@@ -338,7 +338,7 @@ model VerificationToken {
     token      String   @unique
     expires    DateTime
     createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    updatedAt  DateTime @default(now()) @updatedAt
 
     @@unique([identifier, token])
 }

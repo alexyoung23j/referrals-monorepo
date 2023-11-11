@@ -49,7 +49,6 @@ export default async function processEmailRule(
 			};
 		});
 
-		console.log('EMAILS', emails);
 		createEmailJobs(emails)
 			.then(() => prisma.emailRule.update({
 				where: {
