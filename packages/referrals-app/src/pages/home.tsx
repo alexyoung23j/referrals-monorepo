@@ -53,7 +53,7 @@ export default function MyPage(props: {
 	return (
 		<>
 			<Head>
-				<title>ReferLink - Job referrals, simplified.</title>
+				<title>ReferLink - Job referrals on easy mode.</title>
 				<meta
 					name="description"
 					content="Find job referrals faster than ever."
