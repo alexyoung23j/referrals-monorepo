@@ -6,6 +6,7 @@ import {
 	type DefaultSession,
 } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import LinkedInProvider from 'next-auth/providers/linkedin';
 import { env } from '~/env.mjs';
 import { prisma } from '~/server/db';
 
@@ -50,6 +51,25 @@ export const authOptions: NextAuthOptions = {
 		GoogleProvider({
 			clientId: env.GOOGLE_CLIENT_ID,
 			clientSecret: env.GOOGLE_CLIENT_SECRET,
+		}),
+		LinkedInProvider({
+			clientId: env.LINKEDIN_CLIENT_ID,
+			clientSecret: env.LINKEDIN_CLIENT_SECRET,
+			authorization: {
+				params: { scope: 'openid profile email' },
+			},
+			profile(profile, tokens) {
+				const defaultImage = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
+				console.log('PROFILE', profile);
+				return {
+					id: profile.sub,
+					name: profile.name,
+					email: profile.email,
+					image: profile.picture ?? defaultImage,
+				};
+			},
+			issuer: 'https://www.linkedin.com',
+			wellKnown: 'https://www.linkedin.com/oauth/.well-known/openid-configuration',
 		}),
 	],
 };
