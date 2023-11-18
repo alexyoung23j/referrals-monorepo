@@ -532,6 +532,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 						publicEmail: session?.user.email,
 						firstName: session?.user.name?.split(' ')[0],
 						lastName: session?.user.name?.split(' ')[1],
+						avatarUrl: session?.user.image ?? ''
 					},
 				});
 			}

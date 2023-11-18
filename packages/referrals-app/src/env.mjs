@@ -25,6 +25,8 @@ export const env = createEnv({
 		GOOGLE_CLIENT_SECRET: z.string(),
 		NEXT_PUBLIC_SERVER_URL_SHORT: z.string(),
 		NEXT_PUBLIC_SERVER_URL: z.string().url(),
+		LINKEDIN_CLIENT_ID: z.string(),
+		LINKEDIN_CLIENT_SECRET: z.string(),
 	},
 
 	/**
@@ -53,6 +55,8 @@ export const env = createEnv({
 		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 		NEXT_PUBLIC_SERVER_URL_SHORT: process.env.NEXT_PUBLIC_SERVER_URL_SHORT,
 		NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
+		LINKEDIN_CLIENT_ID: process.env.LINKEDIN_CLIENT_ID,
+		LINKEDIN_CLIENT_SECRET: process.env.LINKEDIN_CLIENT_SECRET,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
