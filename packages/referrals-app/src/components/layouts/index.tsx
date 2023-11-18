@@ -141,8 +141,10 @@ const Sidebar = () => {
 								}}
 							>
 								<Icon
-									name="user"
-									color={profileSelected ? '#64748B' : '#94A3B8'}
+									name="send"
+									color={
+										profileSelected ? '#64748B' : '#94A3B8'
+									}
 									size="24px"
 								/>
 							</div>
