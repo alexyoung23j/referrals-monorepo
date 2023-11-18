@@ -1,10 +1,10 @@
 import { RButton } from '~/components/ui/button';
 import { RText } from '~/components/ui/text';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { GetServerSidePropsContext } from 'next';
+import { type GetServerSidePropsContext } from 'next';
 import { redirectIfAuthed } from '~/utils/routing';
 import { googleLogo } from './signup';
-import { ReferLinkLogo } from '~/components/ui/icons';
+import Icon, { ReferLinkLogo } from '~/components/ui/icons';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
@@ -45,8 +45,24 @@ export default function LoginPage() {
 				>
 					{googleLogo()}Sign in with Google
 				</RButton>
+				<RButton
+					className="w-full"
+					onClick={() => {
+						void signIn('linkedin', {
+							callbackUrl: '/dashboard?info=true',
+						});
+					}}
+				>
+					<Icon
+						name="linkedin"
+						size="24px"
+						color="white"
+						fill="white"
+						className="cursor-pointer"
+					/> Sign in with LinkedIn
+				</RButton>
 				<RText fontSize="b1" color="secondary" className="mt-[8px]">
-					{"Don't have an account? "}
+					{'Don\'t have an account? '}
 					<RText
 						fontSize="b1"
 						fontWeight="medium"
