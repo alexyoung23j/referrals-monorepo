@@ -1,4 +1,10 @@
-# Referrals
+# Referlink.xyz
+
+Referlink was a product I built to make job referals as easy as sending a Calendly link. We launched on Product Hunt (https://www.producthunt.com/products/referlink#referlink) and made the top 10! A few hundred people signed up before it was clear this wasn't solving enough of a problem and I shut down the project.
+
+![35bb3224-135d-44b7-bfd5-895abdbcb6c5](https://github.com/user-attachments/assets/2d19b182-69a7-41c9-bb3a-4b3ba5795f6f)
+
+
 
 ## Repo Setup
 Just run `yarn install` from the root of this folder and you are good to go! *Do not run `yarn install` from individual packages.*
